@@ -1,0 +1,47 @@
+
+> arty@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 18.4s
+  Running TypeScript ...
+  Collecting page data using 3 workers ...
+Error [PrismaClientInitializationError]: `PrismaClient` needs to be constructed with a non-empty, valid `PrismaClientOptions`:
+
+```
+new PrismaClient({
+  ...
+})
+```
+
+or
+
+```
+constructor() {
+  super({ ... });
+}
+```
+          
+    at module evaluation (C:\art_web\antigravity\.next\server\chunks\[root-of-the-server]__e7734bb2._.js:1:1167)
+    at instantiateModule (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:763:12)
+    at Context.esmImport [as i] (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:228:20)
+    at module evaluation (C:\art_web\antigravity\.next\server\chunks\[root-of-the-server]__e7734bb2._.js:1:1485)
+    at instantiateModule (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:740:9)
+    at instantiateRuntimeModule (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:768:12)
+    at getOrInstantiateRuntimeModule (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:781:12)
+    at Object.m (C:\art_web\antigravity\.next\server\chunks\[turbopack]_runtime.js:790:18) {
+  clientVersion: '7.4.1',
+  errorCode: undefined,
+  retryable: undefined
+}
+
+> Build error occurred
+Error: Failed to collect page data for /api/items/[itemId]
+    at ignore-listed frames {
+  type: 'Error'
+}

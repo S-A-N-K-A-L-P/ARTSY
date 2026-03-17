@@ -1,0 +1,1 @@
+export const ProfileHeader = () => <header>Minimal Header</header>;

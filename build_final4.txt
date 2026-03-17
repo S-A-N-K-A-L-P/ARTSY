@@ -1,0 +1,24 @@
+
+> arty@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 16.2s
+  Running TypeScript ...
+Failed to compile.
+
+./src/features/auth/authSelectors.ts:3:66
+Type error: Property 'auth' does not exist on type '{ cart: CartItem[]; user: UserState; }'.
+
+[0m [90m 1 |[39m [36mimport[39m { [33mRootState[39m } [36mfrom[39m [32m'../../store/store'[39m[33m;[39m
+ [90m 2 |[39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mexport[39m [36mconst[39m selectIsAuthenticated [33m=[39m (state[33m:[39m [33mRootState[39m) [33m=>[39m state[33m.[39mauth[33m.[39misAuthenticated[33m;[39m
+ [90m   |[39m                                                                  [31m[1m^[22m[39m
+ [90m 4 |[39m [36mexport[39m [36mconst[39m selectAuthUser [33m=[39m (state[33m:[39m [33mRootState[39m) [33m=>[39m state[33m.[39mauth[33m.[39muser[33m;[39m
+ [90m 5 |[39m [36mexport[39m [36mconst[39m selectAuthLoading [33m=[39m (state[33m:[39m [33mRootState[39m) [33m=>[39m state[33m.[39mauth[33m.[39mloading[33m;[39m
+ [90m 6 |[39m [36mexport[39m [36mconst[39m selectAuthError [33m=[39m (state[33m:[39m [33mRootState[39m) [33m=>[39m state[33m.[39mauth[33m.[39merror[33m;[39m[0m
+Next.js build worker exited with code: 1 and signal: null

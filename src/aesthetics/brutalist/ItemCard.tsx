@@ -1,0 +1,1 @@
+export const ItemCard = () => <div>Brutalist Item Card</div>;

@@ -1,0 +1,1 @@
+export const ProfileLayout = () => <div>Cyberpunk Profile Layout</div>;

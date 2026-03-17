@@ -1,0 +1,1 @@
+export type AestheticType = "noir" | "minimal" | "vaporwave" | "brutalist" | "grunge" | "cyberpunk";

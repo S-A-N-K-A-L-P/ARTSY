@@ -1,0 +1,1 @@
+export default function AestheticSettingsPage() { return <h1>Aesthetic Settings</h1>; }

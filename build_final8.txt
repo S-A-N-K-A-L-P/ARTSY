@@ -1,0 +1,51 @@
+
+> arty@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 15.2s
+  Running TypeScript ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/17) ...
+  Generating static pages using 3 workers (4/17) 
+  Generating static pages using 3 workers (8/17) 
+  Generating static pages using 3 workers (12/17) 
+✓ Generating static pages using 3 workers (17/17) in 663.2ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/aesthetics
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/auth/send-otp
+├ ƒ /api/auth/verify-otp
+├ ƒ /api/items
+├ ƒ /api/items/[itemId]
+├ ƒ /api/orders
+├ ƒ /api/users
+├ ƒ /api/users/[username]
+├ ○ /dashboard
+├ ○ /dashboard/analytics
+├ ○ /dashboard/items/create
+├ ƒ /dashboard/items/edit/[itemId]
+├ ○ /dashboard/settings/aesthetic
+├ ○ /dashboard/settings/profile
+├ ○ /explore
+├ ƒ /item/[itemId]
+├ ○ /login
+├ ƒ /user/[username]
+├ ƒ /user/[username]/about
+├ ƒ /user/[username]/collections
+└ ƒ /user/[username]/items
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,1 @@
+export const ProfileHeader = () => <header>Vaporwave Header</header>;

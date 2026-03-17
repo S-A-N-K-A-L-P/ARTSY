@@ -1,0 +1,1 @@
+export const ProfileLayout = () => <div>Grunge Profile Layout</div>;

@@ -1,0 +1,24 @@
+
+> arty@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 14.3s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/api/items/[itemId]/route.ts:8:31
+Type error: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+
+[0m [90m  6 |[39m   [36mtry[39m {
+ [90m  7 |[39m     [36mconst[39m { itemId } [33m=[39m [36mawait[39m params[33m;[39m
+[31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m item [33m=[39m [36mawait[39m prisma[33m.[39mitem[33m.[39mfindUnique({
+ [90m    |[39m                               [31m[1m^[22m[39m
+ [90m  9 |[39m       where[33m:[39m { id[33m:[39m itemId }[33m,[39m
+ [90m 10 |[39m       include[33m:[39m {
+ [90m 11 |[39m         seller[33m:[39m {[0m
+Next.js build worker exited with code: 1 and signal: null

@@ -1,0 +1,1 @@
+export const ItemCard = () => <div>Noir Item Card</div>;

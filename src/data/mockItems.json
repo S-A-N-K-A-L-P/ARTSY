@@ -1,0 +1,46 @@
+[
+    {
+        "id": "1",
+        "title": "Handmade Charcoal Portrait",
+        "image": "https://picsum.photos/400/500?random=1",
+        "price": 1200,
+        "aesthetic": "Dark Noir",
+        "creator": {
+            "username": "raven.art",
+            "avatar": "https://i.pravatar.cc/150?u=raven.art"
+        }
+    },
+    {
+        "id": "2",
+        "title": "Crochet Wool Hat",
+        "image": "https://picsum.photos/400/500?random=2",
+        "price": 850,
+        "aesthetic": "Old Money",
+        "creator": {
+            "username": "woolfolk",
+            "avatar": "https://i.pravatar.cc/150?u=woolfolk"
+        }
+    },
+    {
+        "id": "3",
+        "title": "Pressed Flower Art",
+        "image": "https://picsum.photos/400/500?random=3",
+        "price": 650,
+        "aesthetic": "Cottagecore",
+        "creator": {
+            "username": "florahaus",
+            "avatar": "https://i.pravatar.cc/150?u=florahaus"
+        }
+    },
+    {
+        "id": "4",
+        "title": "Oil Painting - Ocean Breeze",
+        "image": "https://picsum.photos/400/500?random=4",
+        "price": 2500,
+        "aesthetic": "Coastal",
+        "creator": {
+            "username": "ocean.brush",
+            "avatar": "https://i.pravatar.cc/150?u=ocean.brush"
+        }
+    }
+]

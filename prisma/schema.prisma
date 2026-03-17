@@ -1,0 +1,100 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String         @id @default(cuid())
+  name        String
+  email       String?        @unique
+  phone       String?        @unique
+  password    String?
+  avatar      String?
+  bio         String?
+  username    String         @unique
+  isCreator   Boolean        @default(false)
+  aesthetic   String?
+  createdAt   DateTime       @default(now())
+  posts       Post[]
+  orders      Order[]
+  wishlist    WishlistItem[]
+  reviews     Review[]
+  following   Follow[]       @relation("Follower")
+  followers   Follow[]       @relation("Following")
+  sentDMs     DM[]           @relation("Sender")
+  receivedDMs DM[]           @relation("Receiver")
+}
+
+model Post {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  aesthetic   String
+  mediaUrls   String[]
+  mediaType   String         // "image" | "carousel" | "video"
+  price       Float
+  stock       Int            @default(1)
+  createdAt   DateTime       @default(now())
+  creator     User           @relation(fields: [creatorId], references: [id])
+  creatorId   String
+  reviews     Review[]
+  cartItems   CartItem[]
+  wishlist    WishlistItem[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1–5
+  comment   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+}
+
+model CartItem {
+  id     String @id @default(cuid())
+  userId String
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+}
+
+model WishlistItem {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  total     Float
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Follow {
+  follower    User   @relation("Follower",  fields: [followerId],  references: [id])
+  followerId  String
+  following   User   @relation("Following", fields: [followingId], references: [id])
+  followingId String
+  @@id([followerId, followingId])
+}
+
+model DM {
+  id         String   @id @default(cuid())
+  content    String
+  createdAt  DateTime @default(now())
+  sender     User     @relation("Sender",   fields: [senderId],   references: [id])
+  senderId   String
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId String
+}

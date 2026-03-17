@@ -1,0 +1,1 @@
+export const ProfileLayout = () => <div>Vaporwave Profile Layout</div>;

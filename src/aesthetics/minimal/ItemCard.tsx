@@ -1,0 +1,1 @@
+export const ItemCard = () => <div>Minimal Item Card</div>;

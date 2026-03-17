@@ -1,0 +1,1 @@
+export const ProfileLayout = () => <div>Brutalist Profile Layout</div>;

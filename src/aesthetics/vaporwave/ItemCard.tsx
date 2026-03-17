@@ -1,0 +1,1 @@
+export const ItemCard = () => <div>Vaporwave Item Card</div>;

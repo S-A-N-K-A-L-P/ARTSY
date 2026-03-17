@@ -1,0 +1,1 @@
+export const ProfileLayout = () => <div>Minimal Profile Layout</div>;
