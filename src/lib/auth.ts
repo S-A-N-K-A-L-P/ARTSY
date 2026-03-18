@@ -1,20 +1,12 @@
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import bcrypt from 'bcryptjs';
-
-// TEMPORARY mock users — replaced with real DB in Phase 10
-const MOCK_USERS = [
-    {
-        id: '1',
-        name: 'Test User',
-        email: 'test@test.com',
-        // hashed version of 'password123'
-        password: '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-    },
-];
+import prisma from './prisma';
 
 export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma),
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
         GoogleProvider({
@@ -22,17 +14,29 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         }),
         CredentialsProvider({
-            name: 'Email',
+            name: 'Credentials',
             credentials: {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials.password) return null;
-                const user = MOCK_USERS.find(u => u.email === credentials.email);
-                if (!user) return null;
-                const valid = await bcrypt.compare(credentials.password, user.password);
-                return valid ? { id: user.id, name: user.name, email: user.email } : null;
+                
+                const user = await prisma.user.findUnique({
+                    where: { email: credentials.email },
+                });
+
+                if (!user || !user.password) return null;
+
+                const isValid = await bcrypt.compare(credentials.password, user.password);
+                
+                if (!isValid) return null;
+
+                return {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                };
             },
         }),
     ],
@@ -42,9 +46,15 @@ export const authOptions: NextAuthOptions = {
         error: '/login',
     },
     callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
         async session({ session, token }) {
-            if (token.sub && session.user) {
-                (session.user as any).id = token.sub;
+            if (session.user) {
+                (session.user as any).id = token.id;
             }
             return session;
         },

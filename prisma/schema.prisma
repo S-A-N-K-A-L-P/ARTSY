@@ -1,18 +1,19 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String         @id @default(cuid())
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   email       String?        @unique
   phone       String?        @unique
   password    String?
+  address     String?
   avatar      String?
   bio         String?
   username    String         @unique
@@ -27,10 +28,24 @@ model User {
   followers   Follow[]       @relation("Following")
   sentDMs     DM[]           @relation("Sender")
   receivedDMs DM[]           @relation("Receiver")
+  onboarding  Onboarding?
+}
+
+model Onboarding {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @unique @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  intent      String?
+  aesthetics  String[]
+  interests   String[]
+  products    String[]
+  creatorType String?
+  vibe        String?
+  updatedAt   DateTime  @updatedAt
 }
 
 model Post {
-  id          String         @id @default(cuid())
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
   aesthetic   String
@@ -47,7 +62,7 @@ model Post {
 }
 
 model Review {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   rating    Int      // 1–5
   comment   String
   createdAt DateTime @default(now())
@@ -58,14 +73,14 @@ model Review {
 }
 
 model CartItem {
-  id     String @id @default(cuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String
   post   Post   @relation(fields: [postId], references: [id])
   postId String
 }
 
 model WishlistItem {
-  id     String @id @default(cuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String
   user   User   @relation(fields: [userId], references: [id])
   post   Post   @relation(fields: [postId], references: [id])
@@ -73,7 +88,7 @@ model WishlistItem {
 }
 
 model Order {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   total     Float
   status    String   @default("pending")
   createdAt DateTime @default(now())
@@ -82,15 +97,15 @@ model Order {
 }
 
 model Follow {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   follower    User   @relation("Follower",  fields: [followerId],  references: [id])
-  followerId  String
+  followerId  String @db.ObjectId
   following   User   @relation("Following", fields: [followingId], references: [id])
-  followingId String
-  @@id([followerId, followingId])
+  followingId String @db.ObjectId
 }
 
 model DM {
-  id         String   @id @default(cuid())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   content    String
   createdAt  DateTime @default(now())
   sender     User     @relation("Sender",   fields: [senderId],   references: [id])
