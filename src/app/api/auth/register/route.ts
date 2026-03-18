@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import prisma from '@/lib/prisma';
+import dbConnect from '@/lib/db';
+import User from '@/models/User';
 
 export async function POST(req: Request) {
     try {
+        await dbConnect();
         const { name, email, phone, address, password } = await req.json();
 
         if (!email || !password || !name) {
@@ -11,13 +13,8 @@ export async function POST(req: Request) {
         }
 
         // Check if user already exists
-        const existingUser = await prisma.user.findFirst({
-            where: {
-                OR: [
-                    { email },
-                    { phone: phone || undefined }
-                ]
-            }
+        const existingUser = await User.findOne({
+            $or: [{ email }, { phone: phone || undefined }]
         });
 
         if (existingUser) {
@@ -27,18 +24,16 @@ export async function POST(req: Request) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create user
-        const user = await prisma.user.create({
-            data: {
-                name,
-                email,
-                phone,
-                address,
-                password: hashedPassword,
-                username: email.split('@')[0] + Math.floor(Math.random() * 1000), // Simple username generation
-            },
+        const user = await User.create({
+            name,
+            email,
+            phone,
+            address,
+            password: hashedPassword,
+            username: email.split('@')[0] + Math.floor(Math.random() * 1000),
         });
 
-        return NextResponse.json({ message: 'User registered successfully', userId: user.id }, { status: 201 });
+        return NextResponse.json({ message: 'User registered successfully', userId: user._id }, { status: 201 });
     } catch (error: any) {
         console.error('Registration error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
