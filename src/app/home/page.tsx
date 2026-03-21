@@ -19,6 +19,17 @@ const MOCK_ITEMS = [
 export default function MobileHomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-bg">
+      {/* Web view overlay - visible only on medium screens and up */}
+      <div className="hidden md:flex fixed inset-0 z-50 bg-[#F5F2EE] items-center justify-center p-8 text-center">
+        <div className="max-w-4xl w-full">
+          <h1 className="text-6xl font-bold mb-6 tracking-tight text-[#2C2C2C]">ARTSY</h1>
+          <p className="text-xl text-[#2C2C2C]/60 mb-8">The premium aesthetic platform for creators.</p>
+          <div className="p-12 border border-black/5 bg-white rounded-2xl shadow-xl">
+            <p className="text-[#2C2C2C]">Please visit from a mobile device to experience the iOS design system.</p>
+          </div>
+        </div>
+      </div>
+
       <IOSNavBar title="ARTSY" />
       <IOSSearch />
       
