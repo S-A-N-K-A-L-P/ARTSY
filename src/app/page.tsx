@@ -13,8 +13,16 @@ import CTASection from "@/components/portfolio/CTASection";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Box } from "@mui/material";
+import { getIsMobileServer } from "@/lib/utils";
+import MobileHomePage from "./(mobile)/home/page";
 
-export default function LandingPage() {
+export default async function Main() {
+  const isMobile = await getIsMobileServer();
+
+  if (isMobile) {
+    return <MobileHomePage />;
+  }
+
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar />
