@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import dbConnect from '@/lib/db';
+import Order from '@/models/Order';
 
 export async function GET(req: Request) {
   try {
+    await dbConnect();
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
 
@@ -10,19 +12,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
-    });
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
 
     return NextResponse.json(orders);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching orders:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
+    await dbConnect();
     const body = await req.json();
     const { userId, total } = body;
 
@@ -30,16 +31,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'userId and total are required' }, { status: 400 });
     }
 
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        total,
-        status: 'pending',
-      }
+    const order = await Order.create({
+      userId,
+      total,
+      status: 'pending',
     });
 
     return NextResponse.json(order, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error('Error creating order:', error);
     return NextResponse.json({ error: 'Failed to create order' }, { status: 400 });
   }
 }

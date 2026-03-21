@@ -7,7 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Phone, MapPin, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, Phone, MapPin, ArrowRight, Loader2, Sparkles, ChevronLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -53,7 +54,7 @@ export default function LoginPage() {
       if (res?.error) {
         setError('Invalid credentials');
       } else {
-        router.push('/dashboard');
+        router.push('/home'); // Changed from /dashboard to /home which I created
       }
     } catch (err) {
       setError('Something went wrong');
@@ -77,7 +78,6 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(result.error || 'Registration failed');
       } else {
-        // Auto sign-in after registration
         await signIn('credentials', {
           redirect: false,
           email: data.email,
@@ -93,211 +93,228 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-4 overflow-hidden relative">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
+    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden relative">
+      {/* Premium Animated Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, 50, 0],
+            y: [0, -30, 0]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-600/30 blur-[130px] rounded-full" 
+        />
+        <motion.div 
+          animate={{ 
+            scale: [1.2, 1, 1.2],
+            opacity: [0.1, 0.2, 0.1],
+            x: [0, -40, 0],
+            y: [0, 40, 0]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/20 blur-[130px] rounded-full" 
+        />
       </div>
 
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-sm z-10"
       >
-        <div className="text-center mb-8">
-          <motion.h1 
-            initial={{ y: -20 }}
-            animate={{ y: 0 }}
-            className="text-5xl font-bold tracking-tighter bg-gradient-to-r from-white via-gray-300 to-gray-500 bg-clip-text text-transparent"
+        <div className="text-center mb-10">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-20 h-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[22px] mx-auto mb-6 flex items-center justify-center shadow-2xl"
           >
-            ARTSY
+            <span className="text-3xl font-bold tracking-tighter italic">A</span>
+          </motion.div>
+          <motion.h1 
+            className="text-4xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent"
+          >
+            {isLogin ? 'Welcome back' : 'Join the Collective'}
           </motion.h1>
-          <p className="text-gray-400 mt-2 text-sm font-light">Where creativity finds its rhythm.</p>
-        </div>
-
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          <div className="flex bg-black/40 p-1 rounded-xl mb-8 relative">
-            <motion.div
-              animate={{ x: isLogin ? 0 : '100%' }}
-              className="absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-white/10 rounded-lg"
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            />
-            <button 
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 text-sm font-medium z-10 transition-colors ${isLogin ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              Login
-            </button>
-            <button 
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 text-sm font-medium z-10 transition-colors ${!isLogin ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              Register
-            </button>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {isLogin ? (
-              <motion.form
-                key="login"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleLoginSubmit(onLogin)}
-                className="space-y-4"
-              >
-                <div className="space-y-1">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                    <input
-                      {...loginReg('email')}
-                      type="email"
-                      placeholder="Email Address"
-                      className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                    />
-                  </div>
-                  {loginErrors.email && <p className="text-xs text-red-500 ml-1">{loginErrors.email.message as string}</p>}
-                </div>
-
-                <div className="space-y-1">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                    <input
-                      {...loginReg('password')}
-                      type="password"
-                      placeholder="Password"
-                      className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                    />
-                  </div>
-                  {loginErrors.password && <p className="text-xs text-red-500 ml-1">{loginErrors.password.message as string}</p>}
-                </div>
-
-                {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-
-                <button
-                  disabled={loading}
-                  type="submit"
-                  className="w-full bg-white text-black font-semibold py-3 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
-                >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                    <>
-                      Enter the Space
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </button>
-              </motion.form>
-            ) : (
-              <motion.form
-                key="register"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                onSubmit={handleRegisterSubmit(onRegister)}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1 col-span-2">
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        {...registerReg('name')}
-                        placeholder="Full Name"
-                        className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                      />
-                    </div>
-                    {registerErrors.name && <p className="text-xs text-red-500 ml-1">{registerErrors.name.message as string}</p>}
-                  </div>
-
-                  <div className="space-y-1 col-span-2">
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        {...registerReg('email')}
-                        type="email"
-                        placeholder="Email Address"
-                        className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                      />
-                    </div>
-                    {registerErrors.email && <p className="text-xs text-red-500 ml-1">{registerErrors.email.message as string}</p>}
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        {...registerReg('phone')}
-                        placeholder="Phone"
-                        className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        {...registerReg('address')}
-                        placeholder="Address"
-                        className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        {...registerReg('password')}
-                        type="password"
-                        placeholder="Password"
-                        className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                      />
-                    </div>
-                    {registerErrors.password && <p className="text-xs text-red-500 ml-1">{registerErrors.password.message as string}</p>}
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        {...registerReg('confirmPassword')}
-                        type="password"
-                        placeholder="Confirm"
-                        className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-white/30 transition-colors"
-                      />
-                    </div>
-                    {registerErrors.confirmPassword && <p className="text-xs text-red-500 ml-1">{registerErrors.confirmPassword.message as string}</p>}
-                  </div>
-                </div>
-
-                {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-
-                <button
-                  disabled={loading}
-                  type="submit"
-                  className="w-full bg-white text-black font-semibold py-3 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
-                >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                    <>
-                      Create Account
-                      <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                    </>
-                  )}
-                </button>
-              </motion.form>
-            )}
-          </AnimatePresence>
-
-          <p className="mt-8 text-center text-xs text-gray-500">
-            By continuing, you agree to ARTSY's 
-            <span className="text-gray-300 cursor-pointer hover:underline mx-1">Terms</span>
-            & 
-            <span className="text-gray-300 cursor-pointer hover:underline ml-1">Privacy Policy</span>
+          <p className="text-white/40 mt-2 text-sm font-medium tracking-wide px-4 leading-relaxed">
+            {isLogin ? 'Discover unique aesthetics and connect with fellow creators.' : 'Create your digital identity and start curating your world.'}
           </p>
         </div>
+
+        <div className="bg-white/[0.03] backdrop-blur-[32px] border border-white/[0.08] rounded-[32px] p-2 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] relative overflow-hidden">
+          <div className="p-6">
+            <AnimatePresence mode="wait">
+              {isLogin ? (
+                <motion.form
+                  key="login"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  onSubmit={handleLoginSubmit(onLogin)}
+                  className="space-y-4"
+                >
+                  <div className="space-y-3">
+                    <IOSInput
+                      placeholder="Email Address"
+                      icon={<Mail size={18} />}
+                      {...loginReg('email')}
+                      error={loginErrors.email?.message as string}
+                    />
+                    <IOSInput
+                      placeholder="Password"
+                      type="password"
+                      icon={<Lock size={18} />}
+                      {...loginReg('password')}
+                      error={loginErrors.password?.message as string}
+                    />
+                  </div>
+
+                  {error && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-sm text-red-400 font-medium text-center"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={loading}
+                    type="submit"
+                    className="w-full bg-white text-black font-bold h-14 rounded-2xl transition-all shadow-xl shadow-white/5 active:bg-white/90 disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+                  >
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                      <>
+                        Continue
+                        <ArrowRight size={18} className="opacity-60" />
+                      </>
+                    )}
+                  </motion.button>
+                </motion.form>
+              ) : (
+                <motion.form
+                  key="register"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  onSubmit={handleRegisterSubmit(onRegister)}
+                  className="space-y-4"
+                >
+                  <div className="space-y-3">
+                    <IOSInput
+                      placeholder="Your Full Name"
+                      icon={<User size={18} />}
+                      {...registerReg('name')}
+                      error={registerErrors.name?.message as string}
+                    />
+                    <IOSInput
+                      placeholder="Email Address"
+                      icon={<Mail size={18} />}
+                      {...registerReg('email')}
+                      error={registerErrors.email?.message as string}
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <IOSInput
+                        placeholder="Phone"
+                        icon={<Phone size={18} />}
+                        {...registerReg('phone')}
+                      />
+                      <IOSInput
+                        placeholder="Location"
+                        icon={<MapPin size={18} />}
+                        {...registerReg('address')}
+                      />
+                    </div>
+                    <IOSInput
+                      placeholder="Security Password"
+                      type="password"
+                      icon={<Lock size={18} />}
+                      {...registerReg('password')}
+                      error={registerErrors.password?.message as string}
+                    />
+                    <IOSInput
+                      placeholder="Confirm Password"
+                      type="password"
+                      icon={<Lock size={18} />}
+                      {...registerReg('confirmPassword')}
+                      error={registerErrors.confirmPassword?.message as string}
+                    />
+                  </div>
+
+                  {error && <p className="text-sm text-red-400 font-medium text-center">{error}</p>}
+
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={loading}
+                    type="submit"
+                    className="w-full bg-white text-black font-bold h-14 rounded-2xl transition-all shadow-xl shadow-white/5 disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+                  >
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                      <>
+                        Get Started
+                        <Sparkles size={18} className="opacity-60" />
+                      </>
+                    )}
+                  </motion.button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <button 
+            onClick={() => setIsLogin(!isLogin)}
+            className="w-full py-5 bg-white/[0.02] border-t border-white/[0.05] text-sm font-semibold tracking-wide hover:bg-white/[0.04] transition-colors flex items-center justify-center gap-2"
+          >
+            {isLogin ? (
+              <>
+                <span className="opacity-40 font-normal">Don't have an account?</span>
+                <span className="text-white">Register</span>
+              </>
+            ) : (
+              <>
+                <ChevronLeft size={16} className="opacity-40" />
+                <span className="opacity-40 font-normal">Back to</span>
+                <span className="text-white">Login</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        <p className="mt-10 text-center text-[10px] uppercase tracking-[0.2em] text-white/20 font-bold">
+          © 2026 ARTSY COLLECTIVE • SECURED ACCESS
+        </p>
       </motion.div>
+    </div>
+  );
+}
+
+function IOSInput({ placeholder, icon, error, ...props }: any) {
+  return (
+    <div className="space-y-1.5 w-full">
+      <div className={cn(
+        "relative group transition-all duration-300",
+        error ? "ring-1 ring-red-500/50" : "focus-within:ring-1 focus-within:ring-white/20"
+      )}>
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white/60 transition-colors">
+          {icon}
+        </div>
+        <input
+          placeholder={placeholder}
+          className={cn(
+            "w-full bg-white/[0.03] border border-white/[0.05] rounded-2xl h-13 pl-12 pr-4",
+            "text-[15px] font-medium placeholder:text-white/20 text-white",
+            "focus:outline-none focus:bg-white/[0.06] transition-all",
+            "selection:bg-white/20"
+          )}
+          {...props}
+        />
+      </div>
+      {error && <motion.p initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} className="text-[11px] text-red-400 font-semibold ml-4">{error}</motion.p>}
     </div>
   );
 }

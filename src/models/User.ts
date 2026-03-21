@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, unique: true },
   avatar: { type: String },
   bio: { type: String },
+  aesthetic: { type: String, default: 'soft' },
   isCreator: { type: Boolean, default: false },
   onboarding: { type: mongoose.Schema.Types.ObjectId, ref: 'Onboarding' },
   createdAt: { type: Date, default: Date.now },
