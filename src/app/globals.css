@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --background: #F5F2EE;
   --primary-text: #2C2C2C;

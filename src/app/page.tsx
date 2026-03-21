@@ -13,11 +13,13 @@ import CTASection from "@/components/portfolio/CTASection";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Box } from "@mui/material";
-import { getIsMobileServer } from "@/lib/utils";
-import MobileHomePage from "./(mobile)/home/page";
+import { headers } from "next/headers";
+import MobileHomePage from "./home/page";
 
 export default async function Main() {
-  const isMobile = await getIsMobileServer();
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
 
   if (isMobile) {
     return <MobileHomePage />;

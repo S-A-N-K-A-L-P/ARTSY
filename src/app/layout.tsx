@@ -5,7 +5,7 @@ import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import AestheticProvider from '@/aesthetics/AestheticProvider';
 import { ClientProviders } from '@/components/ClientProviders';
-import { getIsMobileServer } from '@/lib/utils';
+import { headers } from 'next/headers';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -16,7 +16,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
-  const isMobile = await getIsMobileServer();
+  const headersList = await headers();
+  const userAgent = headersList.get('user-agent') || '';
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
   
   let aesthetic = 'soft';
 
