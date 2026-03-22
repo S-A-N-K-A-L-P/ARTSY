@@ -1,3 +1,5 @@
+'use client';
+
 import { DesktopLayout } from './components/DesktopLayout';
 import { MobileLayout } from './components/MobileLayout';
 
