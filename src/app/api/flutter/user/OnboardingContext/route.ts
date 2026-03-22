@@ -1,14 +1,48 @@
 import { NextResponse } from 'next/server';
-
-export async function GET() {
-  return NextResponse.json({ message: 'GET request to OnboardingContext' });
-}
+import dbConnect from '@/lib/db';
+import User from '@/models/User';
+import Onboarding from '@/models/Onboarding';
 
 export async function POST(request: Request) {
   try {
+    await dbConnect();
     const body = await request.json();
-    return NextResponse.json({ message: 'POST request to OnboardingContext', data: body });
-  } catch (error) {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    const { userId, interests, aesthetics, palette, budget, productType } = body;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+    }
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Update or create onboarding document
+    const onboarding = await Onboarding.findOneAndUpdate(
+      { userId },
+      {
+        interests: interests || [],
+        aesthetics: aesthetics || [],
+        palette: palette || [],
+        budget: budget || '',
+        productType: productType || [],
+        updatedAt: new Date()
+      },
+      { new: true, upsert: true }
+    );
+
+    // Update user reference
+    user.onboarding = onboarding._id;
+    await user.save();
+
+    return NextResponse.json({ 
+      message: 'Onboarding completed successfully', 
+      onboarding: onboarding 
+    }, { status: 200 });
+  } catch (error: any) {
+    console.error('Flutter Onboarding error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
