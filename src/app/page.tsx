@@ -1,3 +1,4 @@
+"use client"
 import HeroSection from "@/components/portfolio/HeroSection";
 import MottoSection from "@/components/portfolio/MottoSection";
 import CreatorStories from "@/components/portfolio/CreatorStories";
@@ -28,7 +29,7 @@ export default async function Main() {
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar />
-      
+
       <Box component="main" sx={{ flexGrow: 1 }}>
         <HeroSection />
         <MottoSection />
