@@ -8,6 +8,8 @@ import { ClientProviders } from '@/components/ClientProviders';
 import { headers } from 'next/headers';
 import './globals.css';
 
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export default async function RootLayout({
@@ -15,35 +17,38 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-  const headersList = await headers();
-  const userAgent = headersList.get('user-agent') || '';
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
-  
-  let aesthetic = 'soft';
+  try {
+    const session = await getServerSession(authOptions);
+    const headersList = await headers();
+    const userAgent = headersList.get('user-agent') || '';
+    
+    let aesthetic = 'soft';
 
-  if (session?.user?.email) {
-    try {
-      await dbConnect();
-      const user = await User.findOne({ email: session.user.email });
-      if (user?.aesthetic) {
-        aesthetic = user.aesthetic;
+    if (session?.user?.email) {
+      try {
+        await dbConnect();
+        const user = await User.findOne({ email: session.user.email });
+        if (user?.aesthetic) {
+          aesthetic = user.aesthetic;
+        }
+      } catch (dbError) {
+        console.error('SSR DB ERROR:', dbError);
       }
-    } catch (error) {
-      console.error('Error fetching user aesthetic:', error);
     }
-  }
 
-  return (
-    <html lang='en'>
-      <body className={inter.className}>
-        <ClientProviders>
-          <AestheticProvider currentAesthetic={aesthetic}>
-            {/* The children will contain either (mobile) or (web) routes based on the device */}
-            {children}
-          </AestheticProvider>
-        </ClientProviders>
-      </body>
-    </html>
-  );
+    return (
+      <html lang='en'>
+        <body className={inter.className}>
+          <ClientProviders>
+            <AestheticProvider currentAesthetic={aesthetic}>
+              {children}
+            </AestheticProvider>
+          </ClientProviders>
+        </body>
+      </html>
+    );
+  } catch (ssrError) {
+    console.error('SSR FATAL ERROR:', ssrError);
+    throw ssrError;
+  }
 }

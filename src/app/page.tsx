@@ -1,4 +1,5 @@
-"use client"
+export const dynamic = "force-dynamic";
+
 import HeroSection from "@/components/portfolio/HeroSection";
 import MottoSection from "@/components/portfolio/MottoSection";
 import CreatorStories from "@/components/portfolio/CreatorStories";
