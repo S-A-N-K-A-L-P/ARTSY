@@ -60,7 +60,7 @@ export default function ApiExplorer() {
 
       <Grid container spacing={4}>
         {layers.map((layer) => (
-          <Grid item xs={12} md={6} lg={4} key={layer.name}>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }} key={layer.name}>
             <Card sx={{ 
               height: '100%', 
               backgroundColor: 'var(--card-color)', 

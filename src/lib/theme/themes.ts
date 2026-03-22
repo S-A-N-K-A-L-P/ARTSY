@@ -29,6 +29,12 @@ export const themes = {
     "--text": "#E0E0FF",
     "--accent": "#00F5D4",
   },
+  grunge: {
+    "--bg": "#121212",
+    "--card": "#1E1E1E",
+    "--text": "#D1D1D1",
+    "--accent": "#4A5D4E",
+  },
 };
 
 export type ThemeName = keyof typeof themes;
