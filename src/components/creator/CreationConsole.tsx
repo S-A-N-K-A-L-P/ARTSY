@@ -201,6 +201,24 @@ export default function CreationConsole() {
                ))}
             </div>
 
+            <div className="pt-4">
+               <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-20 mb-4 ml-1">Space Aesthetic</h4>
+               <div className="flex flex-wrap gap-2">
+                  {['Noir', 'Minimal', 'Cyberpunk', 'Vaporwave', 'Brutalist'].map(a => (
+                     <button 
+                       key={a}
+                       onClick={() => setPageData({ ...pageData, aesthetic: a.toLowerCase() as ThemeName })}
+                       className={cn(
+                          "px-6 h-10 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all",
+                          pageData.aesthetic === a.toLowerCase() ? "bg-white text-black border-white" : "bg-white/5 border-white/5 hover:border-white/20"
+                       )}
+                     >
+                       {a}
+                     </button>
+                  ))}
+               </div>
+            </div>
+
             <div className="pt-8 flex justify-end">
                <button 
                  disabled={loading}

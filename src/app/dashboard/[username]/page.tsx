@@ -30,14 +30,12 @@ export default function CreatorProfilePage() {
     const fetchCreatorData = async () => {
       try {
         setLoading(true);
-        // In a real app, this would be a public endpoint
         const res = await fetch(`/api/user/profile?username=${username}`);
         const data = await res.json();
         if (data.success) {
           setCreator(data.user);
           setPages(data.pages || []);
           
-          // Apply creator's primary aesthetic if available
           if (data.user?.aesthetic) {
             setAesthetic(data.user.aesthetic);
           }
@@ -70,7 +68,6 @@ export default function CreatorProfilePage() {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* Dynamic Profile Header from Aesthetic Engine */}
       <AestheticRenderer 
         component="ProfileHeader" 
         props={{ user: creator }} 
@@ -81,10 +78,6 @@ export default function CreatorProfilePage() {
         }
       />
 
-import { StatsBarMobile, CategoryScrollerMobile } from '@/components/creator/CreatorMobileUI';
-
-...
-      {/* Pages/Collections Section */}
       <section className="px-6 md:px-10 space-y-12">
         <div className="max-w-5xl mx-auto space-y-12">
           <StatsBarMobile user={{ ...creator, pages }} />
