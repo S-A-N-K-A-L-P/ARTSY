@@ -42,7 +42,7 @@ export default function DashboardPage() {
   }, [session]);
 
   return (
-    <div className="max-w-6xl mx-auto pb-40 transition-colors duration-500">
+    <div className="pb-24 md:pb-10 transition-colors duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b pb-12" style={{ borderColor: 'var(--border-subtle)' }}>
          <div>

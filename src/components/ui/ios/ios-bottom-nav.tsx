@@ -1,24 +1,23 @@
 "use client";
 
 import React from "react";
-import { Home, Search, Heart, User } from "lucide-react";
+import { Home, TrendingUp, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { icon: <Home size={24} />, label: "Home", href: "/" },
-  { icon: <Search size={24} />, label: "Search", href: "/explore" },
-  { icon: <Heart size={24} />, label: "Likes", href: "/likes" },
-  { icon: <User size={24} />, label: "Profile", href: "/user" },
+  { icon: <Home size={22} />, label: "Home", href: "/home" },
+  { icon: <TrendingUp size={22} />, label: "Trend", href: "/trending" },
+  { icon: <User size={22} />, label: "Profile", href: "/user" },
 ];
 
 export function IOSBottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-xl border-t border-white/10 pb-safe">
-      <div className="flex justify-around items-center py-2 px-4 h-16">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-3xl border-t border-white/5 pb-8">
+      <div className="flex justify-around items-center h-16 px-6">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -26,12 +25,22 @@ export function IOSBottomNav() {
               key={item.label} 
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 transition-colors",
-                isActive ? "text-accent" : "text-text/40 hover:text-text/60"
+                "flex flex-col items-center justify-center gap-1.5 transition-all active:scale-90",
+                isActive ? "text-[var(--accent)]" : "text-text/30 hover:text-text/50"
               )}
             >
-              {item.icon}
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <div className={cn(
+                "p-2 rounded-2xl transition-all",
+                isActive ? "bg-[var(--accent-soft)] shadow-inner" : ""
+              )}>
+                {item.icon}
+              </div>
+              <span className={cn(
+                "text-[9px] font-black uppercase tracking-[0.15em]",
+                isActive ? "opacity-100" : "opacity-40"
+              )}>
+                {item.label}
+              </span>
             </Link>
           );
         })}
