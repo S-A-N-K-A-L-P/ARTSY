@@ -26,8 +26,9 @@ export default function HomePage() {
              title: item.title,
              creator: {
                 username: item.ownerId?.username || 'unknown',
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${item.ownerId?.username || 'unknown'}`
+                avatar: item.ownerId?.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${item.ownerId?.username || 'unknown'}`
              },
+             pageSlug: item.pageId?.slug,
              image: item.images?.[0] || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
              price: item.price || 0,
              aesthetic: item.aesthetic || 'minimal'

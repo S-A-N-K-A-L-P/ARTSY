@@ -4,6 +4,7 @@ import React from 'react';
 import { Card, CardMedia, CardContent, Typography, Button, Chip, Avatar, Box } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 interface Item {
@@ -12,16 +13,26 @@ interface Item {
     image: string;
     price: number;
     aesthetic: string;
+    pageSlug?: string;
     creator: { username: string; avatar: string };
 }
 
 export default function FeedCard({ item }: { item: Item }) {
     const dispatch = useDispatch();
+    const router = useRouter();
+
+    const handleNavigate = () => {
+        if (item.pageSlug) {
+            router.push(`/user/${item.creator.username}/${item.pageSlug}`);
+        }
+    };
 
     return (
         <motion.div
             whileHover={{ y: -8 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            onClick={handleNavigate}
+            style={{ cursor: 'pointer' }}
         >
             <Card sx={{ 
                 borderRadius: 6, 

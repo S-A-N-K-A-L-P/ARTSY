@@ -13,7 +13,8 @@ export async function GET(req: Request) {
     const items = await Item.find()
       .limit(limit)
       .sort({ createdAt: -1 })
-      .populate('ownerId', 'username profile.avatar aesthetic');
+      .populate('ownerId', 'username profile.avatar aesthetic')
+      .populate('pageId', 'slug name aesthetic');
 
     return NextResponse.json(items);
   } catch (error) {
