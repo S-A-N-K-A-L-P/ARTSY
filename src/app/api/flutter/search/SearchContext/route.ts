@@ -1,14 +1,30 @@
 import { NextResponse } from 'next/server';
+import dbConnect from "@/lib/db";
+import Item from "@/models/Item";
 
-export async function GET() {
-  return NextResponse.json({ message: 'GET request to SearchContext' });
-}
-
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
-    const body = await request.json();
-    return NextResponse.json({ message: 'POST request to SearchContext', data: body });
-  } catch (error) {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    await dbConnect();
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('q');
+
+    if (!query) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    // Search items by title or tags
+    const items = await Item.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { tags: { $in: [new RegExp(query, 'i')] } }
+      ]
+    }).limit(20);
+
+    return NextResponse.json({
+      success: true,
+      data: items
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
