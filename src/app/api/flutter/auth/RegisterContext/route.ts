@@ -5,7 +5,16 @@ import { registerUser } from "@/lib/authService";
 export async function POST(request: Request) {
   try {
     await dbConnect();
-    const body = await request.json();
+    let body = await request.json();
+    
+    // Mapping Flutter naming to backend naming if needed
+    if (body["Mobile No"]) {
+      body.phone = body["Mobile No"];
+    }
+    if (body["Full Name"]) {
+      body.name = body["Full Name"];
+    }
+
     const user = await registerUser(body);
 
     return NextResponse.json({ success: true, user });

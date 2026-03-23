@@ -7,7 +7,14 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { userId, interests, aesthetics, palette, budget, productType } = body;
+    
+    // Mapping Flutter naming to backend naming
+    const userId = body.userId || body.user_id;
+    const interests = body.interests || body.Interests || [];
+    const aesthetics = body.aesthetics || body.Aesthetic || [];
+    const palette = body.palette || body.Palette || [];
+    const budget = body.budget || body.Budget || '';
+    const productType = body.productType || body["Product Type"] || [];
 
     if (!userId) {
       return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
