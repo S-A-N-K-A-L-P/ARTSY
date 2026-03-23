@@ -24,8 +24,8 @@ const UserSchema = new mongoose.Schema({
     isDark: { type: Boolean, default: false },
   },
   onboardingComplete: { type: Boolean, default: false },
-  isCreator: { type: Boolean, default: false },
-  
+  onboarding: { type: mongoose.Schema.Types.ObjectId, ref: 'OnboardingRecord' },
+  token: { type: String, unique: true, sparse: true },
   socialLinks: {
     instagram: { type: String, default: "" },
     twitter: { type: String, default: "" },
@@ -41,7 +41,6 @@ const UserSchema = new mongoose.Schema({
   followingCount: { type: Number, default: 0 },
 
   pages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Page' }],
-  onboarding: { type: mongoose.Schema.Types.ObjectId, ref: 'Onboarding' },
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "@/models/User";
 import { z } from "zod";
 import dbConnect from "@/lib/db";
+import crypto from "crypto";
 
 // 🧠 1. Final Unified Data Contract
 export const registerSchema = z.object({
@@ -94,7 +95,8 @@ export async function registerUser(data: RegisterInput) {
     postsCount: 0,
     followersCount: 0,
     followingCount: 0,
-    pages: []
+    pages: [],
+    token: crypto.randomBytes(32).toString('hex'),
   });
 
   return {
@@ -103,5 +105,6 @@ export async function registerUser(data: RegisterInput) {
     username: user.username,
     email: user.email,
     avatar: user.profile.avatar,
+    token: user.token,
   };
 }

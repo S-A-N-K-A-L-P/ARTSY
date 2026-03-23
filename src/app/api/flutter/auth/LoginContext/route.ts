@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
@@ -27,6 +28,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    // Generate and save a new secure token for the mobile session
+    user.token = crypto.randomBytes(32).toString('hex');
+    await user.save();
+
     // Success - return user data in the format expected by Flutter fetchCurrentUser
     return NextResponse.json({
       id: user._id,
@@ -36,6 +41,8 @@ export async function POST(request: Request) {
       username: user.username,
       bio: user.profile?.bio || "",
       aesthetic: user.aesthetic || "soft",
+      onboardingComplete: user.onboardingComplete || false,
+      token: user.token,
       stats: {
         posts: user.postsCount || 0,
         followers: user.followersCount || 0,
