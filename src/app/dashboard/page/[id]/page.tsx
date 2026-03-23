@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, MoreHorizontal, Trash2, Edit, Eye } from 'lucide-react';
+import { ItemGrid } from '@/components/items/ItemGrid';
 
 type Tab = 'feed' | 'items' | 'settings';
 
@@ -142,66 +143,21 @@ export default function PageHubPage() {
           {items.length === 0 ? (
             <div className="border border-dashed border-zinc-800 rounded-xl p-12 text-center">
               <p className="text-zinc-500 text-sm mb-4">No items yet. Add your first item.</p>
-              <Link
-                href={`/dashboard/page/${pageId}/item/new`}
-                className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-colors"
-              >
-                <Plus size={16} />
-                Add Item
-              </Link>
+              <ItemGrid items={[]} isOwner={true} aesthetic={page.aesthetic?.theme || page.aesthetic} />
             </div>
           ) : (
-            <div className="border border-zinc-800 rounded-xl overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Title</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Price</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Tags</th>
-                    <th className="text-right text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item: any) => (
-                    <tr key={item._id} className="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {item.images?.[0] ? (
-                            <img src={item.images[0]} alt="" className="w-8 h-8 rounded-lg object-cover" />
-                          ) : (
-                            <div className="w-8 h-8 rounded-lg bg-zinc-800" />
-                          )}
-                          <span className="text-sm font-medium text-white">{item.title}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-zinc-400">₹{item.price || '0'}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1 flex-wrap">
-                          {item.tags?.slice(0, 3).map((tag: string, i: number) => (
-                            <span key={i} className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-500">{tag}</span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => router.push(`/dashboard/item/${item._id}/edit`)}
-                            className="p-1.5 text-zinc-500 hover:text-white rounded-md hover:bg-zinc-800 transition-colors"
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteItem(item._id)}
-                            className="p-1.5 text-zinc-500 hover:text-red-400 rounded-md hover:bg-zinc-800 transition-colors"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="mt-4">
+              <ItemGrid 
+                items={items.map(i => ({
+                  id: i._id,
+                  title: i.title,
+                  price: i.price,
+                  image: i.images?.[0] || '',
+                  author: page.ownerId?.username || 'creator'
+                }))} 
+                isOwner={true} 
+                aesthetic={page.aesthetic?.theme || page.aesthetic} 
+              />
             </div>
           )}
         </div>

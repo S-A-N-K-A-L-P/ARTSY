@@ -18,7 +18,21 @@ export async function PUT(
 
     await dbConnect();
     const data = await req.json();
-    const { title, description, images, price, attributes, externalLinks, tags } = data;
+    let { title, description, images, price, attributes, externalLinks, tags } = data;
+
+    // Process images through Cloudinary if they are base64
+    const processedImages = await Promise.all((images || []).map(async (img: string) => {
+      if (img.startsWith('data:image')) {
+        try {
+          const { uploadToCloudinary } = await import('@/lib/cloudinary');
+          return await uploadToCloudinary(img, 'artsy/artifacts');
+        } catch (err) {
+          console.error('Cloudinary item upload failed:', err);
+          return img;
+        }
+      }
+      return img;
+    }));
 
     const item = await Item.findById(id);
     if (!item) {
@@ -33,7 +47,7 @@ export async function PUT(
 
     const updatedItem = await Item.findByIdAndUpdate(
       id,
-      { title, description, images, price, attributes, externalLinks, tags },
+      { title, description, images: processedImages, price, attributes, externalLinks, tags },
       { new: true }
     );
 

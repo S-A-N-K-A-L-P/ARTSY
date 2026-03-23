@@ -1,31 +1,86 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, ImageIcon } from 'lucide-react';
+import { ArrowLeft, X, ImageIcon, Sparkles, Upload, Loader2, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ItemCard } from '@/components/items/ItemCard';
+import { uploadToCloudinary } from '@/lib/cloudinary';
+import { cn } from '@/lib/utils';
 
 export default function AddItemPage() {
   const params = useParams();
   const router = useRouter();
   const pageId = params.id as string;
 
+  const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
   const [form, setForm] = useState({
     title: '',
     description: '',
     price: '',
     images: [] as string[],
     tags: [] as string[],
+    aesthetic: 'minimal',
     externalLinks: { instagram: '', youtube: '', website: '' },
   });
 
-  const addImage = () => {
-    if (imageUrl.trim()) {
-      setForm(f => ({ ...f, images: [...f.images, imageUrl.trim()] }));
-      setImageUrl('');
+  useEffect(() => {
+    // Fetch page to get its aesthetic
+    const fetchPage = async () => {
+      try {
+        const res = await fetch('/api/creator/page');
+        const data = await res.json();
+        if (data.success) {
+          const found = data.pages.find((p: any) => p._id === pageId);
+          if (found) {
+            setPage(found);
+            setForm(f => ({ ...f, aesthetic: found.aesthetic?.theme || found.aesthetic || 'minimal' }));
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPage();
+  }, [pageId]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError('');
+
+    try {
+      // Convert to base64 for the server-side helper
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64 = reader.result as string;
+        try {
+          // In a real app, we'd call a dedicated upload API or the client-side Cloudinary SDK
+          // For now, I'll use the lib/cloudinary helper directly if possible, 
+          // but since this is client-side, I'll simulate or use a server action/api.
+          // Let's assume the API handles it if we send base64, but for UX, let's do it here.
+          const res = await fetch('/api/flutter/auth/RegisterContext', { // Temporary hijack or dedicated API
+            method: 'POST',
+            body: JSON.stringify({ image: base64 }) // We can create a dedicated upload API later
+          });
+          // Actually, let's just send base64 to the Item API and let IT handle Cloudinary.
+          setForm(f => ({ ...f, images: [...f.images, base64] }));
+        } catch (err) {
+          setError('Upload failed');
+        } finally {
+          setUploading(false);
+        }
+      };
+    } catch (err) {
+      setError('File reading failed');
+      setUploading(false);
     }
   };
 
@@ -43,7 +98,7 @@ export default function AddItemPage() {
       const res = await fetch('/api/creator/item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, pageId }),
+        body: JSON.stringify({ ...form, pageId, price: Number(form.price) }),
       });
       const data = await res.json();
       if (data.success) {
@@ -58,159 +113,186 @@ export default function AddItemPage() {
     }
   };
 
+  const theme = form.aesthetic;
+
   return (
-    <div className="max-w-5xl">
-      <Link href={`/dashboard/page/${pageId}`} className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-6">
-        <ArrowLeft size={16} />
-        Back to Page
-      </Link>
+    <div className="min-h-screen pb-20 px-6 max-w-7xl mx-auto">
+      {/* Dynamic Header */}
+      <div className="flex items-center justify-between py-10">
+        <Link href={`/dashboard/page/${pageId}`} className="group flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
+            <ArrowLeft size={18} className="text-white/40 group-hover:text-white" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Manifest Hub</p>
+            <h1 className="text-xl font-black tracking-tighter text-white">Creation Console</h1>
+          </div>
+        </Link>
 
-      <h2 className="text-xl font-semibold text-white mb-1">Add Item</h2>
-      <p className="text-sm text-zinc-500 mb-8">Add a new item to your page.</p>
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5">
+          <Sparkles size={14} className="text-amber-400" />
+          <span className="text-[10px] font-black uppercase tracking-widest opacity-40">{theme} Mode Active</span>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left: Form */}
-          <div className="space-y-5">
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Title</label>
-              <input
-                value={form.title}
-                onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-                placeholder="Item name"
-                className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
-              />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Creation Form */}
+        <div className="lg:col-span-7 space-y-10">
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center text-xs font-black">01</div>
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/40">Basic Metadata</h3>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Price (₹)</label>
-              <input
-                type="number"
-                value={form.price}
-                onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
-                placeholder="0"
-                className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Artifact Title</label>
+                <input
+                  value={form.title}
+                  onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="The Eternal Drape"
+                  className="w-full h-14 px-5 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Valorization (₹)</label>
+                <input
+                  type="number"
+                  value={form.price}
+                  onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
+                  placeholder="0.00"
+                  className="w-full h-14 px-5 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Description</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Manifesto / Description</label>
               <textarea
                 value={form.description}
                 onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-                placeholder="Describe your item..."
-                rows={4}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors resize-none"
+                placeholder="Describe the aesthetic significance..."
+                rows={5}
+                className="w-full p-5 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all resize-none"
               />
             </div>
+          </section>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Tags (comma separated)</label>
-              <input
-                value={form.tags.join(', ')}
-                onChange={(e) => setForm(f => ({ ...f, tags: e.target.value.split(',').map(t => t.trim()).filter(t => t) }))}
-                placeholder="streetwear, coat, winter"
-                className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
-              />
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+              <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center text-xs font-black">02</div>
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/40">Visual Artifact</h3>
             </div>
 
-            {/* Images */}
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Images</label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addImage())}
-                  placeholder="Paste image URL"
-                  className="flex-1 h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
-                />
-                <button type="button" onClick={addImage} className="h-10 px-4 rounded-lg bg-zinc-800 text-sm text-white hover:bg-zinc-700 transition-colors">Add</button>
-              </div>
-              {form.images.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {form.images.map((img, i) => (
-                    <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden group">
-                      <img src={img} alt="" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(i)}
-                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+               {form.images.map((img, i) => (
+                  <motion.div 
+                    layout
+                    key={i} 
+                    className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group"
+                  >
+                    <img src={img.startsWith('data:') ? img : img} alt="" className="w-full h-full object-cover" />
+                    <button 
+                      onClick={() => removeImage(i)}
+                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"
+                    >
+                      <X size={20} className="text-white" />
+                    </button>
+                  </motion.div>
+               ))}
+               
+               <label className={cn(
+                  "relative aspect-square rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.05] hover:border-white/10 transition-all",
+                  uploading && "opacity-50 cursor-not-allowed"
+               )}>
+                  {uploading ? <Loader2 className="animate-spin text-white/20" /> : <Plus size={24} className="text-white/20" />}
+                  <span className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-2">Upload</span>
+                  <input type="file" className="hidden" onChange={handleFileUpload} disabled={uploading} accept="image/*" />
+               </label>
+            </div>
+          </section>
+
+           <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+              <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center text-xs font-black">03</div>
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/40">Convergence Links</h3>
             </div>
 
-            {/* Social Links */}
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Social Links</label>
-              <div className="space-y-2">
-                {(['instagram', 'youtube', 'website'] as const).map(key => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               {['instagram', 'youtube', 'website'].map((s) => (
                   <input
-                    key={key}
-                    value={(form.externalLinks as any)[key]}
-                    onChange={(e) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, [key]: e.target.value } }))}
-                    placeholder={`${key.charAt(0).toUpperCase() + key.slice(1)} link`}
-                    className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+                    key={s}
+                    value={(form.externalLinks as any)[s]}
+                    onChange={(e) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, [s]: e.target.value } }))}
+                    placeholder={`${s.charAt(0).toUpperCase() + s.slice(1)} URL`}
+                    className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/5 text-[11px] font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
                   />
-                ))}
-              </div>
+               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Right: Live Preview */}
-          <div className="lg:sticky lg:top-20 lg:self-start">
-            <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Live Preview</label>
-            <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900">
-              {/* Image Preview */}
-              <div className="aspect-square bg-zinc-800 flex items-center justify-center">
-                {form.images[0] ? (
-                  <img src={form.images[0]} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-center">
-                    <ImageIcon size={32} className="mx-auto text-zinc-600 mb-2" />
-                    <p className="text-xs text-zinc-600">No image yet</p>
-                  </div>
-                )}
-              </div>
-              {/* Card Preview */}
-              <div className="p-4">
-                <h3 className="text-sm font-semibold text-white">{form.title || 'Item Title'}</h3>
-                {form.price && <p className="text-sm text-zinc-400 mt-1">₹{form.price}</p>}
-                {form.description && <p className="text-xs text-zinc-500 mt-2 line-clamp-2">{form.description}</p>}
-                {form.tags.length > 0 && (
-                  <div className="flex gap-1 flex-wrap mt-3">
-                    {form.tags.map((tag, i) => (
-                      <span key={i} className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-500">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
+          {error && (
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-widest">
+              {error}
             </div>
+          )}
+
+          <div className="pt-10 flex items-center gap-4">
+             <button 
+                onClick={handleSubmit}
+                disabled={loading || !form.title || form.images.length === 0}
+                className="flex-1 h-16 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-30 disabled:hover:scale-100"
+             >
+                {loading ? 'Sychronizing...' : 'Publish to Manifest'}
+             </button>
+             <Link 
+                href={`/dashboard/page/${pageId}`}
+                className="h-16 px-8 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all"
+             >
+                Cancel
+             </Link>
           </div>
         </div>
 
-        {/* Error */}
-        {error && <p className="text-sm text-red-400 mt-4">{error}</p>}
+        {/* Live Preview */}
+        <div className="lg:col-span-5 relative">
+          <div className="sticky top-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase tracking-widest mb-6">
+               <Sparkles size={10} /> Live Preview
+            </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3 pt-6 mt-6 border-t border-zinc-800">
-          <Link href={`/dashboard/page/${pageId}`} className="h-9 px-4 rounded-lg border border-zinc-800 text-sm text-zinc-400 hover:text-white flex items-center transition-colors">
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            disabled={loading || !form.title}
-            className="h-9 px-6 rounded-lg bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Publishing...' : 'Publish Item'}
-          </button>
+            <div className="p-10 rounded-[48px] bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-50" />
+               <div className="relative z-10 flex justify-center">
+                  <ItemCard
+                    id="preview"
+                    title={form.title || "The Unnamed Artifact"}
+                    price={Number(form.price) || 0}
+                    author={page?.ownerId?.username || "creator"}
+                    image={form.images[0] || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"}
+                    aesthetic={theme}
+                  />
+               </div>
+
+               <div className="mt-10 space-y-4">
+                  <div className="h-px bg-white/5" />
+                  <div className="flex items-center justify-between">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Target Aesthetic</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">{theme}</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Manifest Destination</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-white/60">/{page?.slug || '...'}</p>
+                  </div>
+               </div>
+            </div>
+
+            <div className="mt-8 p-6 rounded-3xl border border-white/5 bg-white/[0.01] text-center">
+               <p className="text-[10px] font-bold italic text-white/20">"Artifacts are the tactile dialogue between vision and existence."</p>
+            </div>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

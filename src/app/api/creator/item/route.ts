@@ -14,7 +14,21 @@ export async function POST(req: Request) {
 
     await dbConnect();
     const data = await req.json();
-    const { pageId, title, description, images, price, currency, isForSale, attributes, customFields, aesthetic, externalLinks, tags } = data;
+    let { pageId, title, description, images, price, currency, isForSale, attributes, customFields, aesthetic, externalLinks, tags } = data;
+
+    // Process images through Cloudinary if they are base64
+    const processedImages = await Promise.all((images || []).map(async (img: string) => {
+      if (img.startsWith('data:image')) {
+        try {
+          const { uploadToCloudinary } = await import('@/lib/cloudinary');
+          return await uploadToCloudinary(img, 'artsy/artifacts');
+        } catch (err) {
+          console.error('Cloudinary item upload failed:', err);
+          return img; // Fallback to original or error?
+        }
+      }
+      return img;
+    }));
 
     // Verify page ownership
     const page = await Page.findById(pageId).populate('ownerId');
@@ -27,7 +41,7 @@ export async function POST(req: Request) {
       pageId,
       title,
       description,
-      images,
+      images: processedImages,
       price,
       currency,
       isForSale,
