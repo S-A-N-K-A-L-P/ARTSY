@@ -145,11 +145,11 @@ export default function EditItemPage() {
       {/* Header */}
       <div className="flex items-center justify-between py-10">
         <div className="flex items-center gap-6">
-           <Link href={`/dashboard/page/${page?._id}`} className="group flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
-                <ArrowLeft size={18} className="text-white/40 group-hover:text-white" />
-              </div>
-           </Link>
+          <Link href={`/dashboard/page/${page?._id}`} className="group flex items-center gap-3">
+             <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:bg-[var(--bg-tertiary)] transition-all">
+                <ArrowLeft size={18} className="text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
+             </div>
+          </Link>
            <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Edit Artifact Phase</p>
               <h1 className="text-xl font-black tracking-tighter text-white">Modification Console</h1>
@@ -204,7 +204,7 @@ export default function EditItemPage() {
                            value={form.title}
                            onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
                            placeholder="The Eternal Drape"
-                           className="w-full h-16 px-6 rounded-2xl bg-white/5 border border-white/5 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
+                           className="w-full h-16 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-lg font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
                         />
                      </div>
                      <div className="space-y-2">
@@ -214,7 +214,7 @@ export default function EditItemPage() {
                            onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
                            placeholder="Describe the aesthetic significance..."
                            rows={6}
-                           className="w-full p-6 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all resize-none"
+                           className="w-full p-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all resize-none"
                         />
                      </div>
                      <div className="space-y-2">
@@ -223,7 +223,7 @@ export default function EditItemPage() {
                            value={form.tags.join(', ')}
                            onChange={(e) => setForm(f => ({ ...f, tags: e.target.value.split(',').map(t => t.trim()).filter(t => t) }))}
                            placeholder="minimal, noir, artisan"
-                           className="w-full h-14 px-6 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
+                           className="w-full h-14 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-[11px] font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
                         />
                      </div>
                   </section>
@@ -242,11 +242,11 @@ export default function EditItemPage() {
                            </motion.div>
                         ))}
                         <label className={cn(
-                           "relative aspect-square rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.05] hover:border-white/10 transition-all",
-                           uploading && "opacity-50 cursor-not-allowed"
+                           "relative aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all",
+                           uploading ? "opacity-30 cursor-not-allowed" : "bg-[var(--bg-secondary)] border-[var(--border-subtle)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--accent)]"
                         )}>
-                           {uploading ? <Loader2 className="animate-spin text-white/20" /> : <Plus size={24} className="text-white/20" />}
-                           <span className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-2">Replace Artifact</span>
+                           {uploading ? <Loader2 className="animate-spin text-[var(--text-muted)]" /> : <Plus size={24} className="text-[var(--text-muted)]" />}
+                           <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-2">Replace Artifact</span>
                            <input type="file" className="hidden" onChange={handleFileUpload} disabled={uploading} accept="image/*" />
                         </label>
                      </div>
@@ -264,7 +264,7 @@ export default function EditItemPage() {
                               value={form.price}
                               onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
                               placeholder="0.00"
-                              className="w-full h-16 px-6 rounded-2xl bg-white/5 border border-white/5 text-lg font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
+                              className="w-full h-16 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-lg font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
                            />
                         </div>
                         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
