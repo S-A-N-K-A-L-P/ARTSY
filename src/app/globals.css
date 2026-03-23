@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F5F2EE;
-  --primary-text: #2C2C2C;
+  --bg: #F5F2EE;
+  --text: #2C2C2C;
   --accent: #D6BFA7;
-  --font-family: 'Inter', sans-serif;
+  --font: 'Inter', sans-serif;
+  --border: #E5E5EA;
+  --card: #ffffff;
+  --shadow: 0 4px 24px rgba(0,0,0,0.01);
+  --radius: 24px;
 }
 
 html,
@@ -15,12 +19,12 @@ body {
 }
 
 body {
-  color: var(--primary-text);
-  background: var(--background);
-  font-family: var(--font-family);
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {

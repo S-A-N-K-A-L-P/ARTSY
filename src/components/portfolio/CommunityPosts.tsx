@@ -12,6 +12,26 @@ const mockPosts = [
 ];
 
 export default function CommunityPosts() {
+  const [posts, setPosts] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch('/api/posts?limit=5');
+        const data = await res.json();
+        setPosts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to fetch posts:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  if (loading) return null;
+
   return (
     <Container sx={{ py: 10 }}>
       <Typography variant="h3" fontWeight="bold" gutterBottom sx={{ mb: 6 }}>
@@ -19,9 +39,9 @@ export default function CommunityPosts() {
       </Typography>
       
       <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-        {mockPosts.map((post, index) => (
+        {posts.map((post, index) => (
           <motion.div 
-            key={post.id}
+            key={post._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -29,15 +49,15 @@ export default function CommunityPosts() {
           >
             <Paper elevation={0} sx={{ p: 4, mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
-                <Avatar src={post.avatarUrl} sx={{ width: 48, height: 48 }} />
-                <Typography variant="subtitle1" fontWeight="bold">@{post.username}</Typography>
+                <Avatar src={post.pageId?.coverImage || 'https://i.pravatar.cc/150'} sx={{ width: 48, height: 48 }} />
+                <Typography variant="subtitle1" fontWeight="bold">@{post.pageId?.name || 'anonymous'}</Typography>
               </Box>
               <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem' }}>
-                {post.text}
+                {post.title}: {post.caption}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
                 <Typography variant="body2" sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main' } }}>
-                  ♥ {post.likes} Likes
+                  ♥ {post.engagement?.likes || 0} Likes
                 </Typography>
               </Box>
             </Paper>

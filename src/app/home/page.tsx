@@ -18,6 +18,29 @@ const MOCK_ITEMS = [
 ];
 
 export default function MobileHomePage() {
+  const [items, setItems] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const res = await fetch('/api/items?limit=10');
+        const data = await res.json();
+        setItems(Array.isArray(data) ? data.map(i => ({
+           id: i._id,
+           image: i.images?.[0] || "https://images.unsplash.com/photo-1515405299443-41a6b0932470?q=80&w=600",
+           title: i.title,
+           price: i.price
+        })) : []);
+      } catch (err) {
+        console.error('Failed to fetch items:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-bg selection:bg-accent/30 overflow-hidden">
       {/* Web view overlay */}
@@ -55,7 +78,13 @@ export default function MobileHomePage() {
         </div>
         
         <div className="px-1">
-          <IOSGrid items={MOCK_ITEMS} />
+          {loading ? (
+             <div className="flex justify-center py-20">
+                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+             </div>
+          ) : (
+             <IOSGrid items={items} />
+          )}
         </div>
       </main>
       

@@ -52,26 +52,16 @@ export default function AestheticProvider({
 
   useEffect(() => {
     setMounted(true);
-    // Sync with API on mount if not already matched
-    const fetchAesthetic = async () => {
-      try {
-        const res = await fetch('/api/user/aesthetic');
-        const data = await res.json();
-        if (data?.aesthetic && themes[data.aesthetic as ThemeName] && data.aesthetic !== aesthetic) {
-          setAestheticState(data.aesthetic as ThemeName);
-        }
-      } catch (err) {
-        console.error('Failed to sync aesthetic:', err);
-      }
-    };
-    fetchAesthetic();
-  }, [aesthetic]);
+  }, []); // Only on mount
+
+  // Apply theme to document root whenever aesthetic changes
+  useEffect(() => {
+    if (mounted) {
+      applyTheme(aesthetic);
+    }
+  }, [aesthetic, mounted]);
 
   const muiTheme = useMemo(() => generateMuiTheme(aesthetic), [aesthetic]);
-
-  useEffect(() => {
-    applyTheme(aesthetic);
-  }, [aesthetic]);
 
   return (
     <AestheticContext.Provider value={{ aesthetic, setAesthetic }}>

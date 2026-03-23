@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
-import Post from '@/models/Post';
+import Item from '@/models/Item';
 import User from '@/models/User';
 
 export async function GET(req: Request) {
@@ -9,12 +9,13 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get('limit') || '20');
 
-    const posts = await Post.find()
+    // Fetch items from the DB
+    const items = await Item.find()
       .limit(limit)
       .sort({ createdAt: -1 })
-      .populate('creatorId', 'username avatar aesthetic');
+      .populate('ownerId', 'username profile.avatar aesthetic');
 
-    return NextResponse.json(posts);
+    return NextResponse.json(items);
   } catch (error) {
     console.error('Error fetching items:', error);
     return NextResponse.json({ error: 'Failed to fetch items' }, { status: 500 });
@@ -25,24 +26,26 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
     const body = await req.json();
-    const creatorId = body.creatorId || body.sellerId;
+    const ownerId = body.ownerId || body.creatorId;
 
-    if (!creatorId) {
-      return NextResponse.json({ error: 'creatorId is required' }, { status: 400 });
+    if (!ownerId) {
+      return NextResponse.json({ error: 'ownerId is required' }, { status: 400 });
     }
 
-    const post = await Post.create({
+    const item = await Item.create({
+      ownerId,
+      pageId: body.pageId,
       title: body.title,
       description: body.description,
+      images: body.images || [],
+      price: body.price || 0,
+      currency: body.currency || 'INR',
       aesthetic: body.aesthetic || 'minimal',
-      mediaUrls: body.mediaUrls || [],
-      mediaType: body.mediaType || 'image',
-      price: body.price,
-      stock: body.stock ?? 1,
-      creatorId,
+      attributes: body.attributes || {},
+      tags: body.tags || []
     });
 
-    return NextResponse.json(post, { status: 201 });
+    return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.error('Error creating item:', error);
     return NextResponse.json({ error: 'Failed to create item' }, { status: 400 });

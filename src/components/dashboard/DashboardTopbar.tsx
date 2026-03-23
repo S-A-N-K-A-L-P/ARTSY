@@ -25,11 +25,11 @@ export default function DashboardTopbar() {
   const title = getPageTitle(pathname);
 
   return (
-    <header className="h-14 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-40 flex items-center justify-between px-6">
-      <h1 className="text-sm font-semibold text-white">{title}</h1>
-      <div className="flex items-center gap-3">
-        <button className="p-2 text-zinc-500 hover:text-white transition-colors rounded-lg hover:bg-zinc-800">
-          <Bell size={16} />
+    <header className="h-16 border-b backdrop-blur-3xl sticky top-0 z-40 flex items-center justify-between px-8 transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
+      <h1 className="text-xl font-bold tracking-tighter italic">{title}</h1>
+      <div className="flex items-center gap-4">
+        <button className="p-2.5 opacity-40 hover:opacity-100 transition-all rounded-2xl hover:bg-white/5" style={{ color: 'var(--text)' }}>
+          <Bell size={20} />
         </button>
       </div>
     </header>

@@ -5,14 +5,31 @@ import { Box, Typography, Container, } from '@mui/material'
 import { Grid as Grid2 } from "@mui/material";
 import { ItemCard } from '../items/ItemCard';
 
-const mockItems = [
-  { id: '101', title: 'Neon Sign', price: 150, imageUrl: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&q=80' },
-  { id: '102', title: 'Concrete Planter', price: 45, imageUrl: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&q=80' },
-  { id: '103', title: 'Vintage Cassette', price: 25, imageUrl: 'https://images.unsplash.com/photo-1542204625-2e6cb135a507?w=400&q=80' },
-  { id: '104', title: 'Matte Black Desk', price: 850, imageUrl: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400&q=80' },
-];
-
 export default function ExploreItems() {
+  const [items, setItems] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const res = await fetch('/api/items?limit=8');
+        const data = await res.json();
+        setItems(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to fetch items:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  if (loading) return (
+    <Box sx={{ py: 10, display: 'flex', justifyContent: 'center' }}>
+       <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+    </Box>
+  );
+
   return (
     <Box sx={{ py: 10, bgcolor: 'background.paper' }}>
       <Container>
@@ -20,9 +37,14 @@ export default function ExploreItems() {
           Trending Items
         </Typography>
         <Grid2 container spacing={3}>
-          {mockItems.map((item) => (
-            <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={item.id}>
-              <ItemCard {...item} />
+          {items.map((item) => (
+            <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={item._id}>
+              <ItemCard 
+                id={item._id}
+                title={item.title}
+                price={item.price}
+                imageUrl={item.images?.[0] || 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&q=80'} 
+              />
             </Grid2>
           ))}
         </Grid2>
