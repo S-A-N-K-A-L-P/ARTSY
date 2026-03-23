@@ -19,10 +19,10 @@ function getPageTitle(pathname: string): string {
   return 'Dashboard';
 }
 
-export default function DashboardTopbar() {
+export default function DashboardTopbar({ title: customTitle }: { title?: string }) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const title = getPageTitle(pathname);
+  const title = customTitle || getPageTitle(pathname);
 
   return (
     <header className="h-16 border-b backdrop-blur-3xl sticky top-0 z-40 flex items-center justify-between px-8 transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 80%, transparent)', borderColor: 'var(--border-subtle)' }}>

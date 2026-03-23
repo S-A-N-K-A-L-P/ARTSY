@@ -3,12 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, FileText, BarChart3, Settings, Plus, LogOut } from 'lucide-react';
+import { LayoutGrid, FileText, BarChart3, Settings, Plus, LogOut, Home } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const NAV = [
+  { href: '/home', label: 'Daily Feed', icon: Home },
   { href: '/dashboard', label: 'Pages', icon: LayoutGrid },
   { href: '/dashboard/items', label: 'Items', icon: FileText },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },

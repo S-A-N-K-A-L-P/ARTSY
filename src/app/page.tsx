@@ -35,7 +35,7 @@ export default async function Main() {
     if (isMobile) {
       return <MobileHomePage />;
     }
-    redirect('/dashboard');
+    redirect('/home');
   }
 
   const headersList = await headers();

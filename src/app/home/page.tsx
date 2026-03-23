@@ -1,94 +1,125 @@
-"use client";
+'use client';
 
-import React from "react";
-import { IOSSearch } from "@/components/ui/ios/ios-search";
-import { IOSGrid } from "@/components/ui/ios/ios-grid";
-import { IOSBottomNav } from "@/components/ui/ios/ios-bottom-nav";
-import { IOSNavBar } from "@/components/ui/ios/ios-navbar";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LayoutGrid, PlayCircle, Sparkles, ShoppingBag, Settings, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import FeedReels from '@/components/feed/FeedReels';
+import FeedCard from '@/components/feed/FeedCard';
+import { cn } from '@/lib/utils';
+import DashboardTopbar from '@/components/dashboard/DashboardTopbar';
+import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
+import { useAesthetic } from '@/aesthetics/AestheticProvider';
 
-// Mock items for demonstration
-const MOCK_ITEMS = [
-  { id: 1, image: "https://images.unsplash.com/photo-1515405299443-41a6b0932470?q=80&w=600", title: "Soft Aesthetic", price: 299 },
-  { id: 2, image: "https://images.unsplash.com/photo-1550684376-efcbd6e3f031?q=80&w=600", title: "Midnight Noir", price: 899 },
-  { id: 3, image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600", title: "Cyber Dreams", price: 450 },
-  { id: 4, image: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=600", title: "Minimal Arch", price: 1200 },
-  { id: 5, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600", title: "Ocean Breeze", price: 350 },
-  { id: 6, image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600", title: "Fantasy Peaks", price: 599 },
-];
+export default function HomePage() {
+  const router = useRouter();
+  const { aesthetic } = useAesthetic();
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<'reels' | 'grid'>('reels');
 
-export default function MobileHomePage() {
-  const [items, setItems] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchItems = async () => {
+  useEffect(() => {
+    const fetchFeed = async () => {
       try {
-        const res = await fetch('/api/items?limit=10');
+        const res = await fetch('/api/items');
         const data = await res.json();
-        setItems(Array.isArray(data) ? data.map(i => ({
-           id: i._id,
-           image: i.images?.[0] || "https://images.unsplash.com/photo-1515405299443-41a6b0932470?q=80&w=600",
-           title: i.title,
-           price: i.price
-        })) : []);
+        if (Array.isArray(data)) {
+          setItems(data.map((item: any) => ({
+             id: item._id,
+             title: item.title,
+             creator: {
+                username: item.ownerId?.username || 'unknown',
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${item.ownerId?.username || 'unknown'}`
+             },
+             image: item.images?.[0] || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
+             price: item.price || 0,
+             aesthetic: item.aesthetic || 'minimal'
+          })));
+        }
       } catch (err) {
-        console.error('Failed to fetch items:', err);
+        console.error('Feed Fetch Error:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchItems();
+    fetchFeed();
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg selection:bg-accent/30 overflow-hidden">
-      {/* Web view overlay */}
-      <div className="hidden md:flex fixed inset-0 z-50 bg-[#F5F2EE] items-center justify-center p-8 text-center overscroll-none">
-        <div className="max-w-4xl w-full">
-          <h1 className="text-7xl font-bold mb-8 tracking-tighter text-[#2C2C2C] italic">ARTSY</h1>
-          <p className="text-xl text-[#2C2C2C]/60 mb-10 font-medium">The premium aesthetic platform for creators.</p>
-          <div className="p-16 border border-black/5 bg-white rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
-            <p className="text-[#2C2C2C] text-lg">Please visit from a mobile device to experience the iOS design system.</p>
-          </div>
-        </div>
-      </div>
-
-      <IOSNavBar title="ARTSY" />
-      
-      <main className="flex-1 overflow-y-auto pt-2 pb-24 scroll-smooth">
-        <div className="px-5 mb-6">
-          <div className="flex items-end justify-between mb-1">
-            <h2 className="text-3xl font-bold tracking-tight text-text">For You</h2>
-            <button className="text-accent text-[14px] font-semibold mb-1">See All</button>
-          </div>
-          <p className="text-text/40 text-[14px] font-medium">Curated aesthetics based on your vibe</p>
-        </div>
-
-        {/* Categories / Quick Filters */}
-        <div className="flex gap-2.5 overflow-x-auto px-5 mb-8 no-scrollbar pb-1">
-          {["All", "Minimal", "Cyber", "Nature", "Art"].map((cat, i) => (
-            <button key={cat} className={cn(
-              "px-5 py-2.5 rounded-full text-[13px] font-bold whitespace-nowrap transition-all active:scale-95",
-              i === 0 ? "bg-white text-black shadow-lg shadow-white/10" : "bg-white/5 text-text/60 hover:bg-white/10"
-            )}>
-              {cat}
-            </button>
-          ))}
-        </div>
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <DashboardSidebar />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <DashboardTopbar title="Digital Discovery" />
         
-        <div className="px-1">
-          {loading ? (
-             <div className="flex justify-center py-20">
-                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-             </div>
-          ) : (
-             <IOSGrid items={items} />
-          )}
-        </div>
-      </main>
-      
-      <IOSBottomNav />
+        <main className="flex-1 overflow-y-auto hide-scrollbar p-6 md:p-10">
+          <div className="max-w-6xl mx-auto">
+            {/* Perspective Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+               <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-4">
+                    <Sparkles size={10} /> {aesthetic} Perspective
+                  </div>
+                  <h1 className="text-5xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>The Daily Feed</h1>
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] opacity-40">Discovery through aesthetic convergence</p>
+               </div>
+
+               <div className="flex items-center p-1.5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+                  <button 
+                    onClick={() => setView('reels')}
+                    className={cn(
+                        "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                        view === 'reels' ? "bg-[var(--accent)] text-[var(--bg-primary)] shadow-lg" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    <PlayCircle size={14} /> Reels
+                  </button>
+                  <button 
+                    onClick={() => setView('grid')}
+                    className={cn(
+                        "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                        view === 'grid' ? "bg-[var(--accent)] text-[var(--bg-primary)] shadow-lg" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
+                  >
+                    <LayoutGrid size={14} /> Grid
+                  </button>
+               </div>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {view === 'reels' ? (
+                <motion.div
+                  key="reels"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  className="flex justify-center"
+                >
+                  <FeedReels />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="grid"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-40"
+                >
+                   {items.map((item) => (
+                      <FeedCard key={item.id} item={item} />
+                   ))}
+
+                   {items.length === 0 && !loading && (
+                      <div className="col-span-full py-20 text-center opacity-30">
+                        <ShoppingBag size={48} className="mx-auto mb-4" />
+                        <p className="font-bold italic">Artifacts are being generated in the void...</p>
+                      </div>
+                   )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
