@@ -144,7 +144,7 @@ function CollectionCard({ page }: { page: any }) {
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-12 flex flex-col justify-end translate-y-6 group-hover:translate-y-0 transition-all duration-700">
         <div className="flex items-center gap-3 mb-6">
             <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-md text-[9px] uppercase font-black tracking-widest text-white border border-white/5 opacity-80 group-hover:opacity-100 transition-opacity">{page.type || 'gallery'}</span>
-            <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-md text-[9px] uppercase font-black tracking-widest text-white border border-white/5 opacity-80 group-hover:opacity-100 transition-opacity">{page.aesthetic}</span>
+            <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-md text-[9px] uppercase font-black tracking-widest text-white border border-white/5 opacity-80 group-hover:opacity-100 transition-opacity">{page.aesthetic?.theme || page.aesthetic || 'minimal'}</span>
         </div>
         <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-2xl">{page.name}</h3>
         <p className="text-[12px] font-bold text-white/40 mt-6 line-clamp-2 italic leading-relaxed uppercase tracking-widest max-w-[80%]">{page.description || 'A unique spatial convergence produced by artistic intent.'}</p>
