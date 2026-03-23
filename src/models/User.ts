@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema({
     fontFamily: { type: String, default: 'Inter' },
     isDark: { type: Boolean, default: false },
   },
+  onboardingComplete: { type: Boolean, default: false },
   isCreator: { type: Boolean, default: false },
   
   socialLinks: {
