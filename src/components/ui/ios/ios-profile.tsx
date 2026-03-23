@@ -17,6 +17,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
   const [loading, setLoading] = useState(!initialUser);
   const [activeTab, setActiveTab] = useState("pages");
   const [editingAesthetic, setEditingAesthetic] = useState<string | null>(null);
+  const [modifyingUserAesthetic, setModifyingUserAesthetic] = useState(false);
 
   useEffect(() => {
     if (!initialUser) {
@@ -36,6 +37,24 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
       fetchMe();
     }
   }, [initialUser]);
+
+  const handleUpdateUserAesthetic = async (theme: string) => {
+    try {
+      const res = await fetch('/api/user/aesthetic', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aesthetic: theme }),
+      });
+      if (res.ok) {
+        setUser({ ...user, aesthetic: theme });
+        setModifyingUserAesthetic(false);
+        // Refresh to apply global theme changes across the app
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error('Failed to update user aesthetic:', err);
+    }
+  };
 
   const handleUpdateAesthetic = async (pageId: string, theme: string) => {
     try {
@@ -122,7 +141,10 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
             {isOwner ? "Edit Profile" : "Follow Space"}
           </button>
           {isOwner && (
-            <button className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-text rounded-2xl flex items-center justify-center active:scale-95 transition-all">
+            <button 
+            onClick={() => isOwner && setModifyingUserAesthetic(true)}
+            className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-text rounded-2xl flex items-center justify-center active:scale-95 transition-all"
+          >
                 <Palette size={18} />
             </button>
           )}
@@ -220,6 +242,48 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
            </div>
         )}
       </div>
+
+      {/* Global Aesthetic Picker Overlay */}
+      <AnimatePresence>
+          {modifyingUserAesthetic && (
+              <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center"
+              >
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-6">
+                    <Sparkles size={10} /> Profile Vibe
+                  </div>
+                  <h3 className="text-3xl font-black tracking-tighter italic text-white mb-2">Change Aesthetic</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-10">Select your global identity perspective</p>
+                  
+                  <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+                      {Object.keys(themes).map((theme) => (
+                          <button
+                              key={theme}
+                              onClick={() => handleUpdateUserAesthetic(theme)}
+                              className={cn(
+                                  "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                  user.aesthetic === theme 
+                                      ? "bg-[var(--accent)] text-black shadow-2xl shadow-[var(--accent-soft)]" 
+                                      : "bg-white/5 text-white/40 border border-white/5 hover:bg-white/10"
+                              )}
+                          >
+                              {theme}
+                          </button>
+                      ))}
+                  </div>
+
+                  <button 
+                    onClick={() => setModifyingUserAesthetic(false)}
+                    className="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-white transition-colors"
+                  >
+                      Close Portal
+                  </button>
+              </motion.div>
+          )}
+      </AnimatePresence>
     </div>
   );
 }
