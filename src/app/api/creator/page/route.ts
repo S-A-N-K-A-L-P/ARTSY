@@ -49,9 +49,11 @@ export async function POST(req: Request) {
       postIds: []
     });
 
-    // Update user's pages array
-    user.pages.push(newPage._id);
-    await user.save();
+    // Update user's pages array without triggering full validation of the user document
+    await User.updateOne(
+      { _id: user._id },
+      { $push: { pages: newPage._id } }
+    );
 
     return NextResponse.json({ success: true, page: newPage });
   } catch (error: any) {
