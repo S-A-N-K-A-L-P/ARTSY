@@ -19,7 +19,7 @@ import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import MobileHomePage from "./home/page";
-import LoginPage from "./(auth)/login/page";
+import LoginPage from "./login/page";
 
 export default async function Main() {
   const session = await getServerSession(authOptions);

@@ -209,7 +209,6 @@ export default function DashboardPage() {
                       backgroundColor: 'var(--bg)',
                       borderColor: aesthetic === opt.id ? 'var(--accent)' : 'var(--border)',
                       border: '1px solid var(--border)',
-                      ringColor: 'var(--accent)',
                     }}
                   >
                     <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${opt.color} mb-3 shadow-lg`} />

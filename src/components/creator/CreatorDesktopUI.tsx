@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Filter, 
   Search, 
@@ -14,7 +14,10 @@ import {
   ArrowUpRight,
   MousePointer2,
   ChevronDown,
-  Layers
+  Layers,
+  Palette,
+  PlusCircle,
+  Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
