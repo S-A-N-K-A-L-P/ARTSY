@@ -7,32 +7,36 @@ export function generateMuiTheme(themeName: ThemeName) {
   const config = themes[themeName];
   const isDark = DARK_THEMES.includes(themeName);
 
+  // If theme not found, fallback to soft
+  const themeConfig = config || themes.soft;
+
   return createTheme({
     palette: {
       mode: isDark ? 'dark' : 'light',
       background: {
-        default: config["--bg"],
-        paper: config["--card"],
+        default: themeConfig["--bg-primary"],
+        paper: themeConfig["--bg-secondary"],
       },
       primary: {
-        main: config["--accent"],
+        main: themeConfig["--accent"],
       },
       text: {
-        primary: config["--text"],
-        secondary: config["--muted"],
+        primary: themeConfig["--text-primary"],
+        secondary: themeConfig["--text-secondary"],
       },
+      divider: themeConfig["--border-subtle"],
     },
     shape: {
-      borderRadius: parseInt(config["--radius"]) || 16,
+      borderRadius: parseInt(themeConfig["--radius"]) || 16,
     },
     typography: {
-      fontFamily: config["--font"],
+      fontFamily: themeConfig["--font"],
     },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: parseInt(config["--radius"]) || 16,
+            borderRadius: parseInt(themeConfig["--radius"]) || 16,
             textTransform: 'none' as const,
             boxShadow: 'none',
           },
@@ -41,13 +45,21 @@ export function generateMuiTheme(themeName: ThemeName) {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: parseInt(config["--radius"]) || 16,
-            backgroundColor: config["--card"],
-            border: `1px solid ${config["--border"]}`,
-            boxShadow: config["--shadow"],
+            borderRadius: parseInt(themeConfig["--radius"]) || 16,
+            backgroundColor: themeConfig["--bg-secondary"],
+            border: `1px solid ${themeConfig["--border-subtle"]}`,
+            boxShadow: themeConfig["--shadow-soft"],
           },
         },
       },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none',
+            backgroundColor: themeConfig["--bg-secondary"],
+          }
+        }
+      }
     },
   });
 }
