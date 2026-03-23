@@ -4,19 +4,21 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, Search, PlusSquare, TrendingUp, User, Bell, Settings, LogOut,
-  Heart, Grid, ArrowRight, ShieldCheck, Zap, Palette, ChevronRight, UserCircle, Check, Sparkles
+  Heart, Grid, ArrowRight, ShieldCheck, Zap, Palette, ChevronRight, UserCircle, Check, Sparkles, Layout
 } from 'lucide-react';
 import Masonry from 'react-masonry-css';
 import { cn } from '@/lib/utils';
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
 import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
 import { ThemeName } from '@/lib/theme/themes';
+import CreationConsole from '@/components/creator/CreationConsole';
+import { useSession } from 'next-auth/react';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'For You', icon: Home },
   { id: 'trending', label: 'Trending', icon: TrendingUp },
+  { id: 'manage', label: 'Studio', icon: Layout },
   { id: 'search', label: 'Search', icon: Search },
-  { id: 'create', label: 'Create', icon: PlusSquare },
   { id: 'profile', label: 'Profile', icon: User },
 ];
 
@@ -37,6 +39,8 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { aesthetic, setAesthetic } = useAesthetic();
+
+  const { data: session } = useSession();
 
   useEffect(() => { setMounted(true); }, []);
 
