@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, Search, PlusSquare, TrendingUp, User, Bell, Settings, LogOut,
-  Heart, Grid, ArrowRight, ShieldCheck, Zap, Palette, ChevronRight, UserCircle, Check, Sparkles, Layout
+  Heart, Grid, ArrowRight, ShieldCheck, Zap, Palette, ChevronDown, ChevronRight, UserCircle, Check, Sparkles, Layout, Plus
 } from 'lucide-react';
 import Masonry from 'react-masonry-css';
 import { useRouter } from 'next/navigation';
@@ -28,7 +28,8 @@ import {
 import { 
   CreatorDashboardStats, 
   SidebarFilterPanel, 
-  MasonryGridDesktop 
+  MasonryGridDesktop,
+  StorefrontFooterDesktop
 } from '@/components/creator/CreatorDesktopUI';
 
 const NAV_ITEMS = [
@@ -200,32 +201,81 @@ export default function DashboardPage() {
                   fallback={<div className="h-64 rounded-3xl" style={{ backgroundColor: 'var(--card)' }} />} 
                 />
                 
-                <div className="max-w-5xl mx-auto space-y-12 px-6 md:px-0">
-                   <StatsBarMobile user={{ ...session?.user, pages: userPages }} />
-                   
-                   <CategoryScrollerMobile 
-                     cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
-                     selected={selectedCat}
-                     onSelect={setSelectedCat}
-                   />
-                   
-                   <div className="space-y-8">
-                      <div className="flex items-center justify-between">
-                         <div className="space-y-1">
-                            <h3 className="text-2xl font-bold tracking-tighter italic">Personal Spaces</h3>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-20">Managed Aesthetic Identities</p>
-                         </div>
-                         <button onClick={() => setActiveTab('manage')} className="h-10 px-6 rounded-xl bg-white text-black text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all">
-                            New Space
-                         </button>
+                <div className="max-w-[1600px] mx-auto px-6 md:px-10">
+                   {/* Mobile Stats (Hidden on Desktop) */}
+                   <div className="md:hidden">
+                      <StatsBarMobile user={{ ...session?.user, pages: userPages }} />
+                   </div>
+
+                   <div className="flex flex-col xl:flex-row gap-12 mt-12">
+                      {/* Desktop Sidebar (Only for Profile/Collections) */}
+                      <div className="hidden xl:block">
+                         <SidebarFilterPanel 
+                           categories={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
+                           selectedCat={selectedCat}
+                           onSelect={setSelectedCat}
+                         />
                       </div>
-                      
-                      <PagePreviewListMobile 
-                        pages={userPages} 
-                        onSelect={handlePageSelect}
-                      />
+
+                      <div className="flex-1 space-y-12">
+                         {/* Category Scroller for Tablet/Mobile */}
+                         <div className="xl:hidden">
+                            <CategoryScrollerMobile 
+                              cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
+                              selected={selectedCat}
+                              onSelect={setSelectedCat}
+                            />
+                         </div>
+
+                         <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                               <h3 className="text-3xl font-bold tracking-tighter italic">Personal Spaces</h3>
+                               <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-20">Managed Aesthetic Identities</p>
+                            </div>
+                            <button onClick={() => setActiveTab('manage')} className="h-12 px-8 rounded-2xl bg-white text-black text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all shadow-xl shadow-white/5">
+                               Create New Space
+                            </button>
+                         </div>
+
+                         {/* Desktop Masonry Grid or Page List */}
+                         <div className="hidden md:block">
+                            <MasonryGridDesktop>
+                               {userPages.map((p: any) => (
+                                  <div 
+                                    key={p._id}
+                                    onClick={() => handlePageSelect(p.slug)}
+                                    className="group relative h-[400px] rounded-[48px] overflow-hidden bg-white/5 border border-white/5 cursor-pointer hover:border-white/20 transition-all"
+                                  >
+                                     <img src={p.coverImage} className="w-full h-full object-cover opacity-40 group-hover:scale-110 group-hover:opacity-60 transition-all duration-700" alt="" />
+                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-10 flex flex-col justify-end">
+                                        <div className="flex items-center gap-2 mb-2">
+                                           <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest">{p.type}</span>
+                                           <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest">{p.aesthetic}</span>
+                                        </div>
+                                        <h4 className="text-3xl font-bold tracking-tighter">{p.name}</h4>
+                                     </div>
+                                  </div>
+                               ))}
+                               {userPages.length === 0 && Array.from({ length: 3 }).map((_, i) => (
+                                  <div key={i} className="h-[400px] rounded-[48px] border-2 border-dashed border-white/5 flex items-center justify-center opacity-20">
+                                     <Plus size={40} />
+                                  </div>
+                               ))}
+                            </MasonryGridDesktop>
+                         </div>
+
+                         {/* Mobile Page List */}
+                         <div className="md:hidden">
+                            <PagePreviewListMobile 
+                              pages={userPages} 
+                              onSelect={handlePageSelect}
+                            />
+                         </div>
+                      </div>
                    </div>
                 </div>
+                
+                <StorefrontFooterDesktop />
               </motion.div>
             )}
 

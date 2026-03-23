@@ -16,8 +16,9 @@ import {
   ChevronDown,
   Layers,
   Palette,
-  PlusCircle,
-  Plus
+  PlusCircle, 
+  Plus,
+  Info
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

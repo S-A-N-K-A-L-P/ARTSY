@@ -16,7 +16,15 @@ import {
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
 import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
 import { cn } from '@/lib/utils';
-import { StatsBarMobile, CategoryScrollerMobile } from '@/components/creator/CreatorMobileUI';
+import { 
+  StatsBarMobile, 
+  CategoryScrollerMobile 
+} from '@/components/creator/CreatorMobileUI';
+import { 
+  SidebarFilterPanel, 
+  MasonryGridDesktop,
+  StorefrontFooterDesktop
+} from '@/components/creator/CreatorDesktopUI';
 
 export default function CreatorProfilePage() {
   const params = useParams();
@@ -25,6 +33,7 @@ export default function CreatorProfilePage() {
   const [creator, setCreator] = useState<any>(null);
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCat, setSelectedCat] = useState('All Spaces');
 
   useEffect(() => {
     const fetchCreatorData = async () => {
@@ -78,34 +87,65 @@ export default function CreatorProfilePage() {
         }
       />
 
-      <section className="px-6 md:px-10 space-y-12">
-        <div className="max-w-5xl mx-auto space-y-12">
-          <StatsBarMobile user={{ ...creator, pages }} />
-          
-          <CategoryScrollerMobile 
-            cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
-            selected="All Spaces"
-            onSelect={() => {}}
-          />
-
-          <div className="flex flex-col">
-            <h2 className="text-3xl font-bold tracking-tighter italic">Curated Collections</h2>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 mt-1">Aesthetic Archetypes</p>
+      <section className="px-6 md:px-10">
+        <div className="max-w-[1600px] mx-auto">
+          {/* Mobile/Tablet Stats */}
+          <div className="xl:hidden mb-12">
+            <StatsBarMobile user={{ ...creator, pages }} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {pages.length > 0 ? (
-              pages.map((page) => (
-                <CollectionCard key={page._id} page={page} username={username} />
-              ))
-            ) : (
-              <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-                <p className="opacity-20 font-bold tracking-widest text-xs uppercase">No active collections</p>
-              </div>
-            )}
+          <div className="flex flex-col xl:flex-row gap-16">
+            {/* Desktop Sidebar */}
+            <div className="hidden xl:block">
+               <SidebarFilterPanel 
+                 categories={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
+                 selectedCat={selectedCat}
+                 onSelect={setSelectedCat}
+               />
+            </div>
+
+            <div className="flex-1 space-y-12">
+               {/* Tablet/Mobile Scroller */}
+               <div className="xl:hidden">
+                  <CategoryScrollerMobile 
+                    cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
+                    selected={selectedCat}
+                    onSelect={setSelectedCat}
+                  />
+               </div>
+
+               <div className="flex flex-col">
+                 <h2 className="text-4xl font-bold tracking-tighter italic">Curated Collections</h2>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 mt-1">Aesthetic Archetypes</p>
+               </div>
+
+               {/* Desktop Masonry Grid */}
+               <div className="hidden md:block">
+                  <MasonryGridDesktop>
+                    {pages.map((page) => (
+                      <CollectionCard key={page._id} page={page} username={username} />
+                    ))}
+                  </MasonryGridDesktop>
+               </div>
+
+               {/* Mobile List View fallback or Grid */}
+               <div className="md:hidden grid grid-cols-1 gap-8">
+                  {pages.map((page) => (
+                    <CollectionCard key={page._id} page={page} username={username} />
+                  ))}
+               </div>
+
+               {pages.length === 0 && (
+                 <div className="py-40 text-center border-2 border-dashed border-white/5 rounded-[60px]">
+                   <p className="opacity-20 font-bold tracking-widest text-xs uppercase italic underline underline-offset-8">No active collections</p>
+                 </div>
+               )}
+            </div>
           </div>
         </div>
       </section>
+
+      <StorefrontFooterDesktop />
     </div>
   );
 }
@@ -117,22 +157,20 @@ function CollectionCard({ page, username }: { page: any; username: string }) {
     <motion.div 
       whileHover={{ y: -5 }}
       onClick={() => router.push(`/dashboard/${username}/${page.slug}`)}
-      className="group relative h-80 rounded-[40px] overflow-hidden cursor-pointer bg-white/5 border border-white/5 hover:border-white/10 transition-all"
+      className="group relative h-[450px] rounded-[56px] overflow-hidden cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 transition-all shadow-2xl"
     >
-      <img src={page.coverImage} className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-80 transition-all duration-700" alt={page.name} />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-10 flex flex-col justify-end">
-        <div className="flex items-center gap-3 mb-2">
-            {page.type === 'store' && <ShoppingBag size={14} className="text-white/40" />}
-            {page.type === 'portfolio' && <Layers size={14} className="text-white/40" />}
-            {page.type === 'gallery' && <Grid size={14} className="text-white/40" />}
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/40">{page.type}</span>
+      <img src={page.coverImage} className="w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-80 transition-all duration-1000" alt={page.name} />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-12 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+        <div className="flex items-center gap-3 mb-4">
+            <span className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-[10px] uppercase font-black tracking-widest text-white/80">{page.type}</span>
+            <span className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-[10px] uppercase font-black tracking-widest text-white/80">{page.aesthetic}</span>
         </div>
-        <h3 className="text-3xl font-bold tracking-tighter">{page.name}</h3>
-        <p className="text-xs text-white/40 mt-2 line-clamp-1">{page.description}</p>
+        <h3 className="text-4xl font-bold tracking-tighter">{page.name}</h3>
+        <p className="text-xs text-white/40 mt-4 line-clamp-2 italic leading-relaxed">{page.description}</p>
         
-        <div className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
-          <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
-            Explore <ArrowRight size={14} />
+        <div className="mt-8 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all delay-100">
+          <button className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em]">
+            Enter Space <ArrowRight size={14} className="text-white" />
           </button>
         </div>
       </div>
