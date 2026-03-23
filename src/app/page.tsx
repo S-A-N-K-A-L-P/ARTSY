@@ -21,17 +21,29 @@ import { authOptions } from "@/lib/auth";
 import MobileHomePage from "./home/page";
 import LoginPage from "./login/page";
 
+import { redirect } from "next/navigation";
+
 export default async function Main() {
   const session = await getServerSession(authOptions);
+  
+  // Universal Redirect for logged-in users
+  if (session) {
+    const headersList = await headers();
+    const userAgent = headersList.get("user-agent") || "";
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
+    
+    if (isMobile) {
+      return <MobileHomePage />;
+    }
+    redirect('/dashboard');
+  }
+
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "";
   const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
 
   if (isMobile) {
-    if (!session) {
-      return <LoginPage />;
-    }
-    return <MobileHomePage />;
+    return <LoginPage />;
   }
 
   return (
