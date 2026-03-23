@@ -13,6 +13,7 @@ import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
 import { ThemeName } from '@/lib/theme/themes';
 import CreationConsole from '@/components/creator/CreationConsole';
 import { useSession } from 'next-auth/react';
+import { CreatorDashboardStats } from '@/components/creator/CreatorDesktopUI';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'For You', icon: Home },
@@ -147,7 +148,8 @@ export default function DashboardPage() {
             )}
 
             {activeTab === 'manage' && (
-              <motion.div key="manage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+              <motion.div key="manage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-12">
+                <CreatorDashboardStats stats={{ sales: '₹12,40,500', items: '42' }} />
                 <CreationConsole />
               </motion.div>
             )}
