@@ -160,42 +160,57 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
       </div>
 
       {/* Grid Content - Pages */}
-      <div className="px-6 space-y-4">
-        {user.pages?.map((page: any) => (
-          <motion.div 
-            key={page._id} 
-            layout
-            className="group relative h-48 rounded-[32px] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-secondary)] cursor-pointer"
-            onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
-          >
-            <img 
-              src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
-              className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700"
-              alt={page.name}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1 block">Space Page</span>
-                        <h3 className="text-xl font-black tracking-tighter text-white italic">{page.name}</h3>
-                    </div>
-                </div>
-                
-                <div className="mt-4 flex items-center gap-2">
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); isOwner && setEditingAesthetic(page._id); }}
-                      className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-[9px] font-black uppercase tracking-widest text-white flex items-center gap-2 hover:bg-white/20 transition-all"
-                    >
-                        <Sparkles size={10} className="text-[var(--accent)]" /> {page.aesthetic?.theme || page.aesthetic}
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/page/${page._id}`); }}
-                      className="p-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-white hover:bg-[var(--accent)] hover:text-black transition-all"
-                    >
-                        <ArrowRight size={12} />
-                    </button>
-                </div>
-            </div>
+      <div className="px-5 grid grid-cols-2 gap-3 auto-rows-[minmax(140px,auto)]">
+        {user.pages?.map((page: any, i: number) => {
+          // Staggered logic: 2 small, 1 wide, 1 tall
+          const mod = i % 4;
+          const isWide = mod === 2;
+          const isTall = mod === 3;
+
+          return (
+            <motion.div 
+              key={page._id} 
+              layout
+              className={cn(
+                "group relative rounded-[32px] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-secondary)] cursor-pointer transition-all duration-500",
+                isWide ? "col-span-2 min-h-[160px]" : "col-span-1",
+                isTall ? "row-span-2 min-h-[300px]" : "h-full"
+              )}
+              onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
+            >
+              <img 
+                src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
+                className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700"
+                alt={page.name}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-5 flex flex-col justify-end">
+                  <div className="flex items-center justify-between">
+                      <div>
+                          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30 mb-1 block">Entity Manifest</span>
+                          <h3 className={cn(
+                            "font-black tracking-tighter text-white italic leading-tight",
+                            isWide ? "text-2xl" : "text-lg"
+                          )}>
+                            {page.name}
+                          </h3>
+                      </div>
+                  </div>
+                  
+                  <div className="mt-3 flex items-center gap-2">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); isOwner && setEditingAesthetic(page._id); }}
+                        className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-[8px] font-black uppercase tracking-widest text-white flex items-center gap-1.5 hover:bg-white/20 transition-all"
+                      >
+                          <Sparkles size={8} className="text-[var(--accent)]" /> {page.aesthetic?.theme || page.aesthetic}
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/page/${page._id}`); }}
+                        className="p-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-white hover:bg-[var(--accent)] hover:text-black transition-all"
+                      >
+                          <ArrowRight size={10} />
+                      </button>
+                  </div>
+              </div>
 
             {/* Aesthetic Picker Overlay */}
             <AnimatePresence>
@@ -234,7 +249,8 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                 )}
             </AnimatePresence>
           </motion.div>
-        ))}
+        );
+      })}
 
         {user.pages?.length === 0 && (
            <div className="py-20 text-center opacity-30">
