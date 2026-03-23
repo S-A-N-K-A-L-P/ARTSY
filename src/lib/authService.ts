@@ -6,7 +6,7 @@ import dbConnect from "@/lib/db";
 // 🧠 1. Final Unified Data Contract
 export const registerSchema = z.object({
   name: z.string().min(2, "Name is required"),
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters").optional(),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters").optional(),
   avatar: z.string().optional(),
@@ -34,7 +34,6 @@ export async function registerUser(data: RegisterInput) {
 
   const {
     name,
-    username,
     email,
     password,
     avatar,
@@ -45,7 +44,14 @@ export async function registerUser(data: RegisterInput) {
     provider = "credentials",
   } = parsed;
 
+  let { username } = parsed;
+
   await dbConnect();
+
+  // If username is not provided, generate one
+  if (!username) {
+    username = email.split('@')[0].toLowerCase() + Math.floor(Math.random() * 1000);
+  }
 
   // 🔍 Check existing user
   const existingUser = await User.findOne({

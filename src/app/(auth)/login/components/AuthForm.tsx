@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,10 +28,19 @@ const registerSchema = z.object({
 });
 
 export function AuthForm() {
+  const [mounted, setMounted] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // Don't render anything until mounted to avoid hydration issues with framer-motion
+  }
 
   const { register: loginReg, handleSubmit: handleLoginSubmit, formState: { errors: loginErrors } } = useForm({
     resolver: zodResolver(loginSchema),
@@ -75,7 +84,7 @@ export function AuthForm() {
 
       const result = await res.json();
 
-      if (!res.ok) {
+      if (!result.success) {
         setError(result.error || 'Registration failed');
       } else {
         await signIn('credentials', {
