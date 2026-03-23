@@ -1,365 +1,111 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Home, Search, PlusSquare, TrendingUp, User, Bell, Settings, LogOut,
-  Heart, Grid, ArrowRight, ShieldCheck, Zap, Palette, ChevronDown, ChevronRight, UserCircle, Check, Sparkles, Layout, Plus
-} from 'lucide-react';
-import Masonry from 'react-masonry-css';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { cn } from '@/lib/utils';
-
-// Core Engine & Dashboard Components
-import { useAesthetic } from '@/aesthetics/AestheticProvider';
-import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
-import { ThemeName } from '@/lib/theme/themes';
-import CreationConsole from '@/components/creator/CreationConsole';
-
-// High-Depth Creator Components (25+ Suite)
-import { 
-  StatsBarMobile, 
-  PagePreviewListMobile, 
-  CategoryScrollerMobile, 
-  AestheticThemeBadge,
-  AestheticNotificationToast
-} from '@/components/creator/CreatorMobileUI';
-import { 
-  CreatorDashboardStats, 
-  SidebarFilterPanel, 
-  MasonryGridDesktop,
-  StorefrontFooterDesktop
-} from '@/components/creator/CreatorDesktopUI';
-
-const NAV_ITEMS = [
-  { id: 'home', label: 'For You', icon: Home },
-  { id: 'trending', label: 'Trending', icon: TrendingUp },
-  { id: 'manage', label: 'Studio', icon: Layout },
-  { id: 'search', label: 'Search', icon: Search },
-  { id: 'profile', label: 'Profile', icon: User },
-];
-
-const AESTHETIC_OPTIONS: { id: ThemeName; label: string; color: string; desc: string }[] = [
-  { id: 'soft',      label: 'Soft',       color: 'from-amber-200 to-orange-100', desc: 'Warm & inviting' },
-  { id: 'minimal',   label: 'Minimal',    color: 'from-gray-100 to-white',       desc: 'Clean & focused' },
-  { id: 'noir',      label: 'Noir',       color: 'from-gray-900 to-black',       desc: 'Dark & editorial' },
-  { id: 'cyberpunk', label: 'Cyberpunk',  color: 'from-teal-400 to-indigo-900',  desc: 'Neon & digital' },
-  { id: 'vaporwave', label: 'Vaporwave',  color: 'from-pink-400 to-purple-900',  desc: 'Retro & dreamy' },
-  { id: 'brutalist', label: 'Brutalist',  color: 'from-stone-300 to-stone-500',  desc: 'Raw & industrial' },
-  { id: 'grunge',    label: 'Grunge',     color: 'from-emerald-900 to-gray-900', desc: 'Earthy & textured' },
-  { id: 'fantasy',   label: 'Fantasy',    color: 'from-violet-500 to-indigo-900',desc: 'Mystical & deep' },
-  { id: 'luxury',    label: 'Luxury',     color: 'from-amber-300 to-yellow-600', desc: 'Gold & premium' },
-];
+import { Plus, MoreHorizontal, ExternalLink } from 'lucide-react';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState('home');
-  const [mounted, setMounted] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [userPages, setUserPages] = useState([]);
-  const [selectedCat, setSelectedCat] = useState('All Spaces');
-  
-  const { aesthetic, setAesthetic } = useAesthetic();
+  const [pages, setPages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { 
-    setMounted(true); 
-    if (session?.user) {
-      fetch('/api/creator/page')
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) setUserPages(data.pages);
-        });
-    }
+  useEffect(() => {
+    if (!session?.user) return;
+    fetch('/api/creator/page')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setPages(data.pages || []);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [session]);
 
-  const masonryItems = useMemo(() => {
-    const images = [
-      'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1516557070061-c3d1653fa646?q=80&w=500&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1518621736915-f3b1c41136f6?q=80&w=500&auto=format&fit=crop',
-    ];
-    return Array.from({ length: 16 }).map((_, i) => ({
-      id: i,
-      height: 280 + Math.floor(Math.random() * 180),
-      image: images[i % images.length],
-      title: ['Ethereal Flow', 'Cyber Pulse', 'Silent Peak', 'Organic Chaos', 'Neon Dreams', 'Void Bloom', 'Digital Glitch', 'Abstract Harmony'][i % 8],
-      author: ['Nova', 'Koda', 'Soma', 'Luna', 'Vector', 'Echo', 'Aura', 'Pixel'][i % 8]
-    }));
-  }, []);
-
-  if (!mounted) return null;
-
-  const masonryBreakpoints = { default: 3, 1100: 2, 700: 2, 500: 1 };
-
-  const handlePageSelect = (slug: string) => {
-    if (session?.user?.name) {
-       router.push(`/dashboard/${session.user.name}/${slug}`);
-    }
-  };
-
   return (
-    <div className="min-h-screen transition-colors duration-500" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-72 p-8 z-50" style={{ backgroundColor: 'var(--bg)', borderRight: '1px solid var(--border)' }}>
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
-            <span className="font-bold italic" style={{ color: 'var(--accent)' }}>A</span>
-          </div>
-          <span className="font-bold tracking-tight text-xl">Artsy</span>
+    <div className="max-w-5xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold text-white">Your Pages</h2>
+          <p className="text-sm text-zinc-500 mt-1">{pages.length} page{pages.length !== 1 ? 's' : ''} created</p>
         </div>
-        <nav className="space-y-1.5 flex-1">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={cn(
-                "w-full flex items-center gap-4 px-4 py-3.5 transition-all duration-300 font-bold group text-sm",
-                activeTab === item.id ? "shadow-lg" : "opacity-40 hover:opacity-100"
-              )}
-              style={{
-                borderRadius: 'var(--radius)',
-                backgroundColor: activeTab === item.id ? 'var(--accent)' : 'transparent',
-                color: activeTab === item.id ? 'var(--bg)' : 'var(--text)',
-              }}
-            >
-              <item.icon size={22} />
-              <span className="tracking-tight">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-        
-        <div className="pt-8 space-y-4">
-           <AestheticThemeBadge theme={aesthetic} />
-           <div className="space-y-1" style={{ borderTop: '1px solid var(--border)' }}>
-              <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center gap-4 px-4 py-3 opacity-40 hover:opacity-100 transition-all font-bold text-sm">
-                <Settings size={20} />
-                <span>Settings</span>
-              </button>
-              <button className="w-full flex items-center gap-4 px-4 py-3 text-red-400/60 hover:text-red-400 transition-all font-bold text-sm">
-                <LogOut size={20} />
-                <span>Sign Out</span>
-              </button>
-           </div>
+        <Link
+          href="/dashboard/create"
+          className="flex items-center gap-2 h-9 px-4 rounded-lg bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors"
+        >
+          <Plus size={16} />
+          Create Page
+        </Link>
+      </div>
+
+      {/* Table */}
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
         </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="md:ml-72 min-h-screen pb-24 md:pb-0">
-        <header className="sticky top-0 z-40 backdrop-blur-3xl px-6 md:px-10 h-20 flex items-center justify-between" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderBottom: '1px solid var(--border)' }}>
-          <h1 className="text-2xl font-bold tracking-tighter italic">{NAV_ITEMS.find(n => n.id === activeTab)?.label}</h1>
-          <div className="flex items-center gap-4">
-            <button className="relative p-2.5 opacity-40 hover:opacity-100 transition-colors" style={{ borderRadius: 'var(--radius)' }}>
-               <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-400" />
-               <Bell size={20} />
-            </button>
-            <button onClick={() => setSettingsOpen(true)} className="md:hidden p-2.5 opacity-40">
-              <Settings size={20} />
-            </button>
-          </div>
-        </header>
-
-        <div className="md:px-10 py-8">
-          <AnimatePresence mode="wait">
-            {activeTab === 'home' && (
-              <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="px-6 md:px-0">
-                <Masonry breakpointCols={masonryBreakpoints} className="flex -ml-6 w-auto" columnClassName="pl-6 space-y-6">
-                  {masonryItems.map((item) => (
-                    <AestheticRenderer
-                      key={item.id}
-                      component="ItemCard"
-                      props={item}
-                      fallback={
-                        <div className="rounded-2xl overflow-hidden" style={{ height: item.height, backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
-                          <img src={item.image} className="w-full h-full object-cover opacity-50" alt="" />
-                        </div>
-                      }
-                    />
-                  ))}
-                </Masonry>
-              </motion.div>
-            )}
-
-            {activeTab === 'manage' && (
-              <motion.div key="manage" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-12 px-6 md:px-0">
-                <CreatorDashboardStats stats={{ sales: '₹12,40,500', items: userPages.length }} />
-                <CreationConsole />
-              </motion.div>
-            )}
-
-            {activeTab === 'profile' && (
-              <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 pb-40">
-                <AestheticRenderer 
-                  component="ProfileHeader" 
-                  props={{ user: session?.user }}
-                  fallback={<div className="h-64 rounded-3xl" style={{ backgroundColor: 'var(--card)' }} />} 
-                />
-                
-                <div className="max-w-[1600px] mx-auto px-6 md:px-10">
-                   {/* Mobile Stats (Hidden on Desktop) */}
-                   <div className="md:hidden">
-                      <StatsBarMobile user={{ ...session?.user, pages: userPages }} />
-                   </div>
-
-                   <div className="flex flex-col xl:flex-row gap-12 mt-12">
-                      {/* Desktop Sidebar (Only for Profile/Collections) */}
-                      <div className="hidden xl:block">
-                         <SidebarFilterPanel 
-                           categories={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
-                           selectedCat={selectedCat}
-                           onSelect={setSelectedCat}
-                         />
-                      </div>
-
-                      <div className="flex-1 space-y-12">
-                         {/* Category Scroller for Tablet/Mobile */}
-                         <div className="xl:hidden">
-                            <CategoryScrollerMobile 
-                              cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
-                              selected={selectedCat}
-                              onSelect={setSelectedCat}
-                            />
-                         </div>
-
-                         <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                               <h3 className="text-3xl font-bold tracking-tighter italic">Personal Spaces</h3>
-                               <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-20">Managed Aesthetic Identities</p>
-                            </div>
-                            <button onClick={() => setActiveTab('manage')} className="h-12 px-8 rounded-2xl bg-white text-black text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all shadow-xl shadow-white/5">
-                               Create New Space
-                            </button>
-                         </div>
-
-                         {/* Desktop Masonry Grid or Page List */}
-                         <div className="hidden md:block">
-                            <MasonryGridDesktop>
-                               {userPages.map((p: any) => (
-                                  <div 
-                                    key={p._id}
-                                    onClick={() => handlePageSelect(p.slug)}
-                                    className="group relative h-[400px] rounded-[48px] overflow-hidden bg-white/5 border border-white/5 cursor-pointer hover:border-white/20 transition-all"
-                                  >
-                                     <img src={p.coverImage} className="w-full h-full object-cover opacity-40 group-hover:scale-110 group-hover:opacity-60 transition-all duration-700" alt="" />
-                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-10 flex flex-col justify-end">
-                                        <div className="flex items-center gap-2 mb-2">
-                                           <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest">{p.type}</span>
-                                           <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest">{p.aesthetic}</span>
-                                        </div>
-                                        <h4 className="text-3xl font-bold tracking-tighter">{p.name}</h4>
-                                     </div>
-                                  </div>
-                               ))}
-                               {userPages.length === 0 && Array.from({ length: 3 }).map((_, i) => (
-                                  <div key={i} className="h-[400px] rounded-[48px] border-2 border-dashed border-white/5 flex items-center justify-center opacity-20">
-                                     <Plus size={40} />
-                                  </div>
-                               ))}
-                            </MasonryGridDesktop>
-                         </div>
-
-                         {/* Mobile Page List */}
-                         <div className="md:hidden">
-                            <PagePreviewListMobile 
-                              pages={userPages} 
-                              onSelect={handlePageSelect}
-                            />
-                         </div>
-                      </div>
-                   </div>
-                </div>
-                
-                <StorefrontFooterDesktop />
-              </motion.div>
-            )}
-
-            {['trending', 'search'].includes(activeTab) && (
-              <div key="placeholder" className="flex flex-col items-center justify-center min-h-[60vh] opacity-10 uppercase tracking-[0.8em] font-black text-sm">
-                Expanding Collection...
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
-      </main>
-
-      {/* Mobile Nav */}
-      <nav className="md:hidden fixed bottom-6 left-6 right-6 h-18 backdrop-blur-3xl px-8 flex justify-between items-center z-50 shadow-2xl" style={{ backgroundColor: 'color-mix(in srgb, var(--card) 80%, transparent)', border: '1px solid var(--border)', borderRadius: '2.5rem' }}>
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={cn("p-2.5 transition-all duration-300", activeTab === item.id ? "scale-110 shadow-lg" : "opacity-30")}
-            style={{
-              borderRadius: 'var(--radius)',
-              backgroundColor: activeTab === item.id ? 'var(--accent)' : 'transparent',
-              color: activeTab === item.id ? 'var(--bg)' : 'var(--text)',
-            }}
+      ) : pages.length === 0 ? (
+        <div className="border border-dashed border-zinc-800 rounded-xl p-12 text-center">
+          <p className="text-zinc-500 text-sm mb-4">No pages yet. Create your first page to get started.</p>
+          <Link
+            href="/dashboard/create"
+            className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-colors"
           >
-            <item.icon size={22} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-          </button>
-        ))}
-      </nav>
-
-      {/* Aesthetic Notification */}
-      <AestheticNotificationToast message={`${aesthetic.toUpperCase()} Aesthetic Synced`} />
-
-      {/* Settings Bottom Sheet */}
-      <AnimatePresence>
-        {settingsOpen && (
-          <div className="fixed inset-0 z-[100] flex items-end justify-center px-4 pb-4 overflow-hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSettingsOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 200, damping: 25 }}
-              className="relative w-full max-w-lg overflow-hidden p-8"
-              style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '40px' }}
-            >
-              <div className="w-12 h-1.5 rounded-full mx-auto mb-8" style={{ backgroundColor: 'var(--border)' }} />
-              <h2 className="text-2xl font-bold tracking-tighter mb-6 italic">Visual Control</h2>
-              <div className="grid grid-cols-3 gap-3 mb-8">
-                {AESTHETIC_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setAesthetic(opt.id)}
-                    className={cn(
-                      "relative p-4 rounded-2xl transition-all text-left group overflow-hidden border",
-                      aesthetic === opt.id ? "ring-2 shadow-lg" : "opacity-60 hover:opacity-100"
-                    )}
-                    style={{
-                      backgroundColor: 'var(--bg)',
-                      borderColor: aesthetic === opt.id ? 'var(--accent)' : 'var(--border)',
-                    }}
-                  >
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${opt.color} mb-3 shadow-lg`} />
-                    <p className="text-xs font-bold tracking-tight">{opt.label}</p>
-                    <p className="text-[9px] opacity-40 mt-0.5">{opt.desc}</p>
-                    {aesthetic === opt.id && (
-                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent)', color: 'var(--bg)' }}>
-                        <Check size={12} strokeWidth={3} />
-                      </motion.div>
-                    )}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => setSettingsOpen(false)}
-                className="w-full h-14 font-bold transition-transform active:scale-[0.98] uppercase tracking-widest text-[10px]"
-                style={{ backgroundColor: 'var(--accent)', color: 'var(--bg)', borderRadius: 'var(--radius)' }}
-              >
-                Sync Final Aesthetic
-              </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            <Plus size={16} />
+            Create Page
+          </Link>
+        </div>
+      ) : (
+        <div className="border border-zinc-800 rounded-xl overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-zinc-800 bg-zinc-900/50">
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Name</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Type</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Slug</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Items</th>
+                <th className="text-right text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pages.map((page: any) => (
+                <tr
+                  key={page._id}
+                  className="border-b border-zinc-800/50 hover:bg-zinc-900/30 cursor-pointer transition-colors"
+                  onClick={() => router.push(`/dashboard/page/${page._id}`)}
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      {page.coverImage ? (
+                        <img src={page.coverImage} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-xs text-zinc-500">
+                          {page.name?.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-sm font-medium text-white">{page.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-xs px-2 py-1 rounded-md bg-zinc-800 text-zinc-400">{page.type || 'gallery'}</span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-zinc-500">/{page.slug}</td>
+                  <td className="px-4 py-3 text-sm text-zinc-500">{page.items?.length || 0}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); }}
+                      className="p-1.5 text-zinc-500 hover:text-white rounded-md hover:bg-zinc-800 transition-colors"
+                    >
+                      <MoreHorizontal size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

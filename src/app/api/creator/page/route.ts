@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const { name, slug, aesthetic, type, description, coverImage } = data;
+    const { name, slug, aesthetic, type, description, coverImage, logo } = data;
 
     // Check if slug is taken
     const existingPage = await Page.findOne({ slug });
@@ -29,13 +29,24 @@ export async function POST(req: Request) {
     }
 
     const newPage = await Page.create({
-      userId: user._id,
+      ownerId: user._id,
       name,
       slug,
-      aesthetic,
+      aesthetic: {
+        theme: aesthetic || 'minimal',
+        custom: {
+          primaryColor: '#000',
+          font: 'inter',
+          spacing: 'compact'
+        }
+      },
       type,
       description,
-      coverImage
+      coverImage,
+      logo,
+      stats: { followers: 0, views: 0 },
+      settings: { isPublic: true, allowComments: true },
+      postIds: []
     });
 
     // Update user's pages array

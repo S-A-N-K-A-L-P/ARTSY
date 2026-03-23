@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
-import Item from '@/models/Item';
+import Post from '@/models/Post';
 import Page from '@/models/Page';
 
 export async function POST(req: Request) {
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
     await dbConnect();
     const data = await req.json();
-    const { pageId, title, description, images, price, currency, isForSale, attributes, customFields, aesthetic, externalLinks, tags } = data;
+    const { pageId, type, title, caption, itemIds, layout } = data;
 
     // Verify page ownership
     const page = await Page.findById(pageId).populate('ownerId');
@@ -22,25 +22,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized or Page not found' }, { status: 401 });
     }
 
-    const newItem = await Item.create({
-      ownerId: (page.ownerId as any)._id,
+    const newPost = await Post.create({
       pageId,
+      type,
       title,
-      description,
-      images,
-      price,
-      currency,
-      isForSale,
-      attributes,
-      customFields,
-      aesthetic,
-      externalLinks: externalLinks || { instagram: '', youtube: '', website: '' },
-      tags: tags || []
+      caption,
+      itemIds,
+      layout: layout || { type: 'grid', columns: 3 },
+      engagement: { likes: 0, comments: 0 }
     });
 
-    return NextResponse.json({ success: true, item: newItem });
+    // Link post to page
+    page.postIds.push(newPost._id);
+    await page.save();
+
+    return NextResponse.json({ success: true, post: newPost });
   } catch (error: any) {
-    console.error('Create Item Error:', error);
+    console.error('Create Post Error:', error);
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -55,8 +53,8 @@ export async function GET(req: Request) {
 
   try {
     await dbConnect();
-    const items = await Item.find({ pageId }).sort({ createdAt: -1 });
-    return NextResponse.json({ success: true, items });
+    const posts = await Post.find({ pageId }).sort({ createdAt: -1 }).populate('itemIds');
+    return NextResponse.json({ success: true, posts });
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

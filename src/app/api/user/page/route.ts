@@ -22,7 +22,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const page = await Page.findOne({ userId: user._id, slug, isPublic: true });
+    const page = await Page.findOne({ ownerId: user._id, slug, isPublic: true });
     if (!page) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }

@@ -76,26 +76,29 @@ export async function registerUser(data: RegisterInput) {
 
   // 🚀 Create user
   const user = await User.create({
-    name,
+    profile: {
+      name,
+      avatar: avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+      bio: bio || "",
+    },
     username,
     email,
     password: hashedPassword,
-    avatar: avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
     coverImage,
-    bio,
     address,
     socialLinks,
     provider,
     postsCount: 0,
     followersCount: 0,
     followingCount: 0,
+    pages: []
   });
 
   return {
     id: user._id,
-    name: user.name,
+    name: user.profile.name,
     username: user.username,
     email: user.email,
-    avatar: user.avatar,
+    avatar: user.profile.avatar,
   };
 }

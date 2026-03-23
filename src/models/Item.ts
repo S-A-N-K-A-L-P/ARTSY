@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const ItemSchema = new mongoose.Schema({
+  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   pageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Page', required: true },
   title: { type: String, required: true },
   description: { type: String, default: "" },
@@ -8,10 +9,15 @@ const ItemSchema = new mongoose.Schema({
   
   price: { type: Number, default: 0 },
   currency: { type: String, default: 'INR' },
-  category: { type: String, default: 'General' },
-  status: { type: String, enum: ['active', 'archived', 'draft'], default: 'active' },
-  inventory: { type: Number, default: 0 },
-  isAvailable: { type: Boolean, default: true },
+  
+  externalLinks: {
+     instagram: { type: String, default: "" },
+     youtube: { type: String, default: "" },
+     website: { type: String, default: "" }
+  },
+
+  tags: [{ type: String }],
+  isForSale: { type: Boolean, default: true },
   
   // Dynamic polymorphic product fields (e.g. { brand: 'Nike', material: 'Wool' })
   attributes: { type: Map, of: String, default: {} },

@@ -20,7 +20,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
 
-    const pages = await Page.find({ userId: user._id, isPublic: true });
+    const pages = await Page.find({ ownerId: user._id, isPublic: true });
 
     return NextResponse.json({ 
       success: true, 
