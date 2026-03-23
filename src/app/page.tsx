@@ -16,14 +16,21 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Box } from "@mui/material";
 import { headers } from "next/headers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import MobileHomePage from "./home/page";
+import LoginPage from "./(auth)/login/page";
 
 export default async function Main() {
+  const session = await getServerSession(authOptions);
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "";
   const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
 
   if (isMobile) {
+    if (!session) {
+      return <LoginPage />;
+    }
     return <MobileHomePage />;
   }
 

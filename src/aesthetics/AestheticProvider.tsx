@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { themes, applyTheme, ThemeName } from '@/lib/theme/themes';
@@ -21,16 +21,34 @@ export default function AestheticProvider({
   children: React.ReactNode;
   currentAesthetic?: string;
 }) {
-  const aestheticName = (themes[currentAesthetic as ThemeName] ? currentAesthetic : 'soft') as ThemeName;
-
-  const muiTheme = useMemo(() => generateMuiTheme(aestheticName), [aestheticName]);
+  const [aesthetic, setAesthetic] = useState<ThemeName>(
+    (themes[currentAesthetic as ThemeName] ? currentAesthetic : 'soft') as ThemeName
+  );
 
   useEffect(() => {
-    applyTheme(aestheticName);
-  }, [aestheticName]);
+    // Fetch user preference on mount to avoid server-side DB dependency in Layout
+    const fetchAesthetic = async () => {
+      try {
+        const res = await fetch('/api/user/aesthetic');
+        const data = await res.json();
+        if (data?.aesthetic && themes[data.aesthetic as ThemeName]) {
+          setAesthetic(data.aesthetic as ThemeName);
+        }
+      } catch (err) {
+        console.error('Failed to fetch aesthetic from API:', err);
+      }
+    };
+    fetchAesthetic();
+  }, []);
+
+  const muiTheme = useMemo(() => generateMuiTheme(aesthetic), [aesthetic]);
+
+  useEffect(() => {
+    applyTheme(aesthetic);
+  }, [aesthetic]);
 
   return (
-    <AestheticContext.Provider value={{ aesthetic: aestheticName }}>
+    <AestheticContext.Provider value={{ aesthetic }}>
       <MuiThemeProvider theme={muiTheme}>
         <CssBaseline />
         <div 
