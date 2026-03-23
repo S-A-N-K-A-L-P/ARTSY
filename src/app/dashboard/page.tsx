@@ -146,13 +146,23 @@ export default function DashboardPage() {
               </motion.div>
             )}
 
-            {activeTab === 'profile' && (
-              <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <AestheticRenderer component="ProfileHeader" fallback={<div className="h-64 rounded-3xl" style={{ backgroundColor: 'var(--card)' }} />} />
+            {activeTab === 'manage' && (
+              <motion.div key="manage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <CreationConsole />
               </motion.div>
             )}
 
-            {activeTab !== 'home' && activeTab !== 'profile' && (
+            {activeTab === 'profile' && (
+              <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <AestheticRenderer 
+                  component="ProfileHeader" 
+                  props={{ user: session?.user }}
+                  fallback={<div className="h-64 rounded-3xl" style={{ backgroundColor: 'var(--card)' }} />} 
+                />
+              </motion.div>
+            )}
+
+            {activeTab !== 'home' && activeTab !== 'manage' && activeTab !== 'profile' && (
               <div className="flex flex-col items-center justify-center min-h-[50vh] opacity-10 uppercase tracking-[0.4em] font-bold text-xs">
                 Expanding Collection...
               </div>
