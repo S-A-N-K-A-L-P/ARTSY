@@ -2,14 +2,14 @@ import { theme as noirTheme, ProfileLayout as NoirProfileLayout, ItemCard as Noi
 import { theme as minimalTheme, ProfileLayout as MinimalProfileLayout, ItemCard as MinimalItemCard, ProfileHeader as MinimalProfileHeader } from "./minimal";
 import { theme as vaporwaveTheme, ProfileLayout as VaporwaveProfileLayout, ItemCard as VaporwaveItemCard, ProfileHeader as VaporwaveProfileHeader } from "./vaporwave";
 import { theme as brutalistTheme, ProfileLayout as BrutalistProfileLayout, ItemCard as BrutalistItemCard, ProfileHeader as BrutalistProfileHeader } from "./brutalist";
-import { theme as grungeTheme, ProfileLayout as GrungeProfileLayout } from "./grunge";
-import { theme as cyberpunkTheme, ProfileLayout as CyberpunkProfileLayout } from "./cyberpunk";
+import { theme as grungeTheme, ProfileLayout as GrungeProfileLayout, ItemCard as GrungeItemCard, ProfileHeader as GrungeProfileHeader } from "./grunge";
+import { theme as cyberpunkTheme, ProfileLayout as CyberpunkProfileLayout, ItemCard as CyberpunkItemCard, ProfileHeader as CyberpunkProfileHeader } from "./cyberpunk";
 
 export const aestheticMap = {
   noir: { theme: noirTheme, ProfileLayout: NoirProfileLayout, ItemCard: NoirItemCard, ProfileHeader: NoirProfileHeader },
   minimal: { theme: minimalTheme, ProfileLayout: MinimalProfileLayout, ItemCard: MinimalItemCard, ProfileHeader: MinimalProfileHeader },
   vaporwave: { theme: vaporwaveTheme, ProfileLayout: VaporwaveProfileLayout, ItemCard: VaporwaveItemCard, ProfileHeader: VaporwaveProfileHeader },
   brutalist: { theme: brutalistTheme, ProfileLayout: BrutalistProfileLayout, ItemCard: BrutalistItemCard, ProfileHeader: BrutalistProfileHeader },
-  grunge: { theme: grungeTheme, ProfileLayout: GrungeProfileLayout },
-  cyberpunk: { theme: cyberpunkTheme, ProfileLayout: CyberpunkProfileLayout }
+  grunge: { theme: grungeTheme, ProfileLayout: GrungeProfileLayout, ItemCard: GrungeItemCard, ProfileHeader: GrungeProfileHeader },
+  cyberpunk: { theme: cyberpunkTheme, ProfileLayout: CyberpunkProfileLayout, ItemCard: CyberpunkItemCard, ProfileHeader: CyberpunkProfileHeader },
 };
