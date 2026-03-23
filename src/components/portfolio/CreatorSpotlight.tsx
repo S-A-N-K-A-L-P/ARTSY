@@ -15,10 +15,10 @@ const spotlightUser = {
 };
 
 const spotlightItems = [
-  { id: '1', title: 'Midnight Trench', price: 299.99, imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&auto=format&fit=crop&q=60' },
-  { id: '2', title: 'Obsidian Ring', price: 89.00, imageUrl: 'https://images.unsplash.com/photo-1605100804763-247f6615b5df?w=500&auto=format&fit=crop&q=60' },
-  { id: '3', title: 'Void Canvas', price: 450.00, imageUrl: 'https://images.unsplash.com/photo-1574169208507-84376144848b?w=500&auto=format&fit=crop&q=60' },
-  { id: '4', title: 'Leather Boots', price: 150.00, imageUrl: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&auto=format&fit=crop&q=60' },
+  { id: '1', title: 'Midnight Trench', price: 299.99, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&auto=format&fit=crop&q=60' },
+  { id: '2', title: 'Obsidian Ring', price: 89.00, image: 'https://images.unsplash.com/photo-1605100804763-247f6615b5df?w=500&auto=format&fit=crop&q=60' },
+  { id: '3', title: 'Void Canvas', price: 450.00, image: 'https://images.unsplash.com/photo-1574169208507-84376144848b?w=500&auto=format&fit=crop&q=60' },
+  { id: '4', title: 'Leather Boots', price: 150.00, image: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&auto=format&fit=crop&q=60' },
 ];
 
 export default function CreatorSpotlight() {
