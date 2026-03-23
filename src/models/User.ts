@@ -12,7 +12,17 @@ const UserSchema = new mongoose.Schema({
   password: { type: String },
   coverImage: { type: String, default: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200' },
   address: { type: String, default: "" },
-  aesthetic: { type: String, default: 'soft' },
+  aesthetic: {
+    name: { type: String, default: 'soft' },
+    background: { type: String, default: '#F5F2EE' },
+    cardColor: { type: String, default: '#FFFFFF' },
+    primaryText: { type: String, default: '#2C2C2C' },
+    secondaryText: { type: String, default: '#A8A29E' },
+    accent: { type: String, default: '#D6BFA7' },
+    borderRadius: { type: Number, default: 18 },
+    fontFamily: { type: String, default: 'Inter' },
+    isDark: { type: Boolean, default: false },
+  },
   isCreator: { type: Boolean, default: false },
   
   socialLinks: {
