@@ -1,9 +1,11 @@
 import { createTheme } from '@mui/material/styles';
 import { themes, ThemeName } from '@/lib/theme/themes';
 
+const DARK_THEMES: ThemeName[] = ['noir', 'cyberpunk', 'grunge', 'fantasy', 'vaporwave'];
+
 export function generateMuiTheme(themeName: ThemeName) {
   const config = themes[themeName];
-  const isDark = themeName === 'noir' || themeName === 'fantasy' || themeName === 'cyberpunk' || themeName === 'grunge';
+  const isDark = DARK_THEMES.includes(themeName);
 
   return createTheme({
     palette: {
@@ -17,25 +19,32 @@ export function generateMuiTheme(themeName: ThemeName) {
       },
       text: {
         primary: config["--text"],
+        secondary: config["--muted"],
       },
     },
     shape: {
-      borderRadius: 20,
+      borderRadius: parseInt(config["--radius"]) || 16,
+    },
+    typography: {
+      fontFamily: config["--font"],
     },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 20,
-            textTransform: 'none',
+            borderRadius: parseInt(config["--radius"]) || 16,
+            textTransform: 'none' as const,
+            boxShadow: 'none',
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 20,
+            borderRadius: parseInt(config["--radius"]) || 16,
             backgroundColor: config["--card"],
+            border: `1px solid ${config["--border"]}`,
+            boxShadow: config["--shadow"],
           },
         },
       },
