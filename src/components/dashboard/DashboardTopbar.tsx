@@ -25,7 +25,7 @@ export default function DashboardTopbar({ title: customTitle }: { title?: string
   const title = customTitle || getPageTitle(pathname);
 
   return (
-    <header className="h-16 border-b backdrop-blur-3xl sticky top-0 z-40 flex items-center justify-between px-8 transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 80%, transparent)', borderColor: 'var(--border-subtle)' }}>
+    <header className="hidden md:flex h-16 border-b backdrop-blur-3xl sticky top-0 z-40 items-center justify-between px-8 transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 80%, transparent)', borderColor: 'var(--border-subtle)' }}>
       <h1 className="text-xl font-bold tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>{title}</h1>
       <div className="flex items-center gap-4">
         <button className="p-2.5 opacity-40 hover:opacity-100 transition-all rounded-2xl hover:bg-[var(--bg-tertiary)]" style={{ color: 'var(--text-secondary)' }}>

@@ -9,6 +9,8 @@ import FeedCard from '@/components/feed/FeedCard';
 import { cn } from '@/lib/utils';
 import DashboardTopbar from '@/components/dashboard/DashboardTopbar';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
+import { IOSBottomNav } from '@/components/ui/ios/ios-bottom-nav';
+import { IOSNavBar } from '@/components/ui/ios/ios-navbar';
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
 
 export default function HomePage() {
@@ -48,22 +50,25 @@ export default function HomePage() {
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <DashboardSidebar />
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <DashboardTopbar title="Digital Discovery" />
+        <div className="md:hidden">
+            <IOSNavBar title="ARTSY" />
+        </div>
         
-        <main className="flex-1 overflow-y-auto hide-scrollbar p-6 md:p-10">
+        <main className="flex-1 overflow-y-auto hide-scrollbar p-5 md:p-10 pb-24 md:pb-10">
           <div className="max-w-6xl mx-auto">
             {/* Perspective Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
                <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-4">
                     <Sparkles size={10} /> {aesthetic} Perspective
                   </div>
-                  <h1 className="text-5xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>The Daily Feed</h1>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] opacity-40">Discovery through aesthetic convergence</p>
+                  <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>The Daily Feed</h1>
+                  <p className="mt-2 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] opacity-40">Discovery through aesthetic convergence</p>
                </div>
 
-               <div className="flex items-center p-1.5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+               <div className="flex items-center p-1.5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] self-start md:self-auto">
                   <button 
                     onClick={() => setView('reels')}
                     className={cn(
@@ -119,6 +124,10 @@ export default function HomePage() {
             </AnimatePresence>
           </div>
         </main>
+
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+           <IOSBottomNav />
+        </div>
       </div>
     </div>
   );

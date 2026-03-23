@@ -21,7 +21,7 @@ export default function DashboardSidebar() {
   const { data: session } = useSession();
 
   return (
-    <aside className="w-64 h-screen sticky top-0 flex flex-col border-r transition-all duration-500" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
+    <aside className="hidden md:flex w-64 h-screen sticky top-0 flex flex-col border-r transition-all duration-500" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
       {/* Brand */}
       <div className="h-16 flex items-center px-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
         <Link href="/dashboard" className="flex items-center gap-3">
