@@ -1,36 +1,63 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { ShoppingBag, Zap } from 'lucide-react';
+import { useCart } from '@/components/cart/CartProvider';
 
 interface ItemCardProps {
-  id: number;
+  id: string | number;
   title: string;
   author: string;
   image: string;
+  price?: number;
   height?: number;
 }
 
-export const ItemCard = ({ title, author, image, height = 300 }: ItemCardProps) => {
+export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: ItemCardProps) => {
+  const { addToCart } = useCart();
+
   return (
     <motion.div
-      whileTap={{ scale: 0.97 }}
-      className="group cursor-pointer overflow-hidden border border-[#2A2A4E] bg-[#1A1A2E] rounded transition-all hover:border-[#00F5D4] hover:shadow-[0_0_20px_rgba(0,245,212,0.2)] relative"
-      style={{ height }}
+      whileHover={{ scale: 1.03, skewX: -1 }}
+      whileTap={{ scale: 0.95, skewX: 0 }}
+      transition={{ type: "spring", stiffness: 500, damping: 10 }}
+      className="group cursor-pointer overflow-hidden border transition-all duration-300 relative rounded-none hover:shadow-[0_0_30px_var(--accent-soft)]"
+      style={{ 
+        height, 
+        backgroundColor: 'var(--bg-secondary)', 
+        borderColor: 'var(--border-subtle)' 
+      }}
     >
       <div className="relative h-full overflow-hidden">
-        <img src={image} alt={title} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F1A] to-transparent" />
+        <img src={image} alt={title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
         
         {/* Scan line overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,212,0.1) 2px, rgba(0,245,212,0.1) 4px)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, var(--accent) 2px, var(--accent) 4px)' }} />
 
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-2 h-2 bg-[#00F5D4] rounded-full animate-pulse" />
-            <p className="text-[9px] text-[#00F5D4] uppercase tracking-[0.3em] font-mono font-bold">LIVE</p>
+        {/* Glitch Frame */}
+        <div className="absolute inset-0 border border-transparent group-hover:border-[var(--accent)] group-hover:opacity-40 transition-opacity" />
+
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
+            <p className="text-[8px] uppercase tracking-[0.4em] font-black" style={{ color: 'var(--accent)' }}>MARKET_READY</p>
           </div>
-          <h3 className="text-sm font-bold text-[#E0E0FF] font-mono tracking-tight">{title}</h3>
-          <p className="text-[10px] text-[#5A5A8A] font-mono mt-0.5">@{author}</p>
+          <h3 className="text-sm font-black text-white italic tracking-tighter" style={{ fontFamily: "var(--font)" }}>{title}</h3>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-[9px] uppercase tracking-widest font-mono" style={{ color: 'var(--text-muted)' }}>// @{author}</p>
+            <span className="text-xs font-black" style={{ color: 'var(--accent)' }}>${price}</span>
+          </div>
+        </div>
+
+        {/* Cyber Actions */}
+        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+           <button 
+             onClick={(e) => { e.stopPropagation(); addToCart({ id, title, image, price }); }}
+             className="w-10 h-10 border border-[var(--accent)] bg-black text-[var(--accent)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-black transition-colors shadow-[0_0_10px_var(--accent-soft)]"
+           >
+             <ShoppingBag size={14} />
+           </button>
         </div>
       </div>
     </motion.div>

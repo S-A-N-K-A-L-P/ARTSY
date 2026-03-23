@@ -18,8 +18,10 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
-      className="group cursor-pointer overflow-hidden rounded-[24px] border transition-all duration-300 shadow-soft hover:shadow-medium"
+      whileHover={{ y: -8, scale: 1.02 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      className="group cursor-pointer overflow-hidden rounded-[32px] border transition-all duration-500 shadow-soft hover:shadow-medium"
       style={{ 
         height, 
         backgroundColor: 'var(--bg-secondary)', 
