@@ -7,9 +7,11 @@ import { aestheticMap } from '@/aesthetics';
 type ComponentName = 'ItemCard' | 'ProfileLayout' | 'ProfileHeader';
 
 interface AestheticRendererProps {
-  component: ComponentName;
+  component?: ComponentName;
   props?: Record<string, any>;
   fallback?: React.ReactNode;
+  children?: React.ReactNode;
+  aesthetic?: string;
 }
 
 /**
@@ -18,13 +20,32 @@ interface AestheticRendererProps {
  *
  * Usage: <AestheticRenderer component="ItemCard" props={{ title: "Art" }} />
  */
-export default function AestheticRenderer({ component, props = {}, fallback = null }: AestheticRendererProps) {
-  const { aesthetic } = useAesthetic();
+import { themes, ThemeName } from '@/lib/theme/themes';
 
-  const aestheticKey = mapThemeToAesthetic(aesthetic);
+export default function AestheticRenderer({ 
+  component, 
+  props = {}, 
+  fallback = null,
+  children,
+  aesthetic: aestheticOverride
+}: AestheticRendererProps) {
+  const { aesthetic: globalAesthetic } = useAesthetic();
+  const activeAesthetic = (aestheticOverride || globalAesthetic) as ThemeName;
+
+  const aestheticKey = mapThemeToAesthetic(activeAesthetic);
   const aestheticModule = aestheticMap[aestheticKey as keyof typeof aestheticMap];
 
-  if (!aestheticModule) {
+  // If used as a wrapper for children
+  if (children) {
+    const themeStyles = themes[activeAesthetic] || themes.minimal;
+    return (
+      <div style={themeStyles as React.CSSProperties} className="contents-wrapper">
+        {children}
+      </div>
+    );
+  }
+
+  if (!aestheticModule || !component) {
     return <>{fallback}</>;
   }
 
