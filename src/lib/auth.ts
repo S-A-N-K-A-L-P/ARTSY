@@ -22,13 +22,28 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials.password) return null;
                 
                 await dbConnect();
+                console.log(`[Auth Debug] Attempting login for email: ${credentials.email}`);
+                
                 const user = await User.findOne({ email: credentials.email });
 
-                if (!user || !user.password) return null;
+                if (!user) {
+                    console.log(`[Auth Debug] User not found: ${credentials.email}`);
+                    return null;
+                }
+
+                if (!user.password) {
+                    console.log(`[Auth Debug] User found but has no password set: ${credentials.email}`);
+                    return null;
+                }
 
                 const isValid = await bcrypt.compare(credentials.password, user.password);
                 
-                if (!isValid) return null;
+                if (!isValid) {
+                    console.log(`[Auth Debug] Password mismatch for: ${credentials.email}`);
+                    return null;
+                }
+
+                console.log(`[Auth Debug] Successful login for: ${credentials.email}`);
 
                 return {
                     id: user._id.toString(),
