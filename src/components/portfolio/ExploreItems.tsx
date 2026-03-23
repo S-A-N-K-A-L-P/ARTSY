@@ -43,7 +43,7 @@ export default function ExploreItems() {
                 id={item._id}
                 title={item.title}
                 price={item.price}
-                imageUrl={item.images?.[0] || 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&q=80'} 
+                image={item.images?.[0] || 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&q=80'} 
               />
             </Grid2>
           ))}
