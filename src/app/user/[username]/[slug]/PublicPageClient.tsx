@@ -16,11 +16,7 @@ export default function PublicPageClient({ page, user, items }: any) {
   return (
     <div 
       className="min-h-screen pb-32 transition-colors duration-1000"
-      style={{ 
-        backgroundColor: theme.colors.background.primary,
-        color: theme.colors.text.primary,
-        fontFamily: theme.typography.fontFamily
-      }}
+      style={theme as React.CSSProperties}
     >
       {/* Immersive Header */}
       <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
@@ -31,7 +27,7 @@ export default function PublicPageClient({ page, user, items }: any) {
           src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-current opacity-20" style={{ color: theme.colors.background.primary }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-current opacity-20" style={{ color: (theme as any)["--bg-primary"] }} />
         
         <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 flex flex-col items-center text-center">
             <motion.div 
