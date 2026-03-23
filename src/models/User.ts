@@ -27,6 +27,7 @@ const UserSchema = new mongoose.Schema({
   followersCount: { type: Number, default: 0 },
   followingCount: { type: Number, default: 0 },
 
+  pages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Page' }],
   onboarding: { type: mongoose.Schema.Types.ObjectId, ref: 'Onboarding' },
   createdAt: { type: Date, default: Date.now },
 });

@@ -17,11 +17,22 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+  let userAesthetic = 'soft';
+
+  if (session?.user?.email) {
+    await dbConnect();
+    const user = await User.findOne({ email: session.user.email });
+    if (user?.aesthetic) {
+      userAesthetic = user.aesthetic;
+    }
+  }
+
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
         <ClientProviders>
-          <AestheticProvider currentAesthetic="soft">
+          <AestheticProvider currentAesthetic={userAesthetic}>
             {children}
           </AestheticProvider>
         </ClientProviders>

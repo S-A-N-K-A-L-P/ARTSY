@@ -80,7 +80,7 @@ export default function LoginPage() {
       if (res?.error) {
         setError('Invalid credentials');
       } else {
-        router.push('/home');
+        router.push('/dashboard');
       }
     } catch (err) {
       setError('Something went wrong');
