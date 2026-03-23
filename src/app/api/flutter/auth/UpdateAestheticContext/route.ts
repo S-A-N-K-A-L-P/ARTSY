@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "userId and aesthetic are required" }, { status: 400 });
     }
 
-    let updateData = {};
+    let updateData: any = {};
     if (typeof aesthetic === 'string') {
       // If it's a string, it's a theme name. We should ideally fetch its defaults.
       // For now, we'll map common ones or let the frontend send the full object.

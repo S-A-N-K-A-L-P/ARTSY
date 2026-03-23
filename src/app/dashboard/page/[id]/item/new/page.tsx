@@ -120,18 +120,18 @@ export default function AddItemPage() {
       {/* Dynamic Header */}
       <div className="flex items-center justify-between py-10">
         <Link href={`/dashboard/page/${pageId}`} className="group flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:bg-[var(--bg-tertiary)] transition-all">
-            <ArrowLeft size={18} className="text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
+          <div className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
+            <ArrowLeft size={18} className="text-white/40 group-hover:text-white" />
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] opacity-30">Manifest Hub</p>
-            <h1 className="text-xl font-black tracking-tighter text-[var(--text-primary)]">Creation Console</h1>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Manifest Hub</p>
+            <h1 className="text-xl font-black tracking-tighter text-white">Creation Console</h1>
           </div>
         </Link>
 
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5">
           <Sparkles size={14} className="text-amber-400" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] opacity-50">{theme} Mode Active</span>
+          <span className="text-[10px] font-black uppercase tracking-widest opacity-40">{theme} Mode Active</span>
         </div>
       </div>
 
@@ -151,7 +151,7 @@ export default function AddItemPage() {
                   value={form.title}
                   onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="The Eternal Drape"
-                  className="w-full h-14 px-5 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
+                  className="w-full h-14 px-5 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
                 />
               </div>
               <div className="space-y-2">
@@ -161,7 +161,7 @@ export default function AddItemPage() {
                   value={form.price}
                   onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
                   placeholder="0.00"
-                  className="w-full h-14 px-5 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
+                  className="w-full h-14 px-5 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
                 />
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function AddItemPage() {
                 onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
                 placeholder="Describe the aesthetic significance..."
                 rows={5}
-                className="w-full p-5 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all resize-none"
+                className="w-full p-5 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all resize-none"
               />
             </div>
           </section>
@@ -202,11 +202,11 @@ export default function AddItemPage() {
                ))}
                
                <label className={cn(
-                  "relative aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all",
-                  uploading ? "opacity-30 cursor-not-allowed" : "bg-[var(--bg-secondary)] border-[var(--border-subtle)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--accent)]"
+                  "relative aspect-square rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.05] hover:border-white/10 transition-all",
+                  uploading && "opacity-50 cursor-not-allowed"
                )}>
-                  {uploading ? <Loader2 className="animate-spin text-[var(--text-muted)]" /> : <Plus size={24} className="text-[var(--text-muted)]" />}
-                  <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-2">Upload</span>
+                  {uploading ? <Loader2 className="animate-spin text-white/20" /> : <Plus size={24} className="text-white/20" />}
+                  <span className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-2">Upload</span>
                   <input type="file" className="hidden" onChange={handleFileUpload} disabled={uploading} accept="image/*" />
                </label>
             </div>
@@ -225,7 +225,7 @@ export default function AddItemPage() {
                     value={(form.externalLinks as any)[s]}
                     onChange={(e) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, [s]: e.target.value } }))}
                     placeholder={`${s.charAt(0).toUpperCase() + s.slice(1)} URL`}
-                    className="w-full h-12 px-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-[11px] font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
+                    className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/5 text-[11px] font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
                   />
                ))}
             </div>
