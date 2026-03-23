@@ -49,6 +49,7 @@ export async function POST(request: Request) {
           followers: user.followersCount || 0,
           following: user.followingCount || 0,
         },
+        onboardingComplete: user.onboardingComplete || false,
         socialLinks: user.socialLinks || {},
       }
     });
