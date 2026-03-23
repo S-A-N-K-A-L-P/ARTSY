@@ -51,18 +51,22 @@ export default function AestheticProvider({
 
   return (
     <AestheticContext.Provider value={{ aesthetic }}>
-      <MuiThemeProvider theme={muiTheme}>
-        <CssBaseline />
-        <div 
-          className={mounted ? "min-h-screen bg-bg text-text font-sans antialiased transition-colors duration-300" : "min-h-screen bg-bg text-text font-sans antialiased"}
-          style={{
-            backgroundColor: 'var(--bg)',
-            color: 'var(--text)',
-          }}
-        >
-          {children}
-        </div>
-      </MuiThemeProvider>
+      <div 
+        className={mounted ? "min-h-screen bg-bg text-text font-sans antialiased transition-colors duration-300" : "min-h-screen bg-bg text-text font-sans antialiased"}
+        style={{
+          backgroundColor: 'var(--bg)',
+          color: 'var(--text)',
+        }}
+      >
+        {mounted ? (
+          <MuiThemeProvider theme={muiTheme}>
+            <CssBaseline />
+            {children}
+          </MuiThemeProvider>
+        ) : (
+          children
+        )}
+      </div>
     </AestheticContext.Provider>
   );
 }

@@ -18,75 +18,56 @@ import {
 
 const steps = [
   {
-    title: "What brings you here?",
-    id: "intent",
-    options: [
-      { id: "explore", label: "Explore", description: "Discover inspiration and products" },
-      { id: "create", label: "Create", description: "Build and showcase your work" },
-      { id: "both", label: "Both", description: "The best of both worlds" }
-    ]
-  },
-  {
-    title: "Aesthetic Preferences",
-    id: "aesthetics",
-    multi: true,
-    options: [
-      { id: "minimal", label: "Minimal", image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=200&auto=format&fit=crop" },
-      { id: "cyberpunk", label: "Dark / Cyberpunk", image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=200&auto=format&fit=crop" },
-      { id: "vintage", label: "Vintage", image: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=200&auto=format&fit=crop" },
-      { id: "luxury", label: "Luxury", image: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=200&auto=format&fit=crop" },
-      { id: "street", label: "Street / GenZ", image: "https://images.unsplash.com/photo-1534433502710-5728aa2a1786?q=80&w=200&auto=format&fit=crop" },
-      { id: "futuristic", label: "Futuristic", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200&auto=format&fit=crop" }
-    ]
-  },
-  {
-    title: "Your Interests",
+    title: "Artistic Interests",
     id: "interests",
     multi: true,
     options: [
-      { id: "digital_art", label: "Digital Art" },
-      { id: "uiux", label: "UI/UX" },
-      { id: "fashion", label: "Fashion" },
-      { id: "music", label: "Music" },
-      { id: "photography", label: "Photography" },
-      { id: "coding", label: "Coding" },
-      { id: "web3", label: "NFTs / Web3" },
-      { id: "architecture", label: "Architecture" }
+      { id: "digital", label: "Digital Art", description: "CGI, AI, and generative pieces" },
+      { id: "physical", label: "Physical Fine Art", description: "Sculptures and paintings" },
+      { id: "ux", label: "UX & Products", description: "Industrial and interface design" },
+      { id: "fashion", label: "High Fashion", description: "Couture and street style" }
     ]
   },
   {
-    title: "Product Liking",
-    id: "products",
+    title: "Pick your Aesthetic",
+    id: "aesthetics",
     multi: true,
     options: [
-      { id: "posters", label: "Posters" },
-      { id: "websites", label: "Websites" },
-      { id: "apps", label: "Apps" },
-      { id: "physical", label: "Physical Products" },
-      { id: "clothing", label: "Clothing" },
-      { id: "installations", label: "Installations" }
+      { id: "minimal", label: "Zen Minimal", image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=200&auto=format&fit=crop" },
+      { id: "brutalist", label: "Brutalist Raw", image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=200&auto=format&fit=crop" },
+      { id: "vaporwave", label: "Vaporwave Retro", image: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=200&auto=format&fit=crop" },
+      { id: "solar", label: "Solarpunk Future", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200&auto=format&fit=crop" }
     ]
   },
   {
-    title: "How do you express yourself?",
-    id: "creatorType",
+    title: "The Palette",
+    id: "palette",
     options: [
-      { id: "designer", label: "Designer" },
-      { id: "developer", label: "Developer" },
-      { id: "artist", label: "Artist" },
-      { id: "content_creator", label: "Content Creator" },
-      { id: "exploring", label: "Just Exploring" }
+      { id: "mono", label: "Monochrome Gray", color: "from-gray-800 to-black" },
+      { id: "earth", label: "Earth & Wood", color: "from-amber-800 to-amber-950" },
+      { id: "neon", label: "Cyber Neon", color: "from-fuchsia-600 to-purple-800" },
+      { id: "pastel", label: "Dreamy Pastel", color: "from-pink-100 to-blue-100" }
     ]
   },
   {
-    title: "Pick your vibe",
-    id: "vibe",
+    title: "Investment Budget",
+    id: "budget",
     options: [
-      { id: "bold", label: "🔥 Bold", color: "from-orange-500 to-red-600" },
-      { id: "calm", label: "🌊 Calm", color: "from-blue-400 to-cyan-500" },
-      { id: "energetic", label: "⚡ Energetic", color: "from-yellow-400 to-orange-500" },
-      { id: "mysterious", label: "🌙 Mysterious", color: "from-purple-600 to-indigo-800" },
-      { id: "minimal_vibe", label: "🎯 Minimal", color: "from-gray-400 to-gray-600" }
+      { id: "entry", label: "Entry Level", description: "Under $500" },
+      { id: "mid", label: "Mid Range", description: "$500 - $5,000" },
+      { id: "collector", label: "High Collector", description: "$5,000 - $50,000" },
+      { id: "ultimate", label: "Gallery Tier", description: "$50,000+" }
+    ]
+  },
+  {
+    title: "Product Medium",
+    id: "productType",
+    multi: true,
+    options: [
+      { id: "prints", label: "Limited Prints" },
+      { id: "originals", label: "Original Works" },
+      { id: "digital_assets", label: "Digital Ownership" },
+      { id: "objects", label: "Sculptural Objects" }
     ]
   }
 ];
@@ -94,12 +75,11 @@ const steps = [
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<any>({
-    intent: '',
-    aesthetics: [],
     interests: [],
-    products: [],
-    creatorType: '',
-    vibe: ''
+    aesthetics: [],
+    palette: [],
+    budget: '',
+    productType: []
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -167,15 +147,15 @@ export default function OnboardingPage() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="w-full"
           >
-            <div className="mb-12 text-center">
-              <span className="text-sm font-medium text-gray-500 uppercase tracking-widest block mb-2">Step {currentStep + 1} of {steps.length}</span>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{currentStepData.title}</h1>
+            <div className="mb-16 text-center">
+              <span className="text-xs font-bold text-white/20 uppercase tracking-[0.3em] block mb-4">Phase {currentStep + 1} of {steps.length}</span>
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tighter bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">{currentStepData.title}</h1>
             </div>
 
             <div className={`grid gap-4 ${
-              currentStep === 1 ? 'grid-cols-2 md:grid-cols-3' : 
-              currentStep === 2 || currentStep === 3 ? 'grid-cols-2 md:grid-cols-4' : 
-              'grid-cols-1 md:grid-cols-3'
+              currentStep === 1 ? 'grid-cols-2' : 
+              currentStep === 2 ? 'grid-cols-2 md:grid-cols-4' : 
+              'grid-cols-1 md:grid-cols-2'
             }`}>
               {currentStepData.options.map((option: any) => {
                 const isSelected = currentStepData.multi 
@@ -185,47 +165,61 @@ export default function OnboardingPage() {
                 return (
                   <motion.div
                     key={option.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => handleSelect(currentStepData.id, option.id, currentStepData.multi)}
-                    className={`cursor-pointer group relative overflow-hidden p-6 rounded-3xl border transition-all duration-300 ${
+                    className={`cursor-pointer group relative overflow-hidden p-6 rounded-[32px] border transition-all duration-500 ${
                       isSelected 
-                        ? 'bg-white/10 border-white/30 shadow-[0_0_20px_rgba(255,255,255,0.05)]' 
-                        : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10'
+                        ? 'bg-white/10 border-white/20 shadow-[0_20px_40px_rgba(0,0,0,0.3)]' 
+                        : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
                     }`}
                   >
+                    {/* Background Visual for Aesthetics */}
                     {currentStep === 1 && option.image && (
-                      <div className="absolute inset-0 opacity-20 grayscale group-hover:grayscale-0 transition-all">
+                      <div className="absolute inset-0 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
                         <img src={option.image} alt="" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
                       </div>
                     )}
 
                     <div className="relative z-10">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-                          isSelected ? 'bg-white text-black' : 'bg-white/5 text-gray-400'
-                        }`}>
-                          {option.id === 'explore' && <Sun size={20} />}
-                          {option.id === 'create' && <Zap size={20} />}
-                          {option.id === 'both' && <Sparkles size={20} />}
-                          {currentStep === 2 && <Palette size={20} />}
-                          {currentStep === 3 && <Layers size={20} />}
-                          {currentStep === 4 && <Code size={20} />}
-                          {currentStep === 5 && <Check size={16} />}
-                        </div>
+                      <div className="flex justify-between items-center mb-6">
+                        {/* Icon or Color Circle */}
+                        {currentStep === 2 ? (
+                          <div className={`w-12 h-12 rounded-full bg-gradient-to-br shadow-lg ${option.color}`} />
+                        ) : (
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${
+                            isSelected ? 'bg-white text-black' : 'bg-white/5 text-white/40'
+                          }`}>
+                            {currentStep === 0 && (
+                              <>
+                                {option.id === 'digital' && <Sparkles size={22} />}
+                                {option.id === 'physical' && <Palette size={22} />}
+                                {option.id === 'ux' && <Zap size={22} />}
+                                {option.id === 'fashion' && <Layers size={22} />}
+                              </>
+                            )}
+                            {currentStep === 1 && <Sun size={22} />}
+                            {currentStep === 3 && <Moon size={22} />}
+                            {currentStep === 4 && <Check size={22} />}
+                          </div>
+                        )}
+
                         {isSelected && (
                           <motion.div 
-                            initial={{ scale: 0 }} 
-                            animate={{ scale: 1 }}
-                            className="bg-green-500 w-5 h-5 rounded-full flex items-center justify-center"
+                            initial={{ scale: 0, rotate: -45 }} 
+                            animate={{ scale: 1, rotate: 0 }}
+                            className="bg-white text-black w-6 h-6 rounded-full flex items-center justify-center shadow-xl"
                           >
-                            <Check size={12} className="text-white" />
+                            <Check size={14} strokeWidth={3} />
                           </motion.div>
                         )}
                       </div>
-                      <h3 className="font-semibold text-lg">{option.label}</h3>
-                      {option.description && <p className="text-sm text-gray-400 mt-1">{option.description}</p>}
+
+                      <h3 className="font-bold text-xl tracking-tight mb-1">{option.label}</h3>
+                      {option.description && (
+                        <p className="text-white/40 text-sm font-medium leading-relaxed">{option.description}</p>
+                      )}
                     </div>
                   </motion.div>
                 );
@@ -235,24 +229,24 @@ export default function OnboardingPage() {
         </AnimatePresence>
       </main>
 
-      <footer className="p-8 flex items-center justify-center gap-4 fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent">
+      <footer className="p-10 flex items-center justify-center gap-6 fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent backdrop-blur-sm">
         <button 
           onClick={back}
           disabled={currentStep === 0}
-          className={`flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 transition-all ${
+          className={`flex items-center gap-2 pr-8 pl-6 py-4 rounded-2xl border border-white/5 font-bold text-sm tracking-wide transition-all ${
             currentStep === 0 ? 'opacity-0 pointer-events-none' : 'hover:bg-white/5'
           }`}
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={18} />
           Back
         </button>
         <button 
           onClick={next}
           disabled={!formData[currentStepData.id] || (currentStepData.multi && (formData[currentStepData.id] as string[]).length === 0)}
-          className="flex items-center gap-2 px-10 py-3 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-all disabled:opacity-50"
+          className="flex items-center gap-3 px-12 py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all disabled:opacity-30"
         >
-          {loading ? "Saving..." : currentStep === steps.length - 1 ? "Complete Profile" : "Continue"}
-          {!loading && <ChevronRight size={20} />}
+          {loading ? "Initializing..." : currentStep === steps.length - 1 ? "Enter Workspace" : "Continue"}
+          {!loading && <ChevronRight size={18} />}
         </button>
       </footer>
     </div>
