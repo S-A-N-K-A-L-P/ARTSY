@@ -33,7 +33,9 @@ async function dbConnect() {
   }
 
   try {
+    console.log(`[DB Debug] Connecting to: ${MONGODB_URI.replace(/:([^@]+)@/, ":****@")}`);
     cached.conn = await cached.promise;
+    console.log(`[DB Debug] Connected successfully to: ${mongoose.connection.name}`);
   } catch (e) {
     cached.promise = null;
     throw e;

@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
                 await dbConnect();
                 console.log(`[Auth Debug] Attempting login for email: ${credentials.email}`);
                 
-                const user = await User.findOne({ email: credentials.email });
+                const user = await User.findOne({ email: { $regex: new RegExp(`^${credentials.email}$`, 'i') } });
 
                 if (!user) {
                     console.log(`[Auth Debug] User not found: ${credentials.email}`);

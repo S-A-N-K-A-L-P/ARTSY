@@ -21,11 +21,13 @@ export default function AestheticProvider({
   children: React.ReactNode;
   currentAesthetic?: string;
 }) {
+  const [mounted, setMounted] = useState(false);
   const [aesthetic, setAesthetic] = useState<ThemeName>(
     (themes[currentAesthetic as ThemeName] ? currentAesthetic : 'soft') as ThemeName
   );
 
   useEffect(() => {
+    setMounted(true);
     // Fetch user preference on mount to avoid server-side DB dependency in Layout
     const fetchAesthetic = async () => {
       try {
@@ -52,7 +54,7 @@ export default function AestheticProvider({
       <MuiThemeProvider theme={muiTheme}>
         <CssBaseline />
         <div 
-          className="min-h-screen bg-bg text-text font-sans antialiased transition-colors duration-300"
+          className={mounted ? "min-h-screen bg-bg text-text font-sans antialiased transition-colors duration-300" : "min-h-screen bg-bg text-text font-sans antialiased"}
           style={{
             backgroundColor: 'var(--bg)',
             color: 'var(--text)',

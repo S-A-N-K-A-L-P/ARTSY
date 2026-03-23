@@ -9,6 +9,7 @@ interface IOSProfileProps {
     name: string;
     username: string;
     image: string;
+    coverImage?: string;
     bio: string;
     stats: {
       posts: number;
@@ -23,17 +24,26 @@ export function IOSProfile({ user }: IOSProfileProps) {
 
   return (
     <div className="flex flex-col min-h-screen bg-bg text-text pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-bg/80 backdrop-blur-xl border-b border-white/5 px-4 h-11 flex items-center justify-between">
-        <div className="w-8" />
-        <h1 className="text-[17px] font-semibold tracking-tight">{user.username}</h1>
-        <button className="p-1 hover:bg-white/10 rounded-full transition-colors">
-          <Settings size={22} className="text-text/80" />
-        </button>
-      </header>
+      {/* Cover Image & Header */}
+      <div className="relative h-44 overflow-hidden">
+        <img 
+          src={user.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
+          className="w-full h-full object-cover"
+          alt="Cover"
+        />
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+        
+        <header className="absolute top-0 left-0 right-0 z-40 px-4 h-11 flex items-center justify-between">
+          <div className="w-8" />
+          <h1 className="text-[17px] font-semibold tracking-tight text-white drop-shadow-md">{user.username}</h1>
+          <button className="p-1.5 bg-black/20 backdrop-blur-md rounded-full transition-colors">
+            <Settings size={20} className="text-white" />
+          </button>
+        </header>
+      </div>
 
-      {/* Profile Info */}
-      <div className="px-5 pt-4 pb-6">
+      {/* Profile Info (Overlap) */}
+      <div className="px-5 -mt-10 relative z-10 pb-6">
         <div className="flex items-center gap-8 mb-4">
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-tr from-accent to-purple-500 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity" />

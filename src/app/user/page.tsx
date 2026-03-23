@@ -23,8 +23,9 @@ export default async function ProfilePage() {
   const userData = {
     name: user.name,
     username: user.username || user.email.split("@")[0],
-    image: user.image || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200",
-    bio: user.bio || "Digital curator and aesthetic enthusiast. Exploring the intersection of design and technology.",
+    image: user.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200",
+    coverImage: user.coverImage,
+    bio: user.bio || "Digital curator and aesthetic enthusiast.",
     stats: {
       posts: user.postsCount || 12,
       followers: user.followersCount || 842,

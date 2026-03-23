@@ -23,14 +23,16 @@ export async function GET() {
       id: user._id,
       name: user.name,
       email: user.email,
-      image: user.image || "/default-avatar.png",
+      image: user.avatar || "/default-avatar.png",
       username: user.username || user.email.split("@")[0],
       bio: user.bio || "No bio yet",
+      coverImage: user.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200",
       stats: {
         posts: user.postsCount || 0,
         followers: user.followersCount || 0,
         following: user.followingCount || 0,
       },
+      socialLinks: user.socialLinks || {},
     });
   } catch (error) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
