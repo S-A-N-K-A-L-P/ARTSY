@@ -16,6 +16,7 @@ import {
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
 import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
 import { cn } from '@/lib/utils';
+import { StatsBarMobile, CategoryScrollerMobile } from '@/components/creator/CreatorMobileUI';
 
 export default function CreatorProfilePage() {
   const params = useParams();
@@ -80,25 +81,36 @@ export default function CreatorProfilePage() {
         }
       />
 
-      {/* Pages/Collections Section */}
-      <section className="px-6 md:px-10">
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex flex-col">
-            <h2 className="text-2xl font-bold tracking-tight">Collections</h2>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/20 mt-1">Curated Spaces</p>
-          </div>
-        </div>
+import { StatsBarMobile, CategoryScrollerMobile } from '@/components/creator/CreatorMobileUI';
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {pages.length > 0 ? (
-            pages.map((page) => (
-              <CollectionCard key={page._id} page={page} username={username} />
-            ))
-          ) : (
-            <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-              <p className="opacity-20 font-bold tracking-widest text-xs uppercase">No active collections</p>
-            </div>
-          )}
+...
+      {/* Pages/Collections Section */}
+      <section className="px-6 md:px-10 space-y-12">
+        <div className="max-w-5xl mx-auto space-y-12">
+          <StatsBarMobile user={{ ...creator, pages }} />
+          
+          <CategoryScrollerMobile 
+            cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
+            selected="All Spaces"
+            onSelect={() => {}}
+          />
+
+          <div className="flex flex-col">
+            <h2 className="text-3xl font-bold tracking-tighter italic">Curated Collections</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 mt-1">Aesthetic Archetypes</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {pages.length > 0 ? (
+              pages.map((page) => (
+                <CollectionCard key={page._id} page={page} username={username} />
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-[40px]">
+                <p className="opacity-20 font-bold tracking-widest text-xs uppercase">No active collections</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </div>

@@ -7,13 +7,29 @@ import {
   Heart, Grid, ArrowRight, ShieldCheck, Zap, Palette, ChevronRight, UserCircle, Check, Sparkles, Layout
 } from 'lucide-react';
 import Masonry from 'react-masonry-css';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
+
+// Core Engine & Dashboard Components
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
 import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
 import { ThemeName } from '@/lib/theme/themes';
 import CreationConsole from '@/components/creator/CreationConsole';
-import { useSession } from 'next-auth/react';
-import { CreatorDashboardStats } from '@/components/creator/CreatorDesktopUI';
+
+// High-Depth Creator Components (25+ Suite)
+import { 
+  StatsBarMobile, 
+  PagePreviewListMobile, 
+  CategoryScrollerMobile, 
+  AestheticThemeBadge,
+  AestheticNotificationToast
+} from '@/components/creator/CreatorMobileUI';
+import { 
+  CreatorDashboardStats, 
+  SidebarFilterPanel, 
+  MasonryGridDesktop 
+} from '@/components/creator/CreatorDesktopUI';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'For You', icon: Home },
@@ -36,14 +52,26 @@ const AESTHETIC_OPTIONS: { id: ThemeName; label: string; color: string; desc: st
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('home');
   const [mounted, setMounted] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [userPages, setUserPages] = useState([]);
+  const [selectedCat, setSelectedCat] = useState('All Spaces');
+  
   const { aesthetic, setAesthetic } = useAesthetic();
 
-  const { data: session } = useSession();
-
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    if (session?.user) {
+      fetch('/api/creator/page')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) setUserPages(data.pages);
+        });
+    }
+  }, [session]);
 
   const masonryItems = useMemo(() => {
     const images = [
@@ -68,6 +96,12 @@ export default function DashboardPage() {
   if (!mounted) return null;
 
   const masonryBreakpoints = { default: 3, 1100: 2, 700: 2, 500: 1 };
+
+  const handlePageSelect = (slug: string) => {
+    if (session?.user?.name) {
+       router.push(`/dashboard/${session.user.name}/${slug}`);
+    }
+  };
 
   return (
     <div className="min-h-screen transition-colors duration-500" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
@@ -99,25 +133,30 @@ export default function DashboardPage() {
             </button>
           ))}
         </nav>
-        <div className="pt-8 space-y-1" style={{ borderTop: '1px solid var(--border)' }}>
-          <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center gap-4 px-4 py-3 opacity-40 hover:opacity-100 transition-all font-bold text-sm">
-            <Settings size={20} />
-            <span>Settings</span>
-          </button>
-          <button className="w-full flex items-center gap-4 px-4 py-3 text-red-400/60 hover:text-red-400 transition-all font-bold text-sm">
-            <LogOut size={20} />
-            <span>Sign Out</span>
-          </button>
+        
+        <div className="pt-8 space-y-4">
+           <AestheticThemeBadge theme={aesthetic} />
+           <div className="space-y-1" style={{ borderTop: '1px solid var(--border)' }}>
+              <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center gap-4 px-4 py-3 opacity-40 hover:opacity-100 transition-all font-bold text-sm">
+                <Settings size={20} />
+                <span>Settings</span>
+              </button>
+              <button className="w-full flex items-center gap-4 px-4 py-3 text-red-400/60 hover:text-red-400 transition-all font-bold text-sm">
+                <LogOut size={20} />
+                <span>Sign Out</span>
+              </button>
+           </div>
         </div>
       </aside>
 
-      {/* Main */}
+      {/* Main Content */}
       <main className="md:ml-72 min-h-screen pb-24 md:pb-0">
         <header className="sticky top-0 z-40 backdrop-blur-3xl px-6 md:px-10 h-20 flex items-center justify-between" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderBottom: '1px solid var(--border)' }}>
-          <h1 className="text-2xl font-bold tracking-tighter">{NAV_ITEMS.find(n => n.id === activeTab)?.label}</h1>
+          <h1 className="text-2xl font-bold tracking-tighter italic">{NAV_ITEMS.find(n => n.id === activeTab)?.label}</h1>
           <div className="flex items-center gap-4">
             <button className="relative p-2.5 opacity-40 hover:opacity-100 transition-colors" style={{ borderRadius: 'var(--radius)' }}>
-              <Bell size={20} />
+               <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-400" />
+               <Bell size={20} />
             </button>
             <button onClick={() => setSettingsOpen(true)} className="md:hidden p-2.5 opacity-40">
               <Settings size={20} />
@@ -125,11 +164,10 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <div className="px-6 md:px-10 py-8">
+        <div className="md:px-10 py-8">
           <AnimatePresence mode="wait">
             {activeTab === 'home' && (
-              <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                {/* Feed Grid — uses AestheticRenderer */}
+              <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="px-6 md:px-0">
                 <Masonry breakpointCols={masonryBreakpoints} className="flex -ml-6 w-auto" columnClassName="pl-6 space-y-6">
                   {masonryItems.map((item) => (
                     <AestheticRenderer
@@ -148,24 +186,51 @@ export default function DashboardPage() {
             )}
 
             {activeTab === 'manage' && (
-              <motion.div key="manage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-12">
-                <CreatorDashboardStats stats={{ sales: '₹12,40,500', items: '42' }} />
+              <motion.div key="manage" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-12 px-6 md:px-0">
+                <CreatorDashboardStats stats={{ sales: '₹12,40,500', items: userPages.length }} />
                 <CreationConsole />
               </motion.div>
             )}
 
             {activeTab === 'profile' && (
-              <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 pb-40">
                 <AestheticRenderer 
                   component="ProfileHeader" 
                   props={{ user: session?.user }}
                   fallback={<div className="h-64 rounded-3xl" style={{ backgroundColor: 'var(--card)' }} />} 
                 />
+                
+                <div className="max-w-5xl mx-auto space-y-12 px-6 md:px-0">
+                   <StatsBarMobile user={{ ...session?.user, pages: userPages }} />
+                   
+                   <CategoryScrollerMobile 
+                     cats={['All Spaces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
+                     selected={selectedCat}
+                     onSelect={setSelectedCat}
+                   />
+                   
+                   <div className="space-y-8">
+                      <div className="flex items-center justify-between">
+                         <div className="space-y-1">
+                            <h3 className="text-2xl font-bold tracking-tighter italic">Personal Spaces</h3>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-20">Managed Aesthetic Identities</p>
+                         </div>
+                         <button onClick={() => setActiveTab('manage')} className="h-10 px-6 rounded-xl bg-white text-black text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all">
+                            New Space
+                         </button>
+                      </div>
+                      
+                      <PagePreviewListMobile 
+                        pages={userPages} 
+                        onSelect={handlePageSelect}
+                      />
+                   </div>
+                </div>
               </motion.div>
             )}
 
-            {activeTab !== 'home' && activeTab !== 'manage' && activeTab !== 'profile' && (
-              <div className="flex flex-col items-center justify-center min-h-[50vh] opacity-10 uppercase tracking-[0.4em] font-bold text-xs">
+            {['trending', 'search'].includes(activeTab) && (
+              <div key="placeholder" className="flex flex-col items-center justify-center min-h-[60vh] opacity-10 uppercase tracking-[0.8em] font-black text-sm">
                 Expanding Collection...
               </div>
             )}
@@ -173,7 +238,7 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Mobile Tab Bar */}
+      {/* Mobile Nav */}
       <nav className="md:hidden fixed bottom-6 left-6 right-6 h-18 backdrop-blur-3xl px-8 flex justify-between items-center z-50 shadow-2xl" style={{ backgroundColor: 'color-mix(in srgb, var(--card) 80%, transparent)', border: '1px solid var(--border)', borderRadius: '2.5rem' }}>
         {NAV_ITEMS.map((item) => (
           <button
@@ -191,7 +256,10 @@ export default function DashboardPage() {
         ))}
       </nav>
 
-      {/* Settings Bottom Sheet with Aesthetic Picker */}
+      {/* Aesthetic Notification */}
+      <AestheticNotificationToast message={`${aesthetic.toUpperCase()} Aesthetic Synced`} />
+
+      {/* Settings Bottom Sheet */}
       <AnimatePresence>
         {settingsOpen && (
           <div className="fixed inset-0 z-[100] flex items-end justify-center px-4 pb-4 overflow-hidden">
@@ -205,22 +273,19 @@ export default function DashboardPage() {
               style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '40px' }}
             >
               <div className="w-12 h-1.5 rounded-full mx-auto mb-8" style={{ backgroundColor: 'var(--border)' }} />
-
-              <h2 className="text-2xl font-bold tracking-tighter mb-6">Choose Aesthetic</h2>
-
+              <h2 className="text-2xl font-bold tracking-tighter mb-6 italic">Visual Control</h2>
               <div className="grid grid-cols-3 gap-3 mb-8">
                 {AESTHETIC_OPTIONS.map((opt) => (
                   <button
                     key={opt.id}
                     onClick={() => setAesthetic(opt.id)}
                     className={cn(
-                      "relative p-4 rounded-2xl transition-all text-left group overflow-hidden",
+                      "relative p-4 rounded-2xl transition-all text-left group overflow-hidden border",
                       aesthetic === opt.id ? "ring-2 shadow-lg" : "opacity-60 hover:opacity-100"
                     )}
                     style={{
                       backgroundColor: 'var(--bg)',
                       borderColor: aesthetic === opt.id ? 'var(--accent)' : 'var(--border)',
-                      border: '1px solid var(--border)',
                     }}
                   >
                     <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${opt.color} mb-3 shadow-lg`} />
@@ -234,13 +299,12 @@ export default function DashboardPage() {
                   </button>
                 ))}
               </div>
-
               <button
                 onClick={() => setSettingsOpen(false)}
-                className="w-full h-14 font-bold transition-transform active:scale-[0.98]"
+                className="w-full h-14 font-bold transition-transform active:scale-[0.98] uppercase tracking-widest text-[10px]"
                 style={{ backgroundColor: 'var(--accent)', color: 'var(--bg)', borderRadius: 'var(--radius)' }}
               >
-                Apply & Close
+                Sync Final Aesthetic
               </button>
             </motion.div>
           </div>

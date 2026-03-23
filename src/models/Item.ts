@@ -6,29 +6,28 @@ const ItemSchema = new mongoose.Schema({
   description: { type: String, default: "" },
   images: [{ type: String }],
   
-  price: { type: Number },
-  currency: { type: String, default: "INR" },
-  isForSale: { type: Boolean, default: false },
+  price: { type: Number, default: 0 },
+  currency: { type: String, default: 'INR' },
+  category: { type: String, default: 'General' },
+  status: { type: String, enum: ['active', 'archived', 'draft'], default: 'active' },
+  inventory: { type: Number, default: 0 },
+  isAvailable: { type: Boolean, default: true },
   
-  // Dynamic product fields
-  attributes: { type: Map, of: String },
+  // Dynamic polymorphic product fields (e.g. { brand: 'Nike', material: 'Wool' })
+  attributes: { type: Map, of: String, default: {} },
   
-  // Custom fields for random specs
-  customFields: [{
-    key: { type: String },
-    value: { type: String }
-  }],
+  // Custom fields for random specifications
+  customFields: [
+    {
+      key: String,
+      label: String,
+      value: String,
+      type: { type: String, default: 'text' }
+    }
+  ],
   
-  aesthetic: { type: String }, // Optional override
-  category: { type: String }, // e.g. "clothing", "furniture", "art"
-  
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
-
-ItemSchema.pre('save', function(next) {
-  this.updatedAt = new Date();
-  next();
-});
+  // Aesthetic override at item level
+  aesthetic: { type: String, default: 'minimal' }
+}, { timestamps: true });
 
 export default mongoose.models.Item || mongoose.model('Item', ItemSchema);

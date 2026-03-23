@@ -113,6 +113,32 @@ export default function CreationConsole() {
     }));
   };
 
+  const [activePageId, setActivePageId] = useState<string | null>(null);
+
+  const handlePublish = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(step === 1 ? '/api/creator/page' : '/api/creator/item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(step === 1 ? pageData : { ...itemData, pageId: activePageId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (step === 1) {
+          setActivePageId(data.page._id);
+          setStep(2);
+        } else {
+          alert('Published Successfully!');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-40">
        {/* Header */}
@@ -177,10 +203,11 @@ export default function CreationConsole() {
 
             <div className="pt-8 flex justify-end">
                <button 
-                 onClick={() => setStep(2)}
-                 className="h-16 px-10 rounded-2xl bg-white text-black font-extrabold uppercase tracking-widest text-xs flex items-center gap-3 active:scale-[0.98] transition-all"
+                 disabled={loading}
+                 onClick={handlePublish}
+                 className="h-16 px-10 rounded-2xl bg-white text-black font-extrabold uppercase tracking-widest text-xs flex items-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50"
                >
-                 Next: Curate Content <ChevronRight size={18} />
+                 {loading ? 'Deploying...' : 'Next: Curate Content'} <ChevronRight size={18} />
                </button>
             </div>
          </motion.div>
@@ -206,6 +233,8 @@ export default function CreationConsole() {
                   <div className="space-y-2">
                      <label className="text-[10px] font-bold uppercase tracking-widest opacity-20">Title</label>
                      <input 
+                       value={itemData.title}
+                       onChange={(e) => setItemData({ ...itemData, title: e.target.value })}
                        placeholder="Black Wool Overcoat" 
                        className="w-full h-16 bg-white/5 border border-white/5 rounded-2xl px-6 font-bold tracking-tighter text-xl focus:outline-none focus:border-white/20"
                      />
@@ -215,6 +244,8 @@ export default function CreationConsole() {
                      <div className="relative">
                         <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold italic opacity-40">INR</span>
                         <input 
+                          value={itemData.price}
+                          onChange={(e) => setItemData({ ...itemData, price: e.target.value })}
                           placeholder="0.00" 
                           type="number"
                           className="w-full h-16 bg-white/5 border border-white/5 rounded-2xl pl-16 pr-6 font-bold tracking-tighter text-xl focus:outline-none focus:border-white/20"
@@ -228,7 +259,11 @@ export default function CreationConsole() {
                         {['Noir', 'Minimal', 'Cyberpunk', 'Vaporwave', 'Brutalist'].map(a => (
                            <button 
                              key={a}
-                             className="px-6 h-10 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest hover:border-white/20 transition-all"
+                             onClick={() => setItemData({ ...itemData, aesthetic: a.toLowerCase() as ThemeName })}
+                             className={cn(
+                                "px-6 h-10 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all",
+                                itemData.aesthetic === a.toLowerCase() ? "bg-white text-black border-white" : "bg-white/5 border-white/5 hover:border-white/20"
+                             )}
                            >
                              {a}
                            </button>
@@ -247,8 +282,12 @@ export default function CreationConsole() {
 
             <div className="pt-12 border-t border-white/5 flex items-center justify-between">
                <button onClick={() => setStep(1)} className="text-xs font-bold uppercase tracking-widest opacity-20 hover:opacity-100 transition-all">Back to Space Setup</button>
-               <button className="h-16 px-12 rounded-2xl bg-white text-black font-extrabold uppercase tracking-widest text-xs flex items-center gap-3 shadow-2xl shadow-white/10 active:scale-[0.98] transition-all">
-                  Sign & Publish <Save size={18} />
+               <button 
+                 disabled={loading}
+                 onClick={handlePublish}
+                 className="h-16 px-12 rounded-2xl bg-white text-black font-extrabold uppercase tracking-widest text-xs flex items-center gap-3 shadow-2xl shadow-white/10 active:scale-[0.98] transition-all disabled:opacity-50"
+               >
+                  {loading ? 'Publishing...' : 'Sign & Publish'} <Save size={18} />
                </button>
             </div>
          </motion.div>

@@ -159,20 +159,27 @@ export const ImageCarouselMobile = ({ images }: { images: string[] }) => (
   </div>
 );
 
-// 11. PagePreviewListMobile
-export const PagePreviewListMobile = ({ pages }: any) => (
+export const PagePreviewListMobile = ({ pages, onSelect }: any) => (
   <div className="space-y-4 px-6 pb-20">
-    <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-white/20">All Spaces</h3>
+    <div className="flex items-center justify-between mb-4">
+       <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-white/20">Aesthetic Spaces</h3>
+       <span className="px-2 py-1 rounded bg-white/5 text-[8px] font-bold uppercase tracking-widest opacity-40">{pages.length} Total</span>
+    </div>
     {pages.map((p: any) => (
-       <div key={p._id} className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 border border-white/5">
-          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white/10">
+       <div 
+         key={p._id} 
+         onClick={() => onSelect(p.slug)}
+         className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 border border-white/5 active:scale-[0.98] transition-all cursor-pointer group hover:bg-white/10"
+       >
+          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white/10 relative">
              <img src={p.coverImage} className="w-full h-full object-cover" alt="" />
+             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all" />
           </div>
           <div className="flex-1">
-             <p className="font-bold tracking-tight">{p.name}</p>
-             <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest">{p.type}</p>
+             <p className="font-bold tracking-tight text-lg leading-none mb-1">{p.name}</p>
+             <p className="text-[10px] text-white/20 uppercase font-black tracking-[0.2em]">{p.type} • {p.aesthetic}</p>
           </div>
-          <ChevronRight size={18} className="opacity-20" />
+          <ChevronRight size={18} className="opacity-20 group-hover:opacity-100 transition-all" />
        </div>
     ))}
   </div>
