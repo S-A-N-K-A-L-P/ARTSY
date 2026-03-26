@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+import '@/models/User';
+import '@/models/Item';
+import '@/models/Page';
+import '@/models/Post';
 
 const MONGODB_URI = process.env.DATABASE_URL || '';
 
