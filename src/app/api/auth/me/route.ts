@@ -5,11 +5,15 @@ import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import '@/models/Page'; // Ensure Page model is registered for population
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
+    console.log('[Auth Me Debug] Full Session:', JSON.stringify(session, null, 2));
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      console.log('[Auth Me Debug] No email found in session');
+      return NextResponse.json({ error: 'Unauthorized', debug: session }, { status: 401 });
     }
 
     await dbConnect();
