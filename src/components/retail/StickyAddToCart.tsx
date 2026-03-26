@@ -18,20 +18,22 @@ export const StickyAddToCart = ({ price, onAdd, isLoading }: StickyAddToCartProp
       className="fixed bottom-0 left-0 right-0 z-[110] bg-white/80 backdrop-blur-2xl border-t border-neutral-100 px-6 py-6 pb-12 flex items-center justify-between shadow-[0_-20px_40px_rgba(0,0,0,0.05)]"
     >
       <div className="flex flex-col">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Total Value</span>
-        <span className="text-xl font-black text-neutral-900 tracking-tighter">₹{price}</span>
+        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-neutral-300">Total Value</span>
+        <span className="text-3xl font-black text-neutral-900 tracking-tighter">₹{price}</span>
       </div>
-      <button 
+      <motion.button 
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={onAdd}
         disabled={isLoading}
-        className="h-14 px-8 rounded-2xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-[0.2em] flex items-center gap-3 active:scale-[0.98] transition-all shadow-2xl shadow-neutral-200"
+        className="h-16 px-10 rounded-2xl bg-neutral-900 text-white font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-4 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.1)] disabled:opacity-30"
       >
-        {isLoading ? 'Processing...' : (
+        {isLoading ? 'Synchronizing...' : (
           <>
             Add to Manifest <ChevronRight size={16} />
           </>
         )}
-      </button>
+      </motion.button>
     </motion.div>
   );
 };
