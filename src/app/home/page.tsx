@@ -19,21 +19,23 @@ export default function HomePage() {
   useEffect(() => {
     const fetchDiscovery = async () => {
       try {
-        // Fetch pages (Manifests) for the grid view
-        const res = await fetch('/api/discovery/pages');
+        // Fetch global items for the discovery grid
+        const res = await fetch('/api/items');
         const data = await res.json();
         if (Array.isArray(data)) {
-          setItems(data.map((page: any) => ({
-             id: page._id,
-             title: page.name,
-             type: 'page',
+          setItems(data.map((item: any) => ({
+             id: item._id,
+             title: item.title,
+             description: item.description,
+             type: 'item',
              creator: {
-                username: page.ownerId?.username || 'unknown',
-                avatar: page.ownerId?.profile?.avatar || page.ownerId?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${page.ownerId?.username || 'unknown'}`
+                username: item.ownerId?.username || 'unknown',
+                avatar: item.ownerId?.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${item.ownerId?.username || 'unknown'}`
              },
-             pageSlug: page.slug,
-             image: page.coverImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
-             aesthetic: page.aesthetic?.theme || page.aesthetic || 'minimal'
+             image: item.images?.[0] || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
+             price: item.price,
+             aesthetic: item.aesthetic || item.pageId?.aesthetic || 'minimal',
+             pageSlug: item.pageId?.slug
           })));
         }
       } catch (err) {

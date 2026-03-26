@@ -16,13 +16,13 @@ export async function GET() {
     }
 
     await dbConnect();
-    const user = await User.findOne({ email: session.user.email }).lean();
+    const user = await User.findOne({ email: session.user.email }).lean() as any;
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Find all pages owned by this user
-    const pages = await Page.find({ ownerId: user._id }).lean();
+    const pages = await Page.find({ ownerId: user._id }).lean() as any[];
     const pageIds = pages.map(p => p._id);
 
     // Find all items belonging to these pages
