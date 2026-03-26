@@ -75,8 +75,10 @@ export default function BusinessForm() {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     phone: '',
     organization: '',
+
     address: '',
     currentRole: '',
     businessHandling: '',
@@ -229,10 +231,14 @@ export default function BusinessForm() {
                 
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   <StyledInput label="What's your name?" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="e.g. Rahul Sharma" required />
-                  <StyledInput label="Best way to reach you (Phone)" name="phone" value={formData.phone} onChange={handleChange} placeholder="WhatsApp preferred?" required />
+                  <StyledInput label="Email address" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="e.g. rahul@example.com" required />
                 </Box>
 
-                <StyledInput label="Where are you building right now?" name="organization" value={formData.organization} onChange={handleChange} placeholder="Company or project name" required />
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                  <StyledInput label="Best way to reach you (Phone)" name="phone" value={formData.phone} onChange={handleChange} placeholder="WhatsApp preferred?" required />
+                  <StyledInput label="Where are you building right now?" name="organization" value={formData.organization} onChange={handleChange} placeholder="Company or project name" required />
+                </Box>
+
                 <StyledInput label="Where do you operate from? (Area of operation)" name="address" value={formData.address} onChange={handleChange} placeholder="Tell us which cities or areas you handle orders from..." multiline rows={3} required />
 
                 <Divider sx={{ my: 5, borderColor: 'rgba(255,255,255,0.05)' }} />
@@ -464,6 +470,43 @@ export default function BusinessForm() {
         }}>
           All information is kept confidential and used solely for business purposes.
         </Typography>
+
+        <Box sx={{ mt: 8, mb: 4, textAlign: 'center' }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <Typography sx={{ color: COLORS.muted, fontSize: '13px', mb: 2, letterSpacing: '1px', textTransform: 'uppercase' }}>
+              Want to join the inner circle?
+            </Typography>
+            <Button 
+              href="https://chat.whatsapp.com/GMId3bWE1lZG0qDrR1FV0p"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ 
+                color: COLORS.accent, 
+                border: `1px solid ${COLORS.accent}`,
+                borderRadius: '30px',
+                px: 4,
+                py: 1.2,
+                fontSize: '14px',
+                fontWeight: 600,
+                textTransform: 'none',
+                background: 'transparent',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(200,169,110,0.1)',
+                  borderColor: COLORS.accent2,
+                  boxShadow: `0 0 20px rgba(200,169,110,0.2)`,
+                  transform: 'translateY(-2px)'
+                }
+              }}
+            >
+              Join the Sellers WhatsApp Group
+            </Button>
+          </motion.div>
+        </Box>
       </Container>
     </Box>
   );
