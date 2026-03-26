@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Item from '@/models/Item';
 import User from '@/models/User';
+import Page from '@/models/Page';
 
 export async function GET(req: Request) {
   try {
