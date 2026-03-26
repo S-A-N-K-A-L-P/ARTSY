@@ -22,7 +22,7 @@ export default async function RootLayout({
 
   if (session?.user?.email) {
     await dbConnect();
-    const user = await User.findOne({ email: session.user.email }).lean();
+    const user = await User.findOne({ email: session.user.email }).lean() as any;
     if (user?.aesthetic?.name) {
       userAesthetic = user.aesthetic.name;
     }
