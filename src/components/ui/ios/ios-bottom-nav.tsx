@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { Home, TrendingUp, User } from "lucide-react";
+import { Home, Package, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
   { icon: <Home size={22} />, label: "Home", href: "/home" },
-  { icon: <TrendingUp size={22} />, label: "Trend", href: "/trending" },
+  { icon: <Package size={22} />, label: "Items", href: "/inventory" },
   { icon: <User size={22} />, label: "Profile", href: "/user" },
 ];
 
