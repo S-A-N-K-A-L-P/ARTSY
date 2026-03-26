@@ -30,8 +30,8 @@ export default function CTASection() {
           </Typography>
           
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Button component={Link} href="/register" variant="contained" size="large" sx={{ px: 5, py: 2, borderRadius: 2, fontSize: '1.2rem' }}>
-              Sign Up Now
+            <Button component={Link} href="/join-us" variant="contained" size="large" sx={{ px: 5, py: 2, borderRadius: 2, fontSize: '1.2rem' }}>
+              Join Now
             </Button>
             <Button component={Link} href="/explore" variant="outlined" size="large" sx={{ px: 5, py: 2, borderRadius: 2, fontSize: '1.2rem' }}>
               Explore Platform
