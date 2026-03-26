@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
+import Masonry from 'react-masonry-css';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -116,11 +117,19 @@ export default function DashboardPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 md:gap-10">
+        <Masonry
+          breakpointCols={{
+            default: 2,
+            700: 2,
+            500: 2
+          }}
+          className="flex gap-4 md:gap-10"
+          columnClassName="flex flex-col gap-4 md:gap-10"
+        >
           {pages.map((page: any) => (
             <CollectionCard key={page._id} page={page} />
           ))}
-        </div>
+        </Masonry>
       )}
     </div>
   );
@@ -129,41 +138,46 @@ export default function DashboardPage() {
 function CollectionCard({ page }: { page: any }) {
   const router = useRouter();
 
+  const randomHeight = React.useMemo(() => {
+    // Stable pseudo-random height between 300 and 500 for dashboard cards
+    const seed = page._id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+    return 300 + (seed % 200);
+  }, [page._id]);
+
   return (
     <motion.div 
-      whileHover={{ y: -8 }}
+      whileHover={{ y: -6, scale: 1.01 }}
       onClick={() => router.push(`/dashboard/page/${page._id}`)}
-      className="group relative h-[280px] md:h-[500px] rounded-[32px] md:rounded-[64px] overflow-hidden cursor-pointer border transition-all duration-700 shadow-soft hover:shadow-medium"
-      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}
+      className="group relative rounded-[32px] md:rounded-[48px] overflow-hidden cursor-pointer bg-[var(--bg-secondary)] border border-[var(--border-subtle)] transition-all duration-500"
+      style={{ height: `${randomHeight}px` }}
     >
       <img 
         src={page.coverImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop'} 
-        className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" 
+        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" 
         alt={page.name} 
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 md:p-12 flex flex-col justify-end translate-y-6 group-hover:translate-y-0 transition-all duration-700">
-        <div className="flex flex-wrap items-center gap-2 mb-3 md:mb-6">
-            <span className="px-3 md:px-5 py-1 md:py-2 rounded-full bg-white/10 backdrop-blur-md text-[7px] md:text-[9px] uppercase font-black tracking-widest text-white border border-white/5 opacity-80 group-hover:opacity-100 transition-opacity">{page.type || 'gallery'}</span>
-            <span className="px-3 md:px-5 py-1 md:py-2 rounded-full bg-white/10 backdrop-blur-md text-[7px] md:text-[9px] uppercase font-black tracking-widest text-white border border-white/5 opacity-80 group-hover:opacity-100 transition-opacity">{page.aesthetic?.theme || page.aesthetic || 'minimal'}</span>
-        </div>
-        <h3 className="text-xl md:text-5xl font-black tracking-tighter text-white drop-shadow-2xl">{page.name}</h3>
-        <p className="hidden md:block text-[12px] font-bold text-white/40 mt-6 line-clamp-2 italic leading-relaxed uppercase tracking-widest max-w-[80%]">{page.description || 'A unique spatial convergence produced by artistic intent.'}</p>
-        
-        <div className="mt-10 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all delay-100">
-          <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-white">
-            Access Artifact <ArrowRight size={16} className="text-[var(--accent)]" />
-          </div>
-        </div>
-      </div>
       
-      {/* Top Overlay Actions */}
-      <div className="absolute top-10 right-10 flex flex-col gap-4">
-        <button 
-          onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/settings/${page._id}`); }}
-          className="w-14 h-14 rounded-3xl backdrop-blur-xl bg-black/20 border border-white/10 flex items-center justify-center text-white/40 hover:text-[var(--accent)] hover:border-[var(--accent-soft)] hover:scale-110 transition-all"
-        >
-           <Settings size={22} />
-        </button>
+      {/* OVERLAY */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-6 md:p-10 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+             <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[8px] uppercase font-black tracking-widest text-white border border-white/5">{page.type || 'gallery'}</span>
+             <span className="px-3 py-1 rounded-full bg-[var(--accent)] text-[var(--bg-primary)] text-[8px] uppercase font-black tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                {page.aesthetic?.theme || page.aesthetic || 'minimal'}
+             </span>
+        </div>
+        <h3 className="text-2xl md:text-4xl font-black tracking-tighter text-white drop-shadow-2xl italic leading-tight">{page.name}</h3>
+        
+        <div className="mt-6 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all">
+          <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/60">
+            Open Space <ArrowRight size={14} className="text-[var(--accent)]" />
+          </div>
+          <button 
+            onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/settings/${page._id}`); }}
+            className="w-10 h-10 rounded-2xl backdrop-blur-xl bg-white/10 border border-white/10 flex items-center justify-center text-white hover:text-[var(--accent)] transition-all"
+          >
+             <Settings size={18} />
+          </button>
+        </div>
       </div>
     </motion.div>
   );

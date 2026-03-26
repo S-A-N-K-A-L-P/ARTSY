@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, PlayCircle, Sparkles, ShoppingBag, Loader2 } from 'lucide-react';
+import Masonry from 'react-masonry-css';
 import FeedReels from '@/components/feed/FeedReels';
 import FeedCard from '@/components/feed/FeedCard';
 import { cn } from '@/lib/utils';

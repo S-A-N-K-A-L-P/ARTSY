@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { ThemeName, themes } from "@/lib/theme/themes";
+import Masonry from "react-masonry-css";
 
 interface IOSProfileProps {
   initialUser?: any;
@@ -160,95 +161,87 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
       </div>
 
       {/* Grid Content - Pages */}
-      <div className="px-5 grid grid-cols-2 gap-3 auto-rows-[minmax(140px,auto)]">
-        {user.pages?.map((page: any, i: number) => {
-          const isWide = false;
-          const isTall = false;
+      <div className="px-5">
+        <Masonry
+            breakpointCols={{
+                default: 2,
+                700: 2,
+                500: 2
+            }}
+            className="flex gap-4"
+            columnClassName="flex flex-col gap-4"
+        >
+            {user.pages?.map((page: any, i: number) => {
+                const randomHeight = 180 + (i % 3) * 60; // Subtle variety in heights
 
-          return (
-            <motion.div 
-              key={page._id} 
-              layout
-              className={cn(
-                "group relative rounded-[32px] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-secondary)] cursor-pointer transition-all duration-500",
-                isWide ? "col-span-2 min-h-[160px]" : "col-span-1",
-                isTall ? "row-span-2 min-h-[300px]" : "h-full"
-              )}
-              onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
-            >
-              <img 
-                src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
-                className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700"
-                alt={page.name}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-5 flex flex-col justify-end">
-                  <div className="flex items-center justify-between">
-                      <div>
-                          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30 mb-1 block">Entity Manifest</span>
-                          <h3 className={cn(
-                            "font-black tracking-tighter text-white italic leading-tight",
-                            isWide ? "text-2xl" : "text-lg"
-                          )}>
-                            {page.name}
-                          </h3>
-                      </div>
-                  </div>
-                  
-                  <div className="mt-3 flex items-center gap-2">
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); isOwner && setEditingAesthetic(page._id); }}
-                        className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-[8px] font-black uppercase tracking-widest text-white flex items-center gap-1.5 hover:bg-white/20 transition-all"
-                      >
-                          <Sparkles size={8} className="text-[var(--accent)]" /> {page.aesthetic?.theme || page.aesthetic}
-                      </button>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/page/${page._id}`); }}
-                        className="p-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-white hover:bg-[var(--accent)] hover:text-black transition-all"
-                      >
-                          <ArrowRight size={10} />
-                      </button>
-                  </div>
-              </div>
-
-            {/* Aesthetic Picker Overlay */}
-            <AnimatePresence>
-                {isOwner && editingAesthetic === page._id && (
+                return (
                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl p-6 flex flex-col justify-center gap-4"
-                        onClick={(e) => e.stopPropagation()}
+                        key={page._id} 
+                        whileHover={{ scale: 1.02 }}
+                        className="group relative rounded-[24px] md:rounded-[32px] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-secondary)] cursor-pointer transition-all duration-500"
+                        style={{ height: `${randomHeight}px` }}
+                        onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
                     >
-                        <h4 className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Select Aesthetic</h4>
-                        <div className="grid grid-cols-3 gap-2">
-                            {Object.keys(themes).map((theme) => (
-                                <button
-                                    key={theme}
-                                    onClick={() => handleUpdateAesthetic(page._id, theme)}
-                                    className={cn(
-                                        "h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
-                                        (page.aesthetic?.theme || page.aesthetic) === theme 
-                                            ? "bg-[var(--accent)] text-black" 
-                                            : "bg-white/5 text-white/40 hover:bg-white/10"
-                                    )}
+                        <img 
+                            src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-700"
+                            alt={page.name}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 md:p-6 flex flex-col justify-end">
+                            <h3 className="font-black tracking-tighter text-white italic leading-tight text-lg">
+                                {page.name}
+                            </h3>
+                            
+                            <div className="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); isOwner && setEditingAesthetic(page._id); }}
+                                    className="px-2 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-[7px] font-black uppercase tracking-widest text-white flex items-center gap-1 hover:bg-white/20 transition-all"
                                 >
-                                    {theme}
+                                    <Sparkles size={8} className="text-[var(--accent)]" /> {page.aesthetic?.theme || page.aesthetic}
                                 </button>
-                            ))}
+                            </div>
                         </div>
-                        <button 
-                          onClick={() => setEditingAesthetic(null)}
-                          className="mt-4 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white"
-                        >
-                            Cancel
-                        </button>
+
+                        {/* Aesthetic Picker Overlay inside card */}
+                        <AnimatePresence>
+                            {isOwner && editingAesthetic === page._id && (
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className="absolute inset-0 z-50 bg-black/95 backdrop-blur-xl p-6 flex flex-col justify-center gap-4"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <h4 className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Select Aesthetic</h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {Object.keys(themes).map((theme) => (
+                                            <button
+                                                key={theme}
+                                                onClick={() => handleUpdateAesthetic(page._id, theme)}
+                                                className={cn(
+                                                    "h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
+                                                    (page.aesthetic?.theme || page.aesthetic) === theme 
+                                                        ? "bg-[var(--accent)] text-black" 
+                                                        : "bg-white/5 text-white/40 hover:bg-white/10"
+                                                )}
+                                            >
+                                                {theme}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button 
+                                      onClick={() => setEditingAesthetic(null)}
+                                      className="mt-4 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white"
+                                    >
+                                        Cancel
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
-                )}
-            </AnimatePresence>
-          </motion.div>
-        );
-      })}
+                );
+            })}
+        </Masonry>
 
         {user.pages?.length === 0 && (
            <div className="py-20 text-center opacity-30">
