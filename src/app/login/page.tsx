@@ -139,7 +139,7 @@ export default function LoginPage() {
             <div className="w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center">
               <span className="text-xl font-bold italic">A</span>
             </div>
-            <span className="text-xl font-bold tracking-tight">ARTSY</span>
+            <span className="text-xl font-bold tracking-tight">ASTAL</span>
           </div>
           
           <div className="max-w-md">
@@ -153,7 +153,7 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center gap-6 text-white/20 text-xs font-bold uppercase tracking-[0.2em]">
-            <span>© 2026 Artsy</span>
+            <span>© 2026 Astal</span>
             <div className="w-1 h-1 bg-white/10 rounded-full" />
             <span>Encrypted Access</span>
           </div>

@@ -5,8 +5,8 @@ import { Footer } from '@/components/layout/Footer';
 import { Box } from '@mui/material';
 
 export const metadata = {
-  title: 'Join Us | Artsy Business Profile',
-  description: 'Tell us about your business and join the Artsy community.',
+  title: 'Join Us | Astal Business Profile',
+  description: 'Tell us about your business and join the Astal community.',
 };
 
 export default function JoinUsPage() {

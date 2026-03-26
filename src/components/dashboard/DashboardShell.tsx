@@ -20,7 +20,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   if (isMobile) {
     return (
       <div className="min-h-screen transition-colors duration-500 relative" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-        <IOSNavBar title="ARTSY" />
+        <IOSNavBar title="ASTAL" />
         <main className="p-5 pb-32 transition-all">{children}</main>
         
         <div className="fixed bottom-0 left-0 right-0 z-50">

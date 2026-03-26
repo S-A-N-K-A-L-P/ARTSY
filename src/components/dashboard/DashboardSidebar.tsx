@@ -28,7 +28,7 @@ export default function DashboardSidebar() {
           <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-subtle)' }}>
             <span className="font-bold text-sm italic" style={{ color: 'var(--accent)' }}>A</span>
           </div>
-          <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text-primary)' }}>Artsy</span>
+          <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text-primary)' }}>Astal</span>
         </Link>
       </div>
 

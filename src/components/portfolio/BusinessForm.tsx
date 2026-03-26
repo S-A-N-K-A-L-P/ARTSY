@@ -73,6 +73,7 @@ export default function BusinessForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -480,33 +481,128 @@ export default function BusinessForm() {
             <Typography sx={{ color: COLORS.muted, fontSize: '13px', mb: 2, letterSpacing: '1px', textTransform: 'uppercase' }}>
               Want to join the inner circle?
             </Typography>
-            <Button 
-              href="https://chat.whatsapp.com/GMId3bWE1lZG0qDrR1FV0p"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ 
-                color: COLORS.accent, 
-                border: `1px solid ${COLORS.accent}`,
-                borderRadius: '30px',
-                px: 4,
-                py: 1.2,
-                fontSize: '14px',
-                fontWeight: 600,
-                textTransform: 'none',
-                background: 'transparent',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  bgcolor: 'rgba(200,169,110,0.1)',
-                  borderColor: COLORS.accent2,
-                  boxShadow: `0 0 20px rgba(200,169,110,0.2)`,
-                  transform: 'translateY(-2px)'
-                }
-              }}
-            >
-              Join the Sellers WhatsApp Group
-            </Button>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+              <Button 
+                href="https://chat.whatsapp.com/GMId3bWE1lZG0qDrR1FV0p"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ 
+                  color: COLORS.accent, 
+                  border: `1px solid ${COLORS.accent}`,
+                  borderRadius: '30px',
+                  px: 4,
+                  py: 1.2,
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  background: 'transparent',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(200,169,110,0.1)',
+                    borderColor: COLORS.accent2,
+                    boxShadow: `0 0 20px rgba(200,169,110,0.2)`,
+                    transform: 'translateY(-2px)'
+                  }
+                }}
+              >
+                Join the Sellers WhatsApp Group
+              </Button>
+
+              <Button 
+                onClick={() => setShowQR(true)}
+                sx={{ 
+                  color: COLORS.text, 
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: '30px',
+                  px: 4,
+                  py: 1.2,
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  background: 'rgba(255,255,255,0.05)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    borderColor: COLORS.muted,
+                    transform: 'translateY(-2px)'
+                  }
+                }}
+              >
+                Join via QR
+              </Button>
+            </Box>
           </motion.div>
         </Box>
+
+        {/* QR Code Modal */}
+        <AnimatePresence>
+          {showQR && (
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowQR(false)}
+              sx={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                bgcolor: 'rgba(0,0,0,0.9)',
+                backdropFilter: 'blur(10px)',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2
+              }}
+            >
+              <Box
+                component={motion.div}
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                sx={{
+                  position: 'relative',
+                  maxWidth: '400px',
+                  width: '100%',
+                  bgcolor: '#18181c',
+                  borderRadius: '24px',
+                  overflow: 'hidden',
+                  border: `1px solid ${COLORS.border}`,
+                  boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
+                }}
+              >
+                <Box sx={{ p: 4, textAlign: 'center' }}>
+                  <Typography variant="h6" sx={{ color: COLORS.accent, mb: 1, fontWeight: 700 }}>Scan to Join</Typography>
+                  <Typography sx={{ color: COLORS.muted, fontSize: '14px', mb: 3 }}>Scan this QR code with your phone to join our seller community</Typography>
+                  
+                  <Box sx={{ 
+                    position: 'relative',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    bgcolor: 'white',
+                    p: 2,
+                    display: 'flex',
+                    justifyContent: 'center'
+                  }}>
+                    <img src="/astralseller.JPG" alt="Join via QR" style={{ width: '100%', height: 'auto', borderRadius: '8px' }} />
+                  </Box>
+
+                  <Button 
+                    onClick={() => setShowQR(false)}
+                    fullWidth
+                    sx={{ mt: 4, color: COLORS.muted, textTransform: 'none' }}
+                  >
+                    Close
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </AnimatePresence>
       </Container>
     </Box>
   );
