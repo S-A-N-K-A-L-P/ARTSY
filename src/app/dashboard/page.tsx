@@ -9,7 +9,9 @@ import {
   Layout, 
   ArrowRight, 
   Settings, 
-  Sparkles
+  Sparkles,
+  Loader2,
+  ShoppingBag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -19,7 +21,6 @@ import Masonry from 'react-masonry-css';
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { aesthetic } = useAesthetic();
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,75 +44,71 @@ export default function DashboardPage() {
   }, [session]);
 
   return (
-    <div className="pb-24 md:pb-10 transition-colors duration-500">
+    <div className="pb-24 md:pb-10 bg-white min-h-screen">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b pb-12" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-neutral-100 pb-10">
          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-4">
-              <Settings size={10} /> Management
-            </div>
-            <h1 className="text-5xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>Creator Studio</h1>
-            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] opacity-40">Orchestrate your aesthetic presence</p>
+            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Creator Studio</h1>
+            <p className="mt-1 text-xs text-neutral-400 font-medium uppercase tracking-widest">
+              Management & Insights
+            </p>
          </div>
+         <Link 
+            href="/dashboard/create" 
+            className="h-12 px-6 rounded-xl bg-neutral-900 text-white text-sm font-semibold flex items-center gap-2 hover:bg-neutral-800 transition-all active:scale-[0.98]"
+         >
+            <Plus size={18} /> New Space
+         </Link>
       </div>
 
-      {/* Stats Summary */}
+      {/* Simplified Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        <div className="p-10 rounded-[48px] border transition-all shadow-soft group hover:shadow-medium relative overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
-          <p className="text-[9px] font-black uppercase tracking-[0.3em] opacity-40 mb-2" style={{ color: 'var(--text-muted)' }}>Deployed Archetypes</p>
-          <div className="flex items-end gap-3">
-             <span className="text-5xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>{pages.length}</span>
-             <div className="w-2 h-2 rounded-full bg-[var(--accent)] absolute top-10 right-10 animate-pulse shadow-[0_0_15px_var(--accent-soft)]" />
-          </div>
-          <div className="absolute -bottom-4 -right-4 opacity-5 translate-y-4 group-hover:translate-y-0 transition-transform">
-             <Layout size={100} />
+        <div className="p-8 rounded-2xl bg-neutral-50 border border-neutral-100 transition-all group">
+          <p className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">Total Spaces</p>
+          <div className="flex items-baseline gap-2">
+             <span className="text-4xl font-bold text-neutral-900">{pages.length}</span>
+             <span className="text-xs font-medium text-neutral-400">deployed</span>
           </div>
         </div>
         
-        <div className="p-10 rounded-[48px] border transition-all shadow-soft group hover:shadow-medium relative overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
-          <p className="text-[9px] font-black uppercase tracking-[0.3em] opacity-40 mb-2" style={{ color: 'var(--text-muted)' }}>Active Identity</p>
-          <span className="text-2xl font-black tracking-tighter capitalize italic" style={{ color: 'var(--text-primary)' }}>{aesthetic}</span>
-          <div className="absolute -bottom-4 -right-4 opacity-5 translate-y-4 group-hover:translate-y-0 transition-transform">
-             <Sparkles size={100} />
+        <div className="p-8 rounded-2xl bg-neutral-50 border border-neutral-100 transition-all group">
+          <p className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">Platform Rank</p>
+          <div className="flex items-baseline gap-2">
+             <span className="text-4xl font-bold text-neutral-900">Elite</span>
+             <span className="text-xs font-medium text-neutral-400">verified</span>
           </div>
         </div>
 
-        <Link 
-          href="/dashboard/create" 
-          className="p-10 rounded-[48px] border border-dashed hover:border-solid transition-all group flex flex-col justify-between hover:bg-[var(--bg-tertiary)] hover:border-[var(--accent-soft)]"
-          style={{ borderColor: 'var(--border-strong)', backgroundColor: 'transparent' }}
-        >
-          <p className="text-[9px] font-black uppercase tracking-[0.3em] opacity-40" style={{ color: 'var(--text-muted)' }}>Forge New Space</p>
-          <div className="flex items-center justify-between">
-            <span className="text-xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>Create Identity</span>
-            <div className="w-12 h-12 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:bg-[var(--accent)] group-hover:text-[var(--bg-primary)] transition-all">
-              <Plus size={24} />
-            </div>
+        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-900 transition-all group shadow-xl shadow-neutral-100">
+          <p className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">Discovery Reach</p>
+          <div className="flex items-baseline gap-2">
+             <span className="text-4xl font-bold text-white">4.2k</span>
+             <span className="text-xs font-medium text-neutral-400">impressions</span>
           </div>
-        </Link>
+        </div>
       </div>
 
       {/* Pages Section */}
-      <div className="flex items-center justify-between mb-10">
-        <h3 className="text-3xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>Physical Manifestations</h3>
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-900">Manifestations</h3>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-32">
-          <div className="w-10 h-10 border-2 border-t-accent rounded-full animate-spin" style={{ borderColor: 'var(--border-subtle)' }} />
+          <Loader2 className="w-8 h-8 animate-spin text-neutral-200" />
         </div>
       ) : pages.length === 0 ? (
-        <div className="rounded-[64px] border border-dashed p-32 text-center flex flex-col items-center gap-8" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
-          <div className="w-24 h-24 rounded-[40px] flex items-center justify-center opacity-20 shadow-inner" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-strong)' }}>
-            <Layout size={48} style={{ color: 'var(--text-secondary)' }} />
+        <div className="rounded-[40px] border border-dashed border-neutral-200 p-24 text-center flex flex-col items-center gap-6 bg-neutral-50/50">
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center bg-white border border-neutral-100 shadow-sm">
+            <Layout size={32} className="text-neutral-300" />
           </div>
           <div className="max-w-xs">
-            <p className="text-2xl font-black tracking-tighter mb-2" style={{ color: 'var(--text-primary)' }}>No static data detected</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 leading-relaxed" style={{ color: 'var(--text-muted)' }}>Your presence is felt, but your spaces remain unformed. Begin the ritual of creation.</p>
+            <p className="text-lg font-bold text-neutral-900 mb-1">Begin Your Manifestation</p>
+            <p className="text-sm text-neutral-400 leading-relaxed font-medium">Create your first spatial record to start sharing your perspective with the collective.</p>
           </div>
           <Link
             href="/dashboard/create"
-            className="h-14 px-12 rounded-2xl font-black text-[10px] uppercase tracking-[.3em] transition-all active:scale-95 shadow-2xl bg-[var(--accent)] text-[var(--bg-primary)] flex items-center justify-center"
+            className="h-12 px-8 rounded-xl font-bold text-sm bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-all"
           >
             Deploy First Space
           </Link>
@@ -121,10 +118,10 @@ export default function DashboardPage() {
           breakpointCols={{
             default: 2,
             700: 2,
-            500: 2
+            500: 1
           }}
-          className="flex gap-4 md:gap-10"
-          columnClassName="flex flex-col gap-4 md:gap-10"
+          className="flex gap-6 md:gap-10"
+          columnClassName="flex flex-col gap-6 md:gap-10"
         >
           {pages.map((page: any) => (
             <CollectionCard key={page._id} page={page} />
@@ -138,47 +135,44 @@ export default function DashboardPage() {
 function CollectionCard({ page }: { page: any }) {
   const router = useRouter();
 
-  const randomHeight = React.useMemo(() => {
-    // Stable pseudo-random height between 300 and 500 for dashboard cards
+  const height = React.useMemo(() => {
+    const variants = [240, 280, 340, 300];
     const seed = page._id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-    return 300 + (seed % 200);
+    return variants[seed % variants.length];
   }, [page._id]);
 
   return (
-    <motion.div 
-      whileHover={{ y: -6, scale: 1.01 }}
+    <div 
       onClick={() => router.push(`/dashboard/page/${page._id}`)}
-      className="group relative rounded-[32px] md:rounded-[48px] overflow-hidden cursor-pointer bg-[var(--bg-secondary)] border border-[var(--border-subtle)] transition-all duration-500"
-      style={{ height: `${randomHeight}px` }}
+      className="group cursor-pointer mb-8"
     >
-      <img 
-        src={page.coverImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop'} 
-        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" 
-        alt={page.name} 
-      />
+      <div 
+        className="rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-50 shadow-sm transition-all duration-500"
+        style={{ height: `${height}px` }}
+      >
+        <img 
+          src={page.coverImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop'} 
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+          alt={page.name} 
+        />
+      </div>
       
-      {/* OVERLAY */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-6 md:p-10 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-             <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[8px] uppercase font-black tracking-widest text-white border border-white/5">{page.type || 'gallery'}</span>
-             <span className="px-3 py-1 rounded-full bg-[var(--accent)] text-[var(--bg-primary)] text-[8px] uppercase font-black tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                {page.aesthetic?.theme || page.aesthetic || 'minimal'}
-             </span>
-        </div>
-        <h3 className="text-2xl md:text-4xl font-black tracking-tighter text-white drop-shadow-2xl italic leading-tight">{page.name}</h3>
-        
-        <div className="mt-6 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all">
-          <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-white/60">
-            Open Space <ArrowRight size={14} className="text-[var(--accent)]" />
+      <div className="mt-4 px-1">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 line-clamp-1">{page.name}</h3>
+            <p className="text-xs text-neutral-400 mt-1 font-medium uppercase tracking-widest">
+              {page.aesthetic?.theme || page.aesthetic || 'minimal'} • {page.type || 'gallery'}
+            </p>
           </div>
           <button 
             onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/settings/${page._id}`); }}
-            className="w-10 h-10 rounded-2xl backdrop-blur-xl bg-white/10 border border-white/10 flex items-center justify-center text-white hover:text-[var(--accent)] transition-all"
+            className="p-2 text-neutral-300 hover:text-neutral-900 transition-colors"
           >
-             <Settings size={18} />
+             <Settings size={20} />
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

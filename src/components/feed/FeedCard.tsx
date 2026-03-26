@@ -20,75 +20,65 @@ interface DiscoveryItem {
 }
 
 export default function FeedCard({ item }: { item: DiscoveryItem }) {
-    const dispatch = useDispatch();
     const router = useRouter();
+    const isPage = item.type === 'page';
+
+    // Controlled heights for visual discovery rhythm
+    const height = React.useMemo(() => {
+        const variants = [240, 280, 340, 300];
+        const seed = item.id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+        return variants[seed % variants.length];
+    }, [item.id]);
 
     const handleNavigate = () => {
         if (item.pageSlug) {
             router.push(`/user/${item.creator.username}/${item.pageSlug}`);
+        } else {
+            // Future-proofing for individual items if needed
+            router.push(`/user/${item.creator.username}/${item.pageSlug || 'item'}/${item.id}`);
         }
     };
 
-    const isPage = item.type === 'page';
-
-    const randomHeight = useMemo(() => {
-        // Stable pseudo-random height between 250 and 450
-        const seed = item.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        return 250 + (seed % 200);
-    }, [item.id]);
-
     return (
-        <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        <div 
             onClick={handleNavigate}
-            className="group relative rounded-2xl md:rounded-[32px] overflow-hidden cursor-pointer bg-black/20"
-            style={{ height: `${randomHeight}px` }}
+            className="group cursor-pointer mb-6"
         >
-            {/* IMAGE */}
-            <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-
-            {/* OVERLAYS */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* TOP TAG - Always semi-visible, more visible on hover */}
-            <div className="absolute top-3 left-3 md:top-5 md:left-5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/90 group-hover:bg-[var(--accent)] group-hover:text-[var(--bg-primary)] group-hover:border-transparent transition-all">
-                <Sparkles size={10} className="text-[var(--accent)] group-hover:text-[var(--bg-primary)]" />
-                {item.aesthetic}
+            {/* Image Container */}
+            <div 
+                className="relative rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-50 shadow-sm transition-all duration-500"
+                style={{ height: `${height}px` }}
+            >
+                <img 
+                    src={item.image} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    alt={item.title}
+                />
             </div>
 
-            {/* BOTTOM INFO - Hover Reveal */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                <p className="text-white font-bold text-sm md:text-lg tracking-tight leading-tight line-clamp-2 mb-2 italic">
-                    {item.title}
-                </p>
-                <div className="flex items-center gap-2">
-                    <Avatar 
+            {/* Quiet Metadata */}
+            <div className="mt-3 px-1">
+                <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-semibold text-neutral-900 line-clamp-1 leading-tight">
+                        {item.title}
+                    </h3>
+                </div>
+                <div className="flex items-center gap-2 mt-1.5">
+                    <img 
                         src={item.creator.avatar} 
-                        sx={{ width: 18, height: 18, border: '1px solid rgba(255,255,255,0.2)' }} 
+                        className="w-4 h-4 rounded-full bg-neutral-100" 
+                        alt={item.creator.username}
                     />
-                    <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">
+                    <span className="text-[11px] font-medium text-neutral-400">
                         @{item.creator.username}
-                    </p>
+                    </span>
+                    {!isPage && item.price && (
+                        <span className="text-[11px] font-semibold text-neutral-900 ml-auto">
+                            ₹{item.price}
+                        </span>
+                    )}
                 </div>
-                
-                {!isPage && item.price && (
-                    <p className="mt-4 text-white font-black text-sm tracking-tighter">
-                        ₹{item.price}
-                    </p>
-                )}
             </div>
-            
-            {/* PRICE TAG - Visible always but subtle */}
-            {!isPage && item.price && (
-                <div className="absolute top-3 right-3 md:top-5 md:right-5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-white text-[10px] font-black tracking-tighter group-hover:opacity-0 transition-opacity">
-                    ₹{item.price}
-                </div>
-            )}
-        </motion.div>
+        </div>
     );
 }
