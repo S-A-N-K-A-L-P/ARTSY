@@ -89,7 +89,7 @@ export default function HomePage() {
                exit={{ opacity: 0 }}
                className="flex justify-center py-20"
             >
-               <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)] opacity-20" />
+               <Loader2 className="w-8 h-8 animate-spin text-neutral-200" />
             </motion.div>
           ) : view === 'reels' ? (
             <motion.div
@@ -104,19 +104,30 @@ export default function HomePage() {
           ) : (
             <motion.div
               key="grid"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-4"
             >
-               {items.map((item) => (
-                  <FeedCard key={item.id} item={item} />
-               ))}
+               <Masonry
+                 breakpointCols={{
+                    default: 2,
+                    1100: 2,
+                    700: 2,
+                    500: 1
+                 }}
+                 className="flex gap-4 md:gap-8"
+                 columnClassName="flex flex-col gap-4 md:gap-8"
+               >
+                  {items.map((item) => (
+                     <FeedCard key={item.id} item={item} />
+                  ))}
+               </Masonry>
 
                {items.length === 0 && (
-                  <div className="col-span-full py-20 text-center opacity-30">
-                    <ShoppingBag size={48} className="mx-auto mb-4" />
-                    <p className="font-bold italic uppercase tracking-widest text-xs">The collective void awaits manifests...</p>
+                  <div className="py-40 text-center text-neutral-300">
+                    <ShoppingBag size={48} className="mx-auto mb-4 opacity-20" />
+                    <p className="font-semibold text-xs uppercase tracking-widest">No manifests discovered</p>
                   </div>
                )}
             </motion.div>

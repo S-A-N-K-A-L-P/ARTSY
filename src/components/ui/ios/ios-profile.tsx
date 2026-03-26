@@ -94,74 +94,77 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
   const isOwner = !initialUser; // Simplification: if we fetch it via /me, we are the owner
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg text-text pb-40">
-      {/* Cover Image & Header */}
-      <div className="relative h-56 overflow-hidden">
-        <img 
-          src={user.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
-          className="w-full h-full object-cover"
-          alt="Cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-bg" />
-        
-        <header className="absolute top-0 left-0 right-0 z-40 px-6 h-16 flex items-center justify-between">
-          <div className="w-10" />
-          <h1 className="text-[17px] font-black lowercase tracking-tight text-white drop-shadow-2xl italic">@{user.username}</h1>
-          <button className="w-10 h-10 bg-black/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/10">
-            <Settings size={20} className="text-white" />
-          </button>
-        </header>
-      </div>
-
-      {/* Profile Info (Overlap) */}
-      <div className="px-6 -mt-16 relative z-10 pb-8">
-        <div className="flex items-end gap-6 mb-6">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[var(--accent)] rounded-[32px] blur-2xl opacity-20" />
-            <img 
-              src={user.image} 
-              alt={user.name} 
-              className="w-24 h-24 rounded-[32px] object-cover border-4 border-bg relative z-10 shadow-2xl"
-            />
-          </div>
-          
-          <div className="flex-1 flex justify-around pb-2">
-            <StatItem label="Artifacts" value={user.pages?.length || 0} />
-            <StatItem label="Followers" value={user.stats?.followers || 0} />
-            <StatItem label="Vibe" value={user.stats?.following || 0} />
-          </div>
+    <div className="flex flex-col min-h-screen bg-white text-neutral-900 pb-40">
+      {/* Minimal Header Section */}
+      <div className="px-6 pt-12 pb-8">
+        <div className="flex items-start justify-between mb-8">
+            <div className="relative">
+                <img 
+                    src={user.image} 
+                    alt={user.name} 
+                    className="w-20 h-20 rounded-2xl object-cover bg-neutral-100"
+                />
+            </div>
+            <div className="flex gap-2">
+                <button className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors">
+                    <Settings size={20} />
+                </button>
+            </div>
         </div>
 
-        <div className="space-y-1 mb-8">
-          <h2 className="text-2xl font-black tracking-tighter italic leading-none">{user.name}</h2>
-          <p className="text-[12px] font-medium text-text/50 leading-relaxed max-w-[80%] uppercase tracking-widest">{user.bio}</p>
+        <div className="mb-8">
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{user.name}</h1>
+            <p className="text-sm text-neutral-400 font-medium mt-1">@{user.username}</p>
+            {user.bio && (
+                <p className="text-sm text-neutral-500 mt-4 leading-relaxed max-w-sm">
+                    {user.bio}
+                </p>
+            )}
         </div>
 
         <div className="flex gap-3">
-          <button className="flex-1 bg-[var(--accent)] text-[var(--bg-primary)] h-12 rounded-2xl text-[11px] font-black uppercase tracking-widest active:scale-95 transition-all shadow-xl shadow-[var(--accent-soft)]">
-            {isOwner ? "Edit Profile" : "Follow Space"}
+          <button className="flex-1 bg-neutral-900 text-white h-12 rounded-xl text-sm font-semibold hover:bg-neutral-800 transition-all active:scale-[0.98]">
+            {isOwner ? "Edit Profile" : "Follow"}
           </button>
           {isOwner && (
             <button 
-            onClick={() => isOwner && setModifyingUserAesthetic(true)}
-            className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-text rounded-2xl flex items-center justify-center active:scale-95 transition-all"
-          >
-                <Palette size={18} />
+              onClick={() => isOwner && setModifyingUserAesthetic(true)}
+              className="px-4 h-12 bg-neutral-50 border border-neutral-100 text-neutral-900 rounded-xl flex items-center justify-center hover:bg-neutral-100 transition-all"
+            >
+                <Palette size={20} />
             </button>
           )}
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="px-6 mb-6">
-          <div className="flex p-1.5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
-            <TabButton label="Pages" isActive={activeTab === "pages"} onClick={() => setActiveTab("pages")} />
-            <TabButton label="Activity" isActive={activeTab === "activity"} onClick={() => setActiveTab("activity")} />
+      <div className="px-6 mb-8 mt-2">
+          <div className="flex gap-8 border-b border-neutral-100">
+            <button 
+                onClick={() => setActiveTab("pages")}
+                className={cn(
+                    "pb-4 text-sm font-semibold transition-all relative",
+                    activeTab === "pages" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600"
+                )}
+            >
+                Spaces
+                {activeTab === "pages" && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />}
+            </button>
+            <button 
+                onClick={() => setActiveTab("activity")}
+                className={cn(
+                    "pb-4 text-sm font-semibold transition-all relative",
+                    activeTab === "activity" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600"
+                )}
+            >
+                Activity
+                {activeTab === "activity" && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />}
+            </button>
           </div>
       </div>
 
-      {/* Grid Content - Pages */}
-      <div className="px-5">
+      {/* Content - Spaces */}
+      <div className="px-6">
         <Masonry
             breakpointCols={{
                 default: 2,
@@ -171,123 +174,80 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
             className="flex gap-4"
             columnClassName="flex flex-col gap-4"
         >
-            {user.pages?.map((page: any, i: number) => {
-                const randomHeight = 180 + (i % 3) * 60; // Subtle variety in heights
-
-                return (
-                    <motion.div 
-                        key={page._id} 
-                        whileHover={{ scale: 1.02 }}
-                        className="group relative rounded-[24px] md:rounded-[32px] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-secondary)] cursor-pointer transition-all duration-500"
-                        style={{ height: `${randomHeight}px` }}
-                        onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
-                    >
+            {user.pages?.map((page: any) => (
+                <div 
+                    key={page._id} 
+                    className="group cursor-pointer mb-6"
+                    onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
+                >
+                    <div className="rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-50 h-48">
                         <img 
                             src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
-                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-700"
+                            className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                             alt={page.name}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 md:p-6 flex flex-col justify-end">
-                            <h3 className="font-black tracking-tighter text-white italic leading-tight text-lg">
-                                {page.name}
-                            </h3>
-                            
-                            <div className="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <button 
-                                    onClick={(e) => { e.stopPropagation(); isOwner && setEditingAesthetic(page._id); }}
-                                    className="px-2 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/5 text-[7px] font-black uppercase tracking-widest text-white flex items-center gap-1 hover:bg-white/20 transition-all"
-                                >
-                                    <Sparkles size={8} className="text-[var(--accent)]" /> {page.aesthetic?.theme || page.aesthetic}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Aesthetic Picker Overlay inside card */}
-                        <AnimatePresence>
-                            {isOwner && editingAesthetic === page._id && (
-                                <motion.div 
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className="absolute inset-0 z-50 bg-black/95 backdrop-blur-xl p-6 flex flex-col justify-center gap-4"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <h4 className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Select Aesthetic</h4>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {Object.keys(themes).map((theme) => (
-                                            <button
-                                                key={theme}
-                                                onClick={() => handleUpdateAesthetic(page._id, theme)}
-                                                className={cn(
-                                                    "h-10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
-                                                    (page.aesthetic?.theme || page.aesthetic) === theme 
-                                                        ? "bg-[var(--accent)] text-black" 
-                                                        : "bg-white/5 text-white/40 hover:bg-white/10"
-                                                )}
-                                            >
-                                                {theme}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <button 
-                                      onClick={() => setEditingAesthetic(null)}
-                                      className="mt-4 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white"
-                                    >
-                                        Cancel
-                                    </button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                );
-            })}
+                    </div>
+                    <div className="mt-3 px-1">
+                        <p className="text-sm font-semibold text-neutral-900 line-clamp-1">{page.name}</p>
+                        <p className="text-xs text-neutral-400 mt-0.5 font-medium uppercase tracking-widest">
+                            {page.aesthetic?.theme || page.aesthetic || 'minimal'}
+                        </p>
+                    </div>
+                </div>
+            ))}
         </Masonry>
 
         {user.pages?.length === 0 && (
-           <div className="py-20 text-center opacity-30">
-              <p className="text-xs font-black uppercase tracking-[0.3em] italic">No physical manifests detected.</p>
+           <div className="py-20 text-center text-neutral-300">
+              <p className="text-xs font-medium uppercase tracking-widest">No spaces found</p>
            </div>
         )}
       </div>
 
-      {/* Global Aesthetic Picker Overlay */}
+      {/* Aesthetic Picker Sheet */}
       <AnimatePresence>
           {modifyingUserAesthetic && (
               <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center"
+                  className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-end justify-center"
               >
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-6">
-                    <Sparkles size={10} /> Profile Vibe
-                  </div>
-                  <h3 className="text-3xl font-black tracking-tighter italic text-white mb-2">Change Aesthetic</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-10">Select your global identity perspective</p>
-                  
-                  <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
-                      {Object.keys(themes).map((theme) => (
-                          <button
-                              key={theme}
-                              onClick={() => handleUpdateUserAesthetic(theme)}
-                              className={cn(
-                                  "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                  user.aesthetic === theme 
-                                      ? "bg-[var(--accent)] text-black shadow-2xl shadow-[var(--accent-soft)]" 
-                                      : "bg-white/5 text-white/40 border border-white/5 hover:bg-white/10"
-                              )}
-                          >
-                              {theme}
-                          </button>
-                      ))}
-                  </div>
-
-                  <button 
-                    onClick={() => setModifyingUserAesthetic(false)}
-                    className="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-white transition-colors"
+                  <div className="absolute inset-0" onClick={() => setModifyingUserAesthetic(false)} />
+                  <motion.div 
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    className="relative w-full max-w-lg bg-white rounded-t-[32px] p-10 z-10"
                   >
-                      Close Portal
-                  </button>
+                      <h3 className="text-xl font-bold text-neutral-900 mb-2">Interface Aesthetic</h3>
+                      <p className="text-sm text-neutral-400 mb-8">Select your preferred visual identity</p>
+                      
+                      <div className="grid grid-cols-2 gap-3 mb-10">
+                          {Object.keys(themes).map((theme) => (
+                              <button
+                                  key={theme}
+                                  onClick={() => handleUpdateUserAesthetic(theme)}
+                                  className={cn(
+                                      "h-14 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
+                                      user.aesthetic === theme 
+                                          ? "bg-neutral-900 text-white" 
+                                          : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
+                                  )}
+                              >
+                                  {theme}
+                              </button>
+                          ))}
+                      </div>
+
+                      <button 
+                        onClick={() => setModifyingUserAesthetic(false)}
+                        className="w-full h-14 rounded-xl border border-neutral-100 text-neutral-400 font-semibold text-sm hover:text-neutral-900 transition-colors"
+                      >
+                          Done
+                      </button>
+                  </motion.div>
               </motion.div>
           )}
       </AnimatePresence>

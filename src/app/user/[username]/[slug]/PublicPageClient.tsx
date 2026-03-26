@@ -6,145 +6,119 @@ import { X, ShoppingBag, Share2, Sparkles, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { themes } from '@/lib/theme/themes';
 import { IOSBottomNav } from '@/components/ui/ios/ios-bottom-nav';
+import Masonry from 'react-masonry-css';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '@/store/cartSlice';
 
 export default function PublicPageClient({ page, user, items }: any) {
+  const dispatch = useDispatch();
   const [selectedItem, setSelectedItem] = useState<any>(null);
   
-  const themeName = page.aesthetic?.theme || page.aesthetic || 'minimal';
-  const theme = themes[themeName as keyof typeof themes] || themes.minimal;
+  const handleAddToCart = (item: any) => {
+    dispatch(addToCart({
+      id: item._id,
+      title: item.title,
+      price: item.price
+    }));
+  };
 
   return (
-    <div 
-      className="min-h-screen pb-32 transition-colors duration-1000"
-      style={theme as React.CSSProperties}
-    >
-      {/* Immersive Header */}
-      <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
-        <motion.img 
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
-          src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-current opacity-20" style={{ color: (theme as any)["--bg-primary"] }} />
-        
-        <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 flex flex-col items-center text-center">
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-[9px] font-black uppercase tracking-widest text-white mb-4"
-            >
-                <Sparkles size={10} className="text-[var(--accent)]" /> {themeName} Manifest
-            </motion.div>
-            <motion.h1 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-5xl md:text-7xl font-black tracking-tighter italic mb-4 drop-shadow-2xl text-white"
-            >
-                {page.name}
-            </motion.h1>
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center gap-3"
-            >
-                <img src={user.profile?.avatar || user.avatar} className="w-6 h-6 rounded-full border border-white/20" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">curated by @{user.username}</span>
-            </motion.div>
+    <div className="min-h-screen bg-white text-neutral-900 pb-32">
+      {/* Minimal Header */}
+      <div className="px-6 pt-10 pb-6 flex items-center justify-between border-b border-neutral-100">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+            {page.name}
+          </h1>
+          <p className="text-xs text-neutral-400 font-medium uppercase tracking-widest mt-1">
+            Manifested by @{user.username}
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors">
+            <Share2 size={20} />
+          </button>
         </div>
       </div>
 
-      {/* Grid Content */}
-      <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px]">
-        {items.map((item: any, i: number) => {
-           const isWide = i % 7 === 2;
-           const isTall = i % 7 === 5;
-           
-           return (
-             <motion.div
-               key={item._id}
-               initial={{ opacity: 0, scale: 0.9 }}
-               whileInView={{ opacity: 1, scale: 1 }}
-               viewport={{ once: true }}
-               className={cn(
-                  "group relative rounded-[32px] overflow-hidden cursor-pointer border border-white/5 bg-black/20 backdrop-blur-sm",
-                  isWide ? "col-span-2" : "col-span-1",
-                  isTall ? "row-span-2" : "row-span-1"
-               )}
-               onClick={() => setSelectedItem(item)}
-             >
-                <img 
-                   src={item.images?.[0]} 
-                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
-                    <h3 className="text-white font-black italic tracking-tighter text-xl">{item.title}</h3>
-                    <p className="text-white/40 text-[9px] font-black uppercase tracking-widest mt-1">₹{item.price}</p>
-                </div>
-             </motion.div>
-           );
-        })}
+      {/* Masonry Grid */}
+      <div className="max-w-7xl mx-auto px-6 mt-8">
+        <Masonry
+          breakpointCols={{
+            default: 2,
+            1100: 2,
+            700: 2,
+            500: 1
+          }}
+          className="flex gap-4 md:gap-6"
+          columnClassName="flex flex-col gap-4 md:gap-6"
+        >
+          {items.map((item: any) => (
+            <GalleryItem 
+              key={item._id} 
+              item={item} 
+              onSelect={setSelectedItem} 
+            />
+          ))}
+        </Masonry>
       </div>
 
-      {/* Full Screen Interactive View */}
+      {/* Simplified Modal */}
       <AnimatePresence>
         {selectedItem && (
            <motion.div
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
              exit={{ opacity: 0 }}
-             className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 overflow-hidden"
+             className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/40 backdrop-blur-sm p-0 md:p-6"
            >
-              {/* Blur Backdrop */}
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/30 backdrop-blur-[100px]"
-                onClick={() => setSelectedItem(null)}
-              />
+              {/* Overlay Backdrop */}
+              <div className="absolute inset-0" onClick={() => setSelectedItem(null)} />
 
               <motion.div
-                initial={{ scale: 0.9, y: 50, rotateX: 20 }}
-                animate={{ scale: 1, y: 0, rotateX: 0 }}
-                exit={{ scale: 0.9, y: 50, rotateX: 20 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="relative w-full max-w-5xl h-full max-h-[85vh] bg-white/5 backdrop-blur-2xl rounded-[48px] border border-white/10 overflow-hidden flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                md-initial={{ scale: 0.95, opacity: 0 }}
+                md-animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full md:max-w-4xl max-h-[90vh] bg-white rounded-t-[32px] md:rounded-[24px] overflow-hidden flex flex-col md:flex-row shadow-2xl z-10"
               >
-                 <div className="flex-1 relative bg-black/20">
-                    <img src={selectedItem.images?.[0]} className="w-full h-full object-contain" />
+                 <div className="flex-1 bg-neutral-50 flex items-center justify-center p-4">
+                    <img 
+                      src={selectedItem.image || (selectedItem.images && selectedItem.images.length > 0 ? selectedItem.images[0] : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')} 
+                      className="max-w-full max-h-[50vh] md:max-h-full object-contain" 
+                    />
                     <button 
                       onClick={() => setSelectedItem(null)}
-                      className="absolute top-8 left-8 w-12 h-12 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                      className="absolute top-6 right-6 p-2 bg-white/80 backdrop-blur-md rounded-full text-neutral-900 hover:bg-white transition-all shadow-sm"
                     >
                        <X size={20} />
                     </button>
                  </div>
 
-                 <div className="w-full md:w-[400px] p-10 flex flex-col justify-between border-l border-white/5 bg-black/10">
+                 <div className="w-full md:w-[380px] p-8 md:p-10 flex flex-col justify-between border-t md:border-t-0 md:border-l border-neutral-100">
                     <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-6">
-                            Verified Artifact
-                        </div>
-                        <h2 className="text-4xl font-black italic tracking-tighter text-white mb-4 leading-none">{selectedItem.title}</h2>
-                        <p className="text-white/40 text-xs leading-relaxed mb-8">{selectedItem.description || "The digital manifestation of a unique perspective. Sculpted by the currents of aesthetic identity."}</p>
+                        <h2 className="text-2xl font-bold tracking-tight text-neutral-900 mb-3">{selectedItem.title}</h2>
+                        <p className="text-sm text-neutral-500 leading-relaxed mb-8">
+                          {selectedItem.description || "A curated artifact of aesthetic convergence."}
+                        </p>
                         
-                        <div className="flex items-center gap-4 mb-10">
-                            <div className="flex-1 h-[1px] bg-white/5" />
-                            <span className="text-2xl font-black italic text-[var(--accent)] tracking-tighter">₹{selectedItem.price}</span>
-                            <div className="flex-1 h-[1px] bg-white/5" />
+                        <div className="py-6 border-y border-neutral-50 mb-8 flex items-center justify-between">
+                            <span className="text-xs font-bold uppercase tracking-widest text-neutral-400">Inventory Value</span>
+                            <span className="text-xl font-bold text-neutral-900">₹{selectedItem.price}</span>
                         </div>
                     </div>
 
                     <div className="space-y-3">
-                        <button className="w-full h-16 rounded-[24px] bg-[var(--accent)] text-[var(--bg-primary)] font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-[var(--accent-soft)]">
-                            <ShoppingBag size={16} /> Add to Manifest
+                        <button 
+                          onClick={() => { handleAddToCart(selectedItem); setSelectedItem(null); }}
+                          className="w-full h-14 rounded-xl bg-neutral-900 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-neutral-800 transition-all active:scale-[0.98]"
+                        >
+                            <ShoppingBag size={18} /> Add to Cart
                         </button>
-                        <button className="w-full h-14 rounded-[24px] bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[9px] flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
-                            <Share2 size={14} /> Distribute Perspective
+                        <button className="w-full h-14 rounded-xl border border-neutral-200 text-neutral-900 font-semibold text-sm flex items-center justify-center hover:bg-neutral-50 transition-all">
+                            Share Piece
                         </button>
                     </div>
                  </div>
@@ -154,6 +128,42 @@ export default function PublicPageClient({ page, user, items }: any) {
       </AnimatePresence>
 
       <IOSBottomNav />
+    </div>
+  );
+}
+
+function GalleryItem({ item, onSelect }: { item: any; onSelect: (it: any) => void }) {
+  const height = React.useMemo(() => {
+    const variants = [220, 260, 320, 280];
+    const seed = item._id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+    return variants[seed % variants.length];
+  }, [item._id]);
+
+  return (
+    <div
+      onClick={() => onSelect(item)}
+      className="group cursor-pointer mb-2"
+    >
+      <div
+        className="rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-100"
+        style={{ height: `${height}px` }}
+      >
+        <img
+          src={item.image || (item.images && item.images.length > 0 ? item.images[0] : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')}
+          className="w-full h-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          alt={item.title}
+        />
+      </div>
+
+      {/* Minimal Info */}
+      <div className="mt-3 px-1">
+        <p className="text-sm font-semibold text-neutral-900 line-clamp-1">
+          {item.title}
+        </p>
+        <p className="text-sm text-neutral-400 mt-0.5 font-medium">
+          ₹{item.price}
+        </p>
+      </div>
     </div>
   );
 }
