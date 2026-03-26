@@ -73,7 +73,7 @@ export const SuccessOverlayMobile = ({ onDone }: { onDone: () => void }) => (
         <Heart size={40} className="text-black" />
      </div>
      <h2 className="text-4xl font-bold tracking-tighter mb-4 italic">Aesthetic Deployed</h2>
-     <p className="text-white/40 mb-10">Your collection has been updated globally across the Artsy stack.</p>
+     <p className="text-white/40 mb-10">Your collection has been updated globally across the Astal stack.</p>
      <button onClick={onDone} className="w-full h-16 rounded-2xl bg-white text-black font-extrabold uppercase tracking-widest text-xs">Return to Studio</button>
   </div>
 );

@@ -28,6 +28,24 @@ export const Navbar = () => {
             sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit', fontWeight: 'bold', letterSpacing: 1 }}
           >
             Astal
+            <Box 
+              component="span" 
+              sx={{ 
+                ml: 1.5, 
+                fontSize: '9px', 
+                bgcolor: 'rgba(98, 70, 234, 0.1)', 
+                color: '#6246EA', 
+                px: 1, 
+                py: 0.3, 
+                borderRadius: '4px',
+                border: '1px solid rgba(98, 70, 234, 0.2)',
+                verticalAlign: 'middle',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              Coming Soon
+            </Box>
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

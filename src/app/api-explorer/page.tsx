@@ -51,7 +51,7 @@ export default function ApiExplorer() {
       <Box sx={{ mb: 6, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" gutterBottom 
           sx={{ fontWeight: 'bold', color: 'var(--accent)' }}>
-          ARTSY API Explorer
+          ASTAL API Explorer
         </Typography>
         <Typography variant="h6" color="text.secondary">
           ORE ARCHITECTURE: 12 Layers, 88 Endpoints
