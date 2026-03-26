@@ -47,11 +47,18 @@ export default function DashboardPage() {
     <div className="pb-24 md:pb-10 bg-white min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-neutral-100 pb-10">
-         <div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Creator Studio</h1>
-            <p className="mt-1 text-xs text-neutral-400 font-medium uppercase tracking-widest">
-              Management & Insights
-            </p>
+         <div className="flex items-center gap-4">
+            {session?.user?.image && (
+              <div className="w-14 h-14 rounded-2xl overflow-hidden border border-neutral-100 bg-neutral-50 shrink-0 shadow-sm">
+                  <img src={session.user.image} className="w-full h-full object-cover" alt={session.user.name || "User"} />
+              </div>
+            )}
+            <div>
+               <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Creator Studio</h1>
+               <p className="mt-1 text-xs text-neutral-400 font-medium uppercase tracking-widest">
+                 Management & Insights
+               </p>
+            </div>
          </div>
          <Link 
             href="/dashboard/create" 

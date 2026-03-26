@@ -26,13 +26,20 @@ export default function PublicPageClient({ page, user, items }: any) {
     <div className="min-h-screen bg-white text-neutral-900 pb-32">
       {/* Minimal Header */}
       <div className="px-6 pt-10 pb-6 flex items-center justify-between border-b border-neutral-100">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-            {page.name}
-          </h1>
-          <p className="text-xs text-neutral-400 font-medium uppercase tracking-widest mt-1">
-            Manifested by @{user.username}
-          </p>
+        <div className="flex items-center gap-4">
+          {page.coverImage && (
+            <div className="w-12 h-12 rounded-xl overflow-hidden border border-neutral-100 bg-neutral-50 shrink-0 shadow-sm">
+                <img src={page.coverImage} className="w-full h-full object-cover" alt={page.name} />
+            </div>
+          )}
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-neutral-900">
+              {page.name}
+            </h1>
+            <p className="text-[11px] text-neutral-400 font-medium uppercase tracking-widest mt-0.5">
+              Manifested by @{user.username}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <button className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors">
