@@ -9,7 +9,7 @@ import { RootState } from '@/store/store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Navbar = () => {
-  const cartItemsCount = useSelector((state: RootState) => state.cart.length);
+  const cartItemsCount = useSelector((state: RootState) => state.cart.items.length);
   const [showModal, setShowModal] = useState(false);
 
   const handleLoginClick = (e: React.MouseEvent) => {

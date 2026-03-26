@@ -4,17 +4,44 @@ interface CartItem {
   id: string;
   title: string;
   price: number;
+  image?: string;
+  quantity?: number;
 }
- 
+
+interface CartState {
+  items: CartItem[];
+}
+
+const initialState: CartState = {
+  items: [],
+};
+
 const cartSlice = createSlice({
   name: 'cart',
-  initialState: [] as CartItem[],
+  initialState,
   reducers: {
     addToCart(state, action: PayloadAction<CartItem>) {
-      state.push(action.payload);
+      const existingItem = state.items.find(item => item.id === action.payload.id);
+      if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + (action.payload.quantity || 1);
+      } else {
+        state.items.push({ ...action.payload, quantity: action.payload.quantity || 1 });
+      }
     },
+    updateQuantity(state, action: PayloadAction<{ id: string; quantity: number }>) {
+      const item = state.items.find(item => item.id === action.payload.id);
+      if (item) {
+        item.quantity = action.payload.quantity;
+      }
+    },
+    removeFromCart(state, action: PayloadAction<string>) {
+      state.items = state.items.filter(item => item.id !== action.payload);
+    },
+    clearCart(state) {
+      state.items = [];
+    }
   },
 });
  
-export const { addToCart } = cartSlice.actions;
+export const { addToCart, updateQuantity, removeFromCart, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
