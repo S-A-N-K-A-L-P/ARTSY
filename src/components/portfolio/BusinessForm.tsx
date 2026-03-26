@@ -581,14 +581,39 @@ export default function BusinessForm() {
                   
                   <Box sx={{ 
                     position: 'relative',
-                    borderRadius: '16px',
+                    borderRadius: '12px',
                     overflow: 'hidden',
-                    bgcolor: 'white',
-                    p: 2,
+                    bgcolor: '#fff',
+                    p: 1.5,
                     display: 'flex',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    minHeight: '200px'
                   }}>
-                    <img src="/astralseller.JPG" alt="Join via QR" style={{ width: '100%', height: 'auto', borderRadius: '8px' }} />
+                    <img 
+                      src="/astralseller.JPG" 
+                      alt="Join via QR" 
+                      style={{ 
+                        width: '100%', 
+                        height: 'auto', 
+                        display: 'block',
+                        borderRadius: '4px'
+                      }} 
+                      onError={(e) => {
+                        console.error("QR image failed to load");
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const msg = document.createElement('div');
+                          msg.innerText = 'Image failed to load. Please join via the WhatsApp button.';
+                          msg.style.color = '#ff6b6b';
+                          msg.style.padding = '20px';
+                          msg.style.fontSize = '12px';
+                          parent.appendChild(msg);
+                        }
+                      }}
+                    />
                   </Box>
 
                   <Button 
