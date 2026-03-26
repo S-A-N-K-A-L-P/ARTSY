@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Megaphone, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface StoreAnnouncementProps {
   title: string;
@@ -21,16 +21,31 @@ export const StoreAnnouncement = ({ title, message, onClose }: StoreAnnouncement
          <Megaphone size={20} />
       </div>
 
-      <div className="flex-1 space-y-2 relative z-10">
-         <h4 className="text-xs font-black uppercase tracking-[0.2em] text-amber-900">{title}</h4>
-         <p className="text-sm font-medium text-amber-800 leading-relaxed max-w-lg">{message}</p>
-      </div>
-
-      {onClose && (
-        <button onClick={onClose} className="p-2 text-amber-300 hover:text-amber-900 transition-colors shrink-0">
-          <X size={20} />
-        </button>
-      )}
+      <AnimatePresence>
+      <motion.div 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -50, opacity: 0 }}
+        className="bg-neutral-900 text-white py-4 px-6 flex items-center justify-between relative overflow-hidden group shadow-lg"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        
+        <div className="flex-1 flex items-center justify-center gap-4 relative z-10">
+           <Megaphone size={14} className="text-amber-400 animate-pulse" />
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-center">
+              {message} <span className="text-amber-400 ml-4 font-black tracking-normal italic uppercase">Explore Archives</span>
+           </p>
+        </div>
+        
+        <motion.button 
+          whileHover={{ rotate: 90 }}
+          onClick={() => {/* handle close if needed */}}
+          className="p-1 px-3 text-white/30 hover:text-white transition-all relative z-10"
+        >
+          <X size={14} />
+        </motion.button>
+      </motion.div>
+    </AnimatePresence>
     </div>
   );
 };

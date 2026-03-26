@@ -1,26 +1,22 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface InventoryBadgeProps {
   count: number;
-  lowStockThreshold?: number;
-  className?: string;
 }
 
-export const InventoryBadge = ({ count, lowStockThreshold = 5, className }: InventoryBadgeProps) => {
-  const isLow = count > 0 && count <= lowStockThreshold;
-  const isOut = count === 0;
-
+export const InventoryBadge = ({ count }: InventoryBadgeProps) => {
   return (
-    <div className={cn("inline-flex items-center gap-2", className)}>
-      <div className={cn(
-        "w-1.5 h-1.5 rounded-full animate-pulse",
-        isOut ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-emerald-500"
-      )} />
-      <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-        {isOut ? "Exhausted" : isLow ? "Limited Edition" : "In Stock"}
+    <div className="flex items-center gap-2 bg-neutral-100/50 px-3 py-1.5 rounded-full border border-neutral-100 shadow-sm relative overflow-hidden">
+      <motion.span 
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="w-1.5 h-1.5 rounded-full bg-emerald-500" 
+      />
+      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-900 leading-none">
+        {count} Manifested
       </span>
     </div>
   );

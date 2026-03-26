@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ChevronRight, Home } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 interface BreadcrumbTrailProps {
@@ -10,21 +11,31 @@ interface BreadcrumbTrailProps {
 
 export const BreadcrumbTrail = ({ items }: BreadcrumbTrailProps) => {
   return (
-    <nav className="flex items-center gap-4 py-8">
-      <Link href="/home" className="text-neutral-300 hover:text-neutral-900 transition-colors">
-        <Home size={16} />
-      </Link>
+    <motion.nav 
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="flex items-center gap-4 text-[9px] font-black uppercase tracking-[0.4em]"
+    >
+      <motion.button 
+        whileHover={{ scale: 1.1 }}
+        className="text-neutral-300 hover:text-neutral-900 transition-colors"
+      >
+        <Home size={12} />
+      </motion.button>
       {items.map((item, i) => (
         <React.Fragment key={i}>
-          <ChevronRight size={14} className="text-neutral-200" />
-          <Link 
-            href={item.href}
-            className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-all"
+          <ChevronRight size={10} className="text-neutral-100" />
+          <motion.button 
+             whileHover={{ x: 2 }}
+             className={cn(
+               "transition-all",
+               i === items.length - 1 ? "text-neutral-900 italic underline decoration-neutral-100 underline-offset-4" : "text-neutral-300 hover:text-neutral-900"
+             )}
           >
             {item.label}
-          </Link>
+          </motion.button>
         </React.Fragment>
       ))}
-    </nav>
+    </motion.nav>
   );
 };

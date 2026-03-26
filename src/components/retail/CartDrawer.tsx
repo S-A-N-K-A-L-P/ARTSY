@@ -31,8 +31,8 @@ export const CartDrawer = ({ isOpen, onClose, items, onRemove, onUpdateQuantity 
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="relative w-full max-w-md bg-white h-full flex flex-col shadow-2xl"
+            transition={{ type: "spring", damping: 30, stiffness: 250 }}
+            className="relative w-full max-w-md bg-white/80 backdrop-blur-3xl h-full flex flex-col shadow-[-20px_0_80px_rgba(0,0,0,0.1)]"
           >
             <div className="p-8 border-b border-neutral-100 flex items-center justify-between">
               <div>
@@ -52,38 +52,49 @@ export const CartDrawer = ({ isOpen, onClose, items, onRemove, onUpdateQuantity 
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="flex gap-4">
-                    <div className="w-20 h-20 rounded-2xl bg-neutral-50 border border-neutral-100 overflow-hidden shrink-0">
-                      <img src={item.image} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-bold text-neutral-900 truncate">{item.title}</h4>
-                      <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">₹{item.price}</p>
-                      
-                      <div className="flex items-center justify-between mt-3">
-                         <div className="flex items-center gap-3">
-                            <button onClick={() => onUpdateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))} className="text-neutral-300 hover:text-neutral-900"><Minus size={12} /></button>
-                            <span className="text-[10px] font-bold text-neutral-900">{item.quantity || 1}</span>
-                            <button onClick={() => onUpdateQuantity(item.id, (item.quantity || 1) + 1)} className="text-neutral-300 hover:text-neutral-900"><Plus size={12} /></button>
-                         </div>
-                         <button onClick={() => onRemove(item.id)} className="text-neutral-200 hover:text-red-500 transition-colors">
-                            <Trash2 size={12} />
-                         </button>
+                    <motion.div 
+                      key={item.id} 
+                      layout 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-4 group"
+                    >
+                      <div className="w-20 h-20 rounded-2xl bg-neutral-100 border border-neutral-100 overflow-hidden shrink-0 transition-all group-hover:shadow-lg group-hover:scale-105">
+                        <img src={item.image} className="w-full h-full object-cover" />
                       </div>
-                    </div>
-                  </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[11px] font-black text-neutral-900 uppercase tracking-widest truncate">{item.title}</h4>
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">₹{item.price}</p>
+                        
+                        <div className="flex items-center justify-between mt-3">
+                           <div className="flex items-center gap-4 bg-neutral-50 rounded-full px-3 py-1">
+                              <button onClick={() => onUpdateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))} className="text-neutral-400 hover:text-neutral-900 active:scale-95 transition-all"><Minus size={10} /></button>
+                              <span className="text-[10px] font-black text-neutral-900 min-w-[12px] text-center">{item.quantity || 1}</span>
+                              <button onClick={() => onUpdateQuantity(item.id, (item.quantity || 1) + 1)} className="text-neutral-400 hover:text-neutral-900 active:scale-95 transition-all"><Plus size={10} /></button>
+                           </div>
+                           <button onClick={() => onRemove(item.id)} className="text-neutral-200 hover:text-neutral-900 transition-colors">
+                              <Trash2 size={12} />
+                           </button>
+                        </div>
+                      </div>
+                    </motion.div>
                 ))
               )}
             </div>
 
-            <div className="p-8 border-t border-neutral-100 bg-neutral-50/30">
+            <div className="p-8 border-t border-neutral-100 bg-white/50">
               <div className="flex items-center justify-between mb-8">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Total Value</span>
-                <span className="text-2xl font-black text-neutral-900 tracking-tighter">₹{total}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Archival Total</span>
+                <span className="text-3xl font-black text-neutral-900 tracking-tighter">₹{total}</span>
               </div>
-              <button className="w-full h-18 rounded-2xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-neutral-200 active:scale-[0.98] transition-all disabled:opacity-30" disabled={items.length === 0}>
-                Synchronize & Order
-              </button>
+              <motion.button 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full h-18 rounded-2xl bg-neutral-900 text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-neutral-200 active:bg-neutral-800 transition-all disabled:opacity-30" 
+                disabled={items.length === 0}
+              >
+                Synchronize manifest
+              </motion.button>
             </div>
           </motion.div>
         </div>

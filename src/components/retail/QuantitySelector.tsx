@@ -3,6 +3,7 @@
 import React from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface QuantitySelectorProps {
   quantity: number;
@@ -15,22 +16,24 @@ export const QuantitySelector = ({ quantity, onChange, max = 99 }: QuantitySelec
   const decrement = () => quantity > 1 && onChange(quantity - 1);
 
   return (
-    <div className="flex items-center gap-4 bg-neutral-50 rounded-2xl h-14 px-6 border border-neutral-100">
-      <button 
+    <div className="flex items-center gap-1 bg-neutral-100/50 p-1.5 rounded-2xl border border-neutral-100">
+      <motion.button 
+        whileTap={{ scale: 0.9 }}
         onClick={decrement}
-        className="p-1 text-neutral-400 hover:text-neutral-900 transition-colors"
+        className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-neutral-400 hover:text-neutral-900 shadow-sm transition-all disabled:opacity-30"
         disabled={quantity <= 1}
       >
-        <Minus size={16} />
-      </button>
-      <span className="text-xs font-bold text-neutral-900 min-w-8 text-center">{quantity}</span>
-      <button 
+        <Minus size={14} />
+      </motion.button>
+      <span className="text-[11px] font-black text-neutral-900 min-w-[48px] text-center uppercase tracking-widest">{quantity}</span>
+      <motion.button 
+        whileTap={{ scale: 0.9 }}
         onClick={increment}
-        className="p-1 text-neutral-400 hover:text-neutral-900 transition-colors"
+        className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-neutral-400 hover:text-neutral-900 shadow-sm transition-all disabled:opacity-30"
         disabled={quantity >= max}
       >
-        <Plus size={16} />
-      </button>
+        <Plus size={14} />
+      </motion.button>
     </div>
   );
 };

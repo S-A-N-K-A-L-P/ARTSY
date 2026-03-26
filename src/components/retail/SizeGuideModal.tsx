@@ -23,10 +23,10 @@ export const SizeGuideModal = ({ isOpen, onClose }: SizeGuideModalProps) => {
           />
           
           <motion.div 
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-xl bg-white rounded-[32px] p-10 z-10"
+            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            className="relative w-full max-w-xl bg-white/80 backdrop-blur-3xl rounded-[32px] p-10 z-10 shadow-[0_20px_80px_rgba(0,0,0,0.1)]"
           >
             <div className="flex items-center justify-between mb-8">
                <div className="flex items-center gap-3">
@@ -68,12 +68,14 @@ export const SizeGuideModal = ({ isOpen, onClose }: SizeGuideModalProps) => {
                </p>
             </div>
 
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={onClose}
-              className="w-full h-14 rounded-xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-widest mt-10 active:scale-[0.98] transition-all"
+              className="w-full h-14 rounded-xl bg-neutral-900 text-white font-black text-[10px] uppercase tracking-[0.2em] mt-10 shadow-lg active:bg-neutral-800 transition-all"
             >
               Confirm Orientation
-            </button>
+            </motion.button>
           </motion.div>
         </div>
       )}

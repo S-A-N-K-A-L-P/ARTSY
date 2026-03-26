@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface OptionPickerProps {
   label: string;
@@ -13,28 +14,30 @@ interface OptionPickerProps {
 
 export const OptionPicker = ({ label, options, selected, onChange, type = 'button' }: OptionPickerProps) => {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{label}</span>
-        <span className="text-[10px] font-bold text-neutral-900 uppercase tracking-widest">{selected}</span>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between px-1">
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-300">{label}</span>
+        <span className="text-[10px] font-black text-neutral-900 uppercase tracking-[0.2em]">{selected}</span>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {options.map((opt) => (
-          <button
+          <motion.button
             key={opt}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => onChange(opt)}
             className={cn(
-              "transition-all active:scale-95",
+              "transition-all",
               type === 'button' ? (
                 cn(
-                  "px-6 h-12 rounded-xl text-[11px] font-bold uppercase tracking-widest border",
+                  "px-8 h-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border",
                   selected === opt 
                     ? "bg-neutral-900 border-neutral-900 text-white shadow-xl shadow-black/10" 
                     : "bg-white border-neutral-100 text-neutral-400 hover:border-neutral-900 hover:text-neutral-900"
                 )
               ) : (
                 cn(
-                  "w-10 h-10 rounded-full border-2 p-0.5 transition-all",
+                  "w-12 h-12 rounded-full border-2 p-1 transition-all",
                   selected === opt ? "border-neutral-900" : "border-transparent"
                 )
               )
@@ -42,9 +45,9 @@ export const OptionPicker = ({ label, options, selected, onChange, type = 'butto
             style={type === 'color' ? { backgroundColor: opt } : {}}
           >
             {type === 'button' ? opt : (
-              <div className="w-full h-full rounded-full border border-black/5" style={{ backgroundColor: opt }} />
+              <div className="w-full h-full rounded-full border border-black/5 shadow-inner" style={{ backgroundColor: opt }} />
             )}
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>

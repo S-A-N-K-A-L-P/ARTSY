@@ -11,23 +11,28 @@ interface ImageCarouselProps {
 }
 
 export const ImageCarousel = ({ images, className }: ImageCarouselProps) => {
-  const [index, setIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const next = () => setIndex((prev) => (prev + 1) % images.length);
-  const prev = () => setIndex((prev) => (prev - 1 + images.length) % images.length);
+  const next = () => setCurrentIndex((prev) => (prev + 1) % images.length);
+  const prev = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
     <div className={cn("relative group overflow-hidden bg-neutral-100", className)}>
       <AnimatePresence mode="wait">
-        <motion.img
-          key={index}
-          src={images[index]}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="w-full h-full object-cover"
-        />
+        <motion.div
+           key={currentIndex}
+           initial={{ opacity: 0, scale: 1.1 }}
+           animate={{ opacity: 1, scale: 1 }}
+           exit={{ opacity: 0, scale: 0.95 }}
+           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+           className="w-full h-full"
+        >
+           <img
+             src={images[currentIndex]}
+             alt={`Slide ${currentIndex}`}
+             className="w-full h-full object-cover"
+           />
+        </motion.div>
       </AnimatePresence>
 
       {images.length > 1 && (
@@ -45,12 +50,12 @@ export const ImageCarousel = ({ images, className }: ImageCarouselProps) => {
           
           <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-1.5">
             {images.map((_, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={cn(
-                  "h-1 rounded-full transition-all duration-500",
-                  i === index ? "w-6 bg-neutral-900" : "w-1.5 bg-neutral-300"
-                )} 
+                  "w-12 h-1 rounded-full bg-white transition-all duration-500",
+                  i === currentIndex ? "opacity-100 shadow-[0_0_10px_rgba(255,255,255,0.5)]" : "opacity-20 hover:opacity-40"
+                )}
               />
             ))}
           </div>
