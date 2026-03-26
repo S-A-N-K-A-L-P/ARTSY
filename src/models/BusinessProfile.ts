@@ -10,6 +10,7 @@ const BusinessProfileSchema = new mongoose.Schema({
   productsSell: { type: String, required: true },
   minPrice: { type: Number },
   maxPrice: { type: Number },
+  sampleImages: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
 });
 
