@@ -148,7 +148,7 @@ export default function ItemDetailPage() {
                       Acquire Aesthetic <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                    </button>
                    <p className="text-center text-[9px] font-bold uppercase tracking-widest opacity-30 flex items-center justify-center gap-2">
-                      <Shield size={12} /> Authenticity Guaranteed via Artsy Protocol
+                      <Shield size={12} /> Authenticity Guaranteed via Astal Protocol
                    </p>
                 </div>
               </motion.div>

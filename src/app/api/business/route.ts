@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     let imageUrls: string[] = [];
     if (images && Array.isArray(images) && images.length > 0) {
       const uploadPromises = images.map((base64: string) => 
-        uploadToCloudinary(base64, 'artsy/business_samples')
+        uploadToCloudinary(base64, 'astal/business_samples')
       );
       imageUrls = await Promise.all(uploadPromises);
     }
