@@ -56,7 +56,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
                     alt={item.title}
                     sx={{ aspectRatio: '4/5', objectFit: 'cover' }}
                 />
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                <CardContent sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 2 }}>
                         <Chip 
                             label={item.aesthetic} 
@@ -78,13 +78,13 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
                         )}
                     </Box>
                     
-                    <Typography variant='subtitle1' fontWeight={800} sx={{ letterSpacing: '-0.02em', mb: 1, minHeight: '3em', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <Typography variant='subtitle1' fontWeight={800} sx={{ fontSize: { xs: '13px', md: '16px' }, letterSpacing: '-0.02em', mb: 1, minHeight: '3em', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {item.title}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, my: 2 }}>
-                        <Avatar src={item.creator.avatar} sx={{ width: 28, height: 28, border: '1px solid var(--border-strong)' }} />
-                        <Typography variant='caption' sx={{ fontWeight: 700, opacity: 0.6, letterSpacing: '0.02em' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: { xs: 1, md: 2 } }}>
+                        <Avatar src={item.creator.avatar} sx={{ width: { xs: 20, md: 28 }, height: { xs: 20, md: 28 }, border: '1px solid var(--border-strong)' }} />
+                        <Typography variant='caption' sx={{ fontSize: { xs: '9px', md: '12px' }, fontWeight: 700, opacity: 0.6, letterSpacing: '0.02em' }}>
                             @{item.creator.username}
                         </Typography>
                     </Box>
@@ -126,6 +126,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
                             variant='outlined'
                             endIcon={<ArrowUpRight size={14} />}
                             sx={{
+                                display: { xs: 'none', md: 'flex' },
                                 borderRadius: 4,
                                 textTransform: 'none',
                                 fontWeight: 900,

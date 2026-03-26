@@ -162,10 +162,8 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
       {/* Grid Content - Pages */}
       <div className="px-5 grid grid-cols-2 gap-3 auto-rows-[minmax(140px,auto)]">
         {user.pages?.map((page: any, i: number) => {
-          // Staggered logic: 2 small, 1 wide, 1 tall
-          const mod = i % 4;
-          const isWide = mod === 2;
-          const isTall = mod === 3;
+          const isWide = false;
+          const isTall = false;
 
           return (
             <motion.div 
