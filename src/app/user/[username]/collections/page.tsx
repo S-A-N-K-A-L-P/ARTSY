@@ -1,1 +1,0 @@
-export default function UserCollectionsPage() { return <h1>User Collections</h1>; }

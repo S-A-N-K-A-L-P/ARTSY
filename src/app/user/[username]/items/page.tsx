@@ -1,1 +1,0 @@
-export default function UserItemsPage() { return <h1>User Items</h1>; }

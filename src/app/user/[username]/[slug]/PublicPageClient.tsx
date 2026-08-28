@@ -19,6 +19,7 @@ import { ImageCarousel } from '@/components/retail/ImageCarousel';
 import { RelatedProducts } from '@/components/retail/RelatedProducts';
 import { PaymentTrustBadge } from '@/components/retail/PaymentTrustBadge';
 import { TechSpecsTable } from '@/components/retail/TechSpecsTable';
+import { Badge, Button, EmptyState } from '@/components/ui';
 
 const ALL = 'All';
 
@@ -147,12 +148,9 @@ export default function PublicPageClient({ page, user, items }: any) {
 
           <div className="hidden lg:flex flex-col gap-5">
             <StoreStatus isOpen={page?.settings?.isPublic !== false} />
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="w-full h-14 rounded-2xl bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.24em] shadow-[var(--elevation-medium)] hover:scale-[1.02] active:scale-[0.98] transition-transform"
-            >
-              Open Manifest ({cartItems.length})
-            </button>
+            <Button block size="lg" onClick={() => setIsCartOpen(true)}>
+              Open bag ({cartItems.length})
+            </Button>
           </div>
         </aside>
 
@@ -194,22 +192,21 @@ export default function PublicPageClient({ page, user, items }: any) {
               ))}
             </Masonry>
           ) : (
-            <div className="py-28 text-center border border-dashed border-line rounded-ios">
-              <ShoppingBag size={34} className="mx-auto mb-4 text-text-muted opacity-40" />
-              <p className="text-sm font-medium text-text-secondary">
-                {activeCategory === ALL
+            <EmptyState
+              icon={<ShoppingBag size={34} />}
+              title={
+                activeCategory === ALL
                   ? 'This archive is empty for now.'
-                  : `Nothing tagged “${activeCategory}” yet.`}
-              </p>
-              {activeCategory !== ALL && (
-                <button
-                  onClick={() => setActiveCategory(ALL)}
-                  className="mt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-accent"
-                >
-                  Show everything
-                </button>
-              )}
-            </div>
+                  : `Nothing tagged \u201C${activeCategory}\u201D yet.`
+              }
+              action={
+                activeCategory !== ALL ? (
+                  <Button variant="secondary" onClick={() => setActiveCategory(ALL)}>
+                    Show everything
+                  </Button>
+                ) : undefined
+              }
+            />
           )}
         </main>
       </div>
@@ -395,12 +392,7 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
           {item.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {item.tags.map((t: string) => (
-                <span
-                  key={t}
-                  className="px-2.5 py-1 rounded-full border border-line text-[10px] font-bold uppercase tracking-wider text-text-muted"
-                >
-                  {t}
-                </span>
+                <Badge key={t}>{t}</Badge>
               ))}
             </div>
           )}
@@ -413,16 +405,17 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
             <QuantitySelector quantity={quantity} onChange={setQuantity} />
           </div>
 
-          <button
+          <Button
+            block
+            size="lg"
+            iconLeft={<ShoppingBag size={16} />}
             onClick={() => {
               for (let i = 0; i < quantity; i++) onAddToCart(item);
               onClose();
             }}
-            className="w-full h-14 rounded-2xl bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
           >
-            <ShoppingBag size={16} />
             Add to bag
-          </button>
+          </Button>
 
           <PaymentTrustBadge />
 

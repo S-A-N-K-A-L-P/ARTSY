@@ -1,1 +1,0 @@
-export default function UserAboutPage() { return <h1>About User</h1>; }
