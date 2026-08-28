@@ -5,8 +5,8 @@ import { Footer } from '@/components/layout/Footer';
 import { Box } from '@mui/material';
 
 export const metadata = {
-  title: 'Join Us | Astal Business Profile',
-  description: 'Tell us about your business and join the Astal community.',
+  title: 'Join Us | Astl Business Profile',
+  description: 'Tell us about your business and join the Astl community.',
 };
 
 export default function JoinUsPage() {

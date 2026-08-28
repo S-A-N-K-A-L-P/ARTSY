@@ -19,7 +19,7 @@ export function IOSNavBar({
   const router = useRouter();
 
   return (
-    <div className={cn("sticky top-0 z-50 w-full bg-bg/80 backdrop-blur-xl border-b border-white/5", className)}>
+    <div className={cn("sticky top-0 z-50 w-full bg-bg/80 backdrop-blur-xl border-b border-line", className)}>
       <div className="flex items-center justify-between h-14 px-4">
         <div className="flex-1">
           {showBack && (

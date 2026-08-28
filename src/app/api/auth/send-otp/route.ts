@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         // Lazy-initialize the Twilio client only when real credentials are present
         const client = twilio(sid, process.env.TWILIO_AUTH_TOKEN);
         await client.messages.create({
-            body: `Your Arty code: ${otp}`,
+            body: `Your Astl code: ${otp}`,
             from: process.env.TWILIO_PHONE_NUMBER,
             to: phone,
         });

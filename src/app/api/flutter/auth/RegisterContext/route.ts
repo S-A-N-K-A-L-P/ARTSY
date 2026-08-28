@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const imageToUpload = body.image || body.avatar || body.profile_pic;
     if (imageToUpload && (imageToUpload.startsWith('data:image') || imageToUpload.startsWith('http') === false)) {
       try {
-        const cloudinaryUrl = await uploadToCloudinary(imageToUpload, 'artsy/avatars');
+        const cloudinaryUrl = await uploadToCloudinary(imageToUpload, 'astl/avatars');
         body.avatar = cloudinaryUrl;
       } catch (uploadErr) {
         console.warn("Cloudinary upload failed, proceeding with default avatar", uploadErr);

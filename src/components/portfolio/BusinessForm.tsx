@@ -149,7 +149,7 @@ export default function BusinessForm() {
             Join the Collective.
           </Typography>
           <Typography variant="body1" sx={{ color: COLORS.muted, fontWeight: 500, maxWidth: '360px' }}>
-            Submit your business details for verification and inclusion in the Astal discovery network.
+            Submit your business details for verification and inclusion in the Astl discovery network.
           </Typography>
         </Box>
 

@@ -43,7 +43,7 @@ export default function HeroSection() {
             WebkitTextFillColor: 'transparent',
           }}
         >
-          ARTY
+          ASTL
         </Typography>
         
         <Typography 

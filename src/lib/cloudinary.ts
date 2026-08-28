@@ -12,7 +12,7 @@ cloudinary.config({
  * @param file - Base64 string or file path
  * @param folder - Cloudinary folder name
  */
-export async function uploadToCloudinary(file: string, folder: string = 'artsy/profiles') {
+export async function uploadToCloudinary(file: string, folder: string = 'astl/profiles') {
   try {
     const result = await cloudinary.uploader.upload(file, {
       folder: folder,
