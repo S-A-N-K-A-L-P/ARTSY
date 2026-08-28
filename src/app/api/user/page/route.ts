@@ -22,7 +22,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const page = await Page.findOne({ ownerId: user._id, slug, isPublic: true });
+/*
+     * Visibility lives at settings.isPublic on the Page schema, not at the top
+     * level. Querying a bare `isPublic: true` matched no document ever, so this
+     * endpoint returned 404 for every request. $ne:false keeps older records
+     * that predate the settings block visible, matching the schema default.
+     */
+    const page = await Page.findOne({
+      ownerId: user._id,
+      slug,
+      'settings.isPublic': { $ne: false },
+    });
     if (!page) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }

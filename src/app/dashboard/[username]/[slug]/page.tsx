@@ -1,167 +1,194 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft,
-  Filter,
-  Grid,
-  List,
-  ChevronRight,
-  ShoppingBag,
-  Loader2,
-  Maximize2
-} from 'lucide-react';
-import Masonry from 'react-masonry-css';
-import { useAesthetic } from '@/aesthetics/AestheticProvider';
-import AestheticRenderer from '@/components/aesthetics/AestheticRenderer';
-import { cn } from '@/lib/utils';
-import { 
-  SidebarFilterPanel, 
+import Link from 'next/link';
+import { ChevronLeft, Package } from 'lucide-react';
+import { resolveTheme } from '@/lib/theme/themes';
+import {
+  SidebarFilterPanel,
   MasonryGridDesktop,
   StorefrontFooterDesktop,
   BreadcrumbNavigation,
-  HoverPreviewCard
+  HoverPreviewCard,
 } from '@/components/creator/CreatorDesktopUI';
 import { CategoryScrollerMobile } from '@/components/creator/CreatorMobileUI';
+import { Button, EmptyState, SkeletonGrid, Skeleton, Stack } from '@/components/ui';
+
+const ALL = 'All';
 
 export default function CollectionViewPage() {
   const params = useParams();
   const router = useRouter();
   const { username, slug } = params as { username: string; slug: string };
-  const { setAesthetic, aesthetic } = useAesthetic();
-  
+
   const [page, setPage] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCat, setSelectedCat] = useState('All Items');
+  const [selectedCat, setSelectedCat] = useState(ALL);
 
   useEffect(() => {
-    const fetchPageData = async () => {
+    if (!username || !slug) return;
+    let cancelled = false;
+    (async () => {
       try {
         setLoading(true);
         const res = await fetch(`/api/user/page?username=${username}&slug=${slug}`);
         const data = await res.json();
+        if (cancelled) return;
         if (data.success) {
           setPage(data.page);
-          setItems(data.items || []);
-          
-          if (data.page?.aesthetic) {
-            setAesthetic(data.page.aesthetic);
-          }
+          setItems(data.items ?? []);
         }
       } catch (err) {
         console.error('Fetch Page Error:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    if (username && slug) fetchPageData();
-  }, [username, slug, setAesthetic]);
+  }, [username, slug]);
+
+  /*
+   * Scoped to this subtree rather than pushed into global state.
+   *
+   * This called setAesthetic(data.page.aesthetic), which persists via
+   * PUT /api/user/aesthetic — viewing a space rewrote the visitor's own saved
+   * theme. It also passed the whole aesthetic object where a theme name was
+   * expected, so it actually reset you to 'soft'.
+   */
+  const theme = resolveTheme(page?.aesthetic?.theme ?? page?.aesthetic);
+
+  // Categories from the items that exist, not a hardcoded
+  // ['All Pieces','Clothing','Art','Furniture','Digital'] that filtered nothing.
+  const categories = useMemo(() => {
+    const tags = new Set<string>();
+    items.forEach((i: any) => (i.tags ?? []).forEach((t: string) => t?.trim() && tags.add(t.trim())));
+    return [ALL, ...Array.from(tags).sort()];
+  }, [items]);
+
+  const visibleItems = useMemo(
+    () =>
+      selectedCat === ALL
+        ? items
+        : items.filter((i: any) => (i.tags ?? []).includes(selectedCat)),
+    [items, selectedCat]
+  );
 
   if (loading) {
     return (
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin opacity-20" />
+      <div className="min-h-screen bg-bg px-6 md:px-10 py-10">
+        <Stack gap="lg">
+          <Skeleton className="h-14 w-80" />
+          <SkeletonGrid count={6} />
+        </Stack>
       </div>
     );
   }
 
-  if (!page) return (
-     <div className="min-h-screen flex items-center justify-center">
-        <p className="opacity-20 font-bold tracking-widest uppercase">Space not found</p>
-     </div>
-  );
-
-  const masonryBreakpoints = { default: 3, 1100: 2, 700: 2, 500: 1 };
+  if (!page) {
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center px-6">
+        <EmptyState
+          icon={<Package size={34} />}
+          title="Space not found"
+          description="This space may have been removed or made private."
+          action={
+            <Link href={`/dashboard/${username}`}>
+              <Button>Back to profile</Button>
+            </Link>
+          }
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen transition-all duration-700" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
-      {/* Desktop Navigation */}
-      <div className="hidden md:block">
-        <BreadcrumbNavigation paths={[
-           { label: `@${username}`, href: `/dashboard/${username}` },
-           { label: page.name }
-        ]} />
+    <div
+      data-theme={theme}
+      style={{ fontFamily: 'var(--font)' }}
+      className="min-h-screen bg-bg text-text"
+    >
+      <div className="hidden md:block px-10 pt-8">
+        <BreadcrumbNavigation
+          paths={[{ label: `@${username}`, href: `/dashboard/${username}` }, { label: page.name }]}
+        />
       </div>
 
-      {/* Mobile/Tablet Header */}
-      <header className="md:hidden px-6 h-20 flex items-center justify-between sticky top-0 backdrop-blur-3xl z-40 border-b border-line">
-        <button onClick={() => router.push(`/dashboard/${username}`)} className="p-2 opacity-40">
-           <ArrowLeft size={20} />
+      <header className="md:hidden px-5 h-16 flex items-center gap-3 sticky top-0 bg-bg/90 backdrop-blur-xl z-40 border-b border-line">
+        <button
+          onClick={() => router.push(`/dashboard/${username}`)}
+          aria-label="Back to profile"
+          className="p-2 -ml-2 text-text-muted hover:text-text transition-colors"
+        >
+          <ChevronLeft size={20} />
         </button>
-        <h1 className="text-sm font-bold tracking-tight italic">{page.name}</h1>
-        <button className="p-2 opacity-40">
-           <ShoppingBag size={20} />
-        </button>
+        <h1 className="text-sm font-bold tracking-tight truncate">{page.name}</h1>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-6 md:px-10 pb-40">
-         {/* Hero Section */}
-         <div className="py-20 max-w-4xl">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-               <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 italic">{page.name}</h2>
-               <p className="text-lg md:text-xl font-medium opacity-40 leading-relaxed max-w-2xl">{page.description}</p>
-            </motion.div>
-         </div>
+      <main className="max-w-[1600px] mx-auto px-5 md:px-10 pb-24">
+        <div className="py-10 md:py-14 max-w-3xl">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-text">{page.name}</h2>
+          {page.description && (
+            <p className="mt-3 text-base text-text-secondary leading-relaxed">{page.description}</p>
+          )}
+        </div>
 
-         <div className="flex flex-col xl:flex-row gap-16">
-            {/* Desktop Sidebars */}
-            <div className="hidden xl:block">
-               <SidebarFilterPanel 
-                 categories={['All Pieces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
-                 selectedCat={selectedCat} 
-                 onSelect={setSelectedCat} 
-               />
-            </div>
+        <div className="flex flex-col xl:flex-row gap-10">
+          {categories.length > 1 && (
+            <SidebarFilterPanel
+              categories={categories}
+              selectedCat={selectedCat}
+              onSelect={setSelectedCat}
+            />
+          )}
 
-            <div className="flex-1 space-y-12">
-               {/* Mobile Category Scroller */}
-               <div className="xl:hidden">
-                  <CategoryScrollerMobile 
-                    cats={['All Pieces', 'Clothing', 'Art', 'Furniture', 'Digital']} 
-                    selected={selectedCat} 
-                    onSelect={setSelectedCat} 
+          <div className="flex-1 min-w-0 space-y-6">
+            {categories.length > 1 && (
+              <div className="xl:hidden">
+                <CategoryScrollerMobile
+                  cats={categories}
+                  selected={selectedCat}
+                  onSelect={setSelectedCat}
+                />
+              </div>
+            )}
+
+            {visibleItems.length > 0 ? (
+              /* One grid for every width. The old page rendered a desktop
+                 masonry and a second mobile masonry of the same items, so both
+                 trees mounted and the item list was built twice. */
+              <MasonryGridDesktop>
+                {visibleItems.map((item: any) => (
+                  <HoverPreviewCard
+                    key={item._id}
+                    item={item}
+                    onClick={() => router.push(`/dashboard/${username}/${slug}/${item._id}`)}
                   />
-               </div>
-
-               {/* Grid Content */}
-               <div className="hidden md:block">
-                  <MasonryGridDesktop>
-                     {items.map((item) => (
-                        <HoverPreviewCard 
-                          key={item._id} 
-                          item={item} 
-                          onClick={() => router.push(`/dashboard/${username}/${slug}/${item._id}`)} 
-                        />
-                     ))}
-                     {items.length === 0 && (
-                        <div className="col-span-full py-40 border-2 border-dashed border-line rounded-[60px] flex flex-col items-center justify-center text-center">
-                           <p className="opacity-20 font-bold uppercase tracking-[0.5em] text-xs underline underline-offset-8">No pieces found in this vibe</p>
-                        </div>
-                     )}
-                  </MasonryGridDesktop>
-               </div>
-
-               {/* Mobile/Layout View fallback */}
-               <div className="md:hidden space-y-8">
-                  <Masonry breakpointCols={masonryBreakpoints} className="flex -ml-6 w-auto" columnClassName="pl-6 space-y-6">
-                     {items.map((item) => (
-                        <AestheticRenderer 
-                           key={item._id}
-                           component="ItemCard"
-                           props={{ 
-                             ...item,
-                             onClick: () => router.push(`/dashboard/${username}/${slug}/${item._id}`) 
-                           }}
-                           fallback={<div className="h-64 rounded-3xl bg-card/5" />}
-                        />
-                     ))}
-                  </Masonry>
-               </div>
-            </div>
-         </div>
+                ))}
+              </MasonryGridDesktop>
+            ) : (
+              <EmptyState
+                icon={<Package size={34} />}
+                title={items.length === 0 ? 'Nothing here yet' : `Nothing tagged “${selectedCat}”`}
+                description={
+                  items.length === 0
+                    ? 'This space has no items published.'
+                    : 'Try another category.'
+                }
+                action={
+                  selectedCat !== ALL ? (
+                    <Button variant="secondary" onClick={() => setSelectedCat(ALL)}>
+                      Show everything
+                    </Button>
+                  ) : undefined
+                }
+              />
+            )}
+          </div>
+        </div>
       </main>
 
       <StorefrontFooterDesktop />
