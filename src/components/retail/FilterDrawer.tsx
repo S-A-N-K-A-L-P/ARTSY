@@ -55,7 +55,7 @@ export const FilterDrawer = ({ isOpen, onClose, categories, activeCategory, onSe
                     )}
                   >
                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">{cat}</span>
-                     <ChevronRight size={16} className={cn(activeCategory === cat ? "text-white" : "text-text-muted")} />
+                     <ChevronRight size={16} className={cn(activeCategory === cat ? "text-text" : "text-text-muted")} />
                   </motion.button>
                ))}
             </div>

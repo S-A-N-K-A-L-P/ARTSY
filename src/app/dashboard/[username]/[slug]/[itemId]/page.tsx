@@ -81,7 +81,7 @@ export default function ItemDetailPage() {
       </div>
 
       {/* Mobile/Tablet Header */}
-      <header className="md:hidden px-6 h-20 flex items-center justify-between sticky top-0 backdrop-blur-3xl z-50 border-b border-white/5">
+      <header className="md:hidden px-6 h-20 flex items-center justify-between sticky top-0 backdrop-blur-3xl z-50 border-b border-line">
         <button onClick={() => router.push(`/dashboard/${username}/${slug}`)} className="p-2 opacity-40">
            <ArrowLeft size={20} />
         </button>
@@ -97,21 +97,21 @@ export default function ItemDetailPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }} 
             animate={{ opacity: 1, scale: 1 }} 
-            className="aspect-[4/5] rounded-[64px] overflow-hidden bg-white/5 group relative cursor-zoom-in"
+            className="aspect-[4/5] rounded-[64px] overflow-hidden bg-card/5 group relative cursor-zoom-in"
           >
              <img 
                src={item.images?.[0] || 'https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=1200&auto=format&fit=crop'} 
                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000" 
                alt={item.title} 
              />
-             <div className="absolute top-10 right-10 w-14 h-14 rounded-full bg-black/40 backdrop-blur-3xl border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+             <div className="absolute top-10 right-10 w-14 h-14 rounded-full bg-black/40 backdrop-blur-3xl border border-line flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
                 <Maximize2 size={20} />
              </div>
           </motion.div>
           
           <div className="grid grid-cols-4 gap-6">
              {item.images?.slice(1).map((img: string, i: number) => (
-                <div key={i} className="aspect-square rounded-[32px] overflow-hidden bg-white/5 cursor-pointer hover:ring-2 hover:ring-white/20 transition-all opacity-60 hover:opacity-100">
+                <div key={i} className="aspect-square rounded-[32px] overflow-hidden bg-card/5 cursor-pointer hover:ring-2 hover:ring-white/20 transition-all opacity-60 hover:opacity-100">
                    <img src={img} className="w-full h-full object-cover" alt="" />
                 </div>
              ))}
@@ -124,7 +124,7 @@ export default function ItemDetailPage() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <div className="flex items-center gap-3 mb-6 opacity-40">
                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">{item.category}</span>
-                 <div className="w-1 h-1 rounded-full bg-white/40" />
+                 <div className="w-1 h-1 rounded-full bg-card/40" />
                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">{item.aesthetic}</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 italic leading-none">{item.title}</h1>
@@ -132,7 +132,7 @@ export default function ItemDetailPage() {
             </motion.div>
 
             {item.isForSale && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="p-10 rounded-[48px] bg-white text-black shadow-2xl space-y-8">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="p-10 rounded-[48px] bg-card text-text shadow-2xl space-y-8">
                 <div className="flex justify-between items-end">
                    <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-1">Market Valuation</p>
@@ -144,7 +144,7 @@ export default function ItemDetailPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 gap-3">
-                   <button className="h-20 w-full bg-black text-white rounded-[24px] font-black uppercase tracking-[0.3em] text-[10px] active:scale-[0.98] transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-4 group">
+                   <button className="h-20 w-full bg-accent text-bg rounded-[24px] font-black uppercase tracking-[0.3em] text-[10px] active:scale-[0.98] transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-4 group">
                       Acquire Aesthetic <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                    </button>
                    <p className="text-center text-[9px] font-bold uppercase tracking-widest opacity-30 flex items-center justify-center gap-2">
@@ -155,7 +155,7 @@ export default function ItemDetailPage() {
             )}
 
             <div className="space-y-12">
-               <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 border-b border-white/5 pb-6">Technical Specifications</h3>
+               <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-text/20 border-b border-line pb-6">Technical Specifications</h3>
                <AttributeDataGrid attributes={item.attributes} />
                
                {item.customFields?.length > 0 && (

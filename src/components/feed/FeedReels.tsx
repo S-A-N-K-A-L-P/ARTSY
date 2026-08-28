@@ -21,6 +21,7 @@ interface FeedItem {
 }
 
 export default function FeedReels() {
+  const { addToCart } = useCart();
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -78,10 +79,25 @@ export default function FeedReels() {
     );
   }
 
+  const active = items[activeIndex];
+
+  const addToCartFromRail = (item: FeedItem) =>
+    addToCart({ id: item.id, title: item.title, price: item.price, image: item.image });
+
   return (
-    <div 
-      className="relative w-full max-w-md mx-auto h-[calc(100vh-140px)] md:h-[calc(100vh-100px)] group/container"
-    >
+    /*
+     * Desktop stage. The reel is a phone-shaped column, and it used to sit at
+     * max-w-md in the middle of a ~1600px content area with a viewport-height
+     * that overflowed the page — a narrow card marooned in empty space with
+     * its own Add-to-bag button cut off below the fold. It now sits in a
+     * bounded stage beside a detail rail that uses the width, and its height
+     * is capped so nothing is clipped.
+     */
+    <div className="w-full flex justify-center">
+     <div className="w-full max-w-5xl flex gap-10 items-center">
+      <div
+        className="relative w-full max-w-[380px] mx-auto lg:mx-0 shrink-0 aspect-[9/16] max-h-[calc(100vh-230px)] group/container"
+      >
       <div 
         ref={containerRef}
         onScroll={handleScroll}
@@ -107,11 +123,56 @@ export default function FeedReels() {
       </div>
 
       {/* Floating Scroll Indicators */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-20 pointer-events-none opacity-0 group-hover/container:opacity-100 transition-opacity">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-6 z-20 pointer-events-none opacity-0 group-hover/container:opacity-100 transition-opacity">
         <motion.div animate={{ y: [0, 5, 0] }} transition={{ repeat: Infinity }}>
-          <ChevronDown className="text-white/20" size={24} />
+          <ChevronDown className="text-text-muted" size={22} />
         </motion.div>
       </div>
+      </div>
+
+      {/* Detail rail — fills the space the lone reel used to leave empty */}
+      {active && (
+        <aside className="hidden lg:flex flex-1 min-w-0 flex-col gap-5">
+          <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-soft text-accent text-[var(--text-label)] font-bold uppercase tracking-[0.12em]">
+            <Sparkles size={11} /> {active.aesthetic}
+          </span>
+
+          <div>
+            <h2 className="text-3xl font-black tracking-tighter text-text leading-tight">
+              {active.title}
+            </h2>
+            <p className="mt-1.5 text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">
+              @{active.author}
+            </p>
+          </div>
+
+          {active.description && (
+            <p className="text-sm text-text-secondary leading-relaxed line-clamp-4">
+              {active.description}
+            </p>
+          )}
+
+          {active.price > 0 && (
+            <p className="text-2xl font-black tabular-nums text-text tracking-tight">
+              {`₹${Number(active.price).toLocaleString('en-IN')}`}
+            </p>
+          )}
+
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              onClick={() => addToCartFromRail(active)}
+              className="h-12 px-6 rounded-[var(--radius-md)] bg-accent text-bg text-xs font-bold uppercase tracking-[0.18em] flex items-center gap-2 active:scale-[0.98] transition-transform"
+            >
+              <ShoppingBag size={15} />
+              Add to bag
+            </button>
+            <span className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">
+              {activeIndex + 1} / {items.length}
+            </span>
+          </div>
+        </aside>
+      )}
+     </div>
     </div>
   );
 }
@@ -162,27 +223,27 @@ const ReelCard = React.memo(({ item, isActive }: { item: FeedItem, isActive: boo
           <div className="flex items-center gap-2">
             <motion.span 
               whileHover={{ scale: 1.05 }}
-              className="px-3 py-1 rounded-full backdrop-blur-md bg-white/10 text-[9px] font-black uppercase tracking-widest text-white/80 border border-white/5"
+              className="px-3 py-1 rounded-full backdrop-blur-md bg-card/10 text-[9px] font-black uppercase tracking-widest text-white/80 border border-line"
             >
               {item.aesthetic}
             </motion.span>
-            <span className="text-[10px] font-bold text-white/40 italic">@{item.author}</span>
+            <span className="text-[10px] font-bold text-text/40 italic">@{item.author}</span>
           </div>
 
           <div className="relative">
             <h3 className="text-3xl font-black tracking-tighter text-white drop-shadow-lg leading-tight">{item.title}</h3>
             {item.description && (
-              <p className="text-[11px] text-white/60 line-clamp-2 mt-3 leading-relaxed font-medium italic">{item.description}</p>
+              <p className="text-[11px] text-text/60 line-clamp-2 mt-3 leading-relaxed font-medium italic">{item.description}</p>
             )}
           </div>
 
           <div className="flex items-center gap-4 pointer-events-auto">
-             <span className="text-xl font-black text-white tracking-tighter">${item.price}</span>
+             <span className="text-xl font-black text-text tracking-tighter tabular-nums">{`₹${Number(item.price || 0).toLocaleString('en-IN')}`}</span>
              <motion.button 
                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
                whileTap={{ scale: 0.95 }}
                onClick={() => addToCart(item)}
-               className="h-12 px-8 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl relative overflow-hidden group/btn"
+               className="h-12 px-8 rounded-2xl bg-card text-text text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl relative overflow-hidden group/btn"
              >
                <span className="relative z-10">Add to Bag</span>
                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
@@ -199,7 +260,7 @@ const ReelCard = React.memo(({ item, isActive }: { item: FeedItem, isActive: boo
             onClick={handleLike}
             className={cn(
               "w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md transition-all",
-              liked ? "bg-red-500/20 text-red-500" : "bg-white/10 text-white"
+              liked ? "bg-red-500/20 text-red-500" : "bg-card/10 text-text"
             )}
           >
             <AnimatePresence mode="wait">
@@ -220,7 +281,7 @@ const ReelCard = React.memo(({ item, isActive }: { item: FeedItem, isActive: boo
           <motion.button 
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.9 }}
-            className="w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md bg-white/10 text-white"
+            className="w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md bg-card/10 text-white"
           >
             <MessageCircle size={24} />
           </motion.button>
@@ -234,7 +295,7 @@ const ReelCard = React.memo(({ item, isActive }: { item: FeedItem, isActive: boo
              setTimeout(() => setSharing(false), 2000);
           }}
           className={cn(
-            "w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md bg-white/10 text-white transition-colors",
+            "w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md bg-card/10 text-white transition-colors",
             sharing && "bg-blue-500/20 text-blue-400"
           )}
         >
@@ -243,7 +304,7 @@ const ReelCard = React.memo(({ item, isActive }: { item: FeedItem, isActive: boo
 
         <motion.div 
           whileHover={{ scale: 1.1, rotate: 5 }}
-          className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl relative"
+          className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-line shadow-2xl relative"
         >
            <Image src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${item.author}`} alt="" fill className="object-cover" />
         </motion.div>

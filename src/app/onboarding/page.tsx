@@ -127,9 +127,9 @@ export default function OnboardingPage() {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#050505] text-text flex flex-col font-sans">
       {/* Progress Bar */}
-      <div className="h-1 bg-white/5 w-full fixed top-0 z-50">
+      <div className="h-1 bg-card/5 w-full fixed top-0 z-50">
         <motion.div 
           className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400"
           initial={{ width: 0 }}
@@ -148,7 +148,7 @@ export default function OnboardingPage() {
             className="w-full"
           >
             <div className="mb-16 text-center">
-              <span className="text-xs font-bold text-white/20 uppercase tracking-[0.3em] block mb-4">Phase {currentStep + 1} of {steps.length}</span>
+              <span className="text-xs font-bold text-text/20 uppercase tracking-[0.3em] block mb-4">Phase {currentStep + 1} of {steps.length}</span>
               <h1 className="text-5xl md:text-6xl font-bold tracking-tighter bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">{currentStepData.title}</h1>
             </div>
 
@@ -170,8 +170,8 @@ export default function OnboardingPage() {
                     onClick={() => handleSelect(currentStepData.id, option.id, currentStepData.multi)}
                     className={`cursor-pointer group relative overflow-hidden p-6 rounded-[32px] border transition-all duration-500 ${
                       isSelected 
-                        ? 'bg-white/10 border-white/20 shadow-[0_20px_40px_rgba(0,0,0,0.3)]' 
-                        : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
+                        ? 'bg-card/10 border-line shadow-[0_20px_40px_rgba(0,0,0,0.3)]' 
+                        : 'bg-card/[0.02] border-line hover:bg-card/[0.04] hover:border-line'
                     }`}
                   >
                     {/* Background Visual for Aesthetics */}
@@ -189,7 +189,7 @@ export default function OnboardingPage() {
                           <div className={`w-12 h-12 rounded-full bg-gradient-to-br shadow-lg ${option.color}`} />
                         ) : (
                           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${
-                            isSelected ? 'bg-white text-black' : 'bg-white/5 text-white/40'
+                            isSelected ? 'bg-card text-text' : 'bg-card/5 text-text/40'
                           }`}>
                             {currentStep === 0 && (
                               <>
@@ -209,7 +209,7 @@ export default function OnboardingPage() {
                           <motion.div 
                             initial={{ scale: 0, rotate: -45 }} 
                             animate={{ scale: 1, rotate: 0 }}
-                            className="bg-white text-black w-6 h-6 rounded-full flex items-center justify-center shadow-xl"
+                            className="bg-card text-text w-6 h-6 rounded-full flex items-center justify-center shadow-xl"
                           >
                             <Check size={14} strokeWidth={3} />
                           </motion.div>
@@ -218,7 +218,7 @@ export default function OnboardingPage() {
 
                       <h3 className="font-bold text-xl tracking-tight mb-1">{option.label}</h3>
                       {option.description && (
-                        <p className="text-white/40 text-sm font-medium leading-relaxed">{option.description}</p>
+                        <p className="text-text/40 text-sm font-medium leading-relaxed">{option.description}</p>
                       )}
                     </div>
                   </motion.div>
@@ -233,8 +233,8 @@ export default function OnboardingPage() {
         <button 
           onClick={back}
           disabled={currentStep === 0}
-          className={`flex items-center gap-2 pr-8 pl-6 py-4 rounded-2xl border border-white/5 font-bold text-sm tracking-wide transition-all ${
-            currentStep === 0 ? 'opacity-0 pointer-events-none' : 'hover:bg-white/5'
+          className={`flex items-center gap-2 pr-8 pl-6 py-4 rounded-2xl border border-line font-bold text-sm tracking-wide transition-all ${
+            currentStep === 0 ? 'opacity-0 pointer-events-none' : 'hover:bg-card/5'
           }`}
         >
           <ChevronLeft size={18} />
@@ -243,7 +243,7 @@ export default function OnboardingPage() {
         <button 
           onClick={next}
           disabled={!formData[currentStepData.id] || (currentStepData.multi && (formData[currentStepData.id] as string[]).length === 0)}
-          className="flex items-center gap-3 px-12 py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all disabled:opacity-30"
+          className="flex items-center gap-3 px-12 py-4 rounded-2xl bg-card text-text font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all disabled:opacity-30"
         >
           {loading ? "Initializing..." : currentStep === steps.length - 1 ? "Enter Workspace" : "Continue"}
           {!loading && <ChevronRight size={18} />}

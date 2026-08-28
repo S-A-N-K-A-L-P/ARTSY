@@ -33,7 +33,7 @@ const RADII: Record<Size, string> = {
  * The one button.
  *
  * Every screen used to hand-roll its own
- * `h-14 rounded-2xl bg-neutral-900 text-white text-[10px] uppercase
+ * `h-14 rounded-2xl bg-accent text-bg text-[10px] uppercase
  * tracking-[0.3em]`, which is why no two buttons in the app matched and why
  * none of them survived a dark aesthetic. Colours here are tokens only.
  */

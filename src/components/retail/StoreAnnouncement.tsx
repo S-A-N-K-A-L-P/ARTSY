@@ -26,7 +26,7 @@ export const StoreAnnouncement = ({ title, message, onClose }: StoreAnnouncement
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -50, opacity: 0 }}
-        className="bg-neutral-900 text-white py-4 px-6 flex items-center justify-between relative overflow-hidden group shadow-lg"
+        className="bg-accent text-bg py-4 px-6 flex items-center justify-between relative overflow-hidden group shadow-lg"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
         
@@ -40,7 +40,7 @@ export const StoreAnnouncement = ({ title, message, onClose }: StoreAnnouncement
         <motion.button 
           whileHover={{ rotate: 90 }}
           onClick={() => {/* handle close if needed */}}
-          className="p-1 px-3 text-white/30 hover:text-white transition-all relative z-10"
+          className="p-1 px-3 text-text/30 hover:text-text transition-all relative z-10"
         >
           <X size={14} />
         </motion.button>

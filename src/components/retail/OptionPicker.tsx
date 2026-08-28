@@ -16,8 +16,8 @@ export const OptionPicker = ({ label, options, selected, onChange, type = 'butto
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between px-1">
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-300">{label}</span>
-        <span className="text-[10px] font-black text-neutral-900 uppercase tracking-[0.2em]">{selected}</span>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted">{label}</span>
+        <span className="text-[10px] font-black text-text uppercase tracking-[0.2em]">{selected}</span>
       </div>
       <div className="flex flex-wrap gap-2.5">
         {options.map((opt) => (
@@ -32,13 +32,13 @@ export const OptionPicker = ({ label, options, selected, onChange, type = 'butto
                 cn(
                   "px-8 h-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border",
                   selected === opt 
-                    ? "bg-neutral-900 border-neutral-900 text-white shadow-xl shadow-black/10" 
-                    : "bg-white border-neutral-100 text-neutral-400 hover:border-neutral-900 hover:text-neutral-900"
+                    ? "bg-accent border-accent text-bg shadow-xl shadow-black/10" 
+                    : "bg-card border-line text-text-muted hover:border-accent hover:text-text"
                 )
               ) : (
                 cn(
                   "w-12 h-12 rounded-full border-2 p-1 transition-all",
-                  selected === opt ? "border-neutral-900" : "border-transparent"
+                  selected === opt ? "border-accent" : "border-transparent"
                 )
               )
             )}

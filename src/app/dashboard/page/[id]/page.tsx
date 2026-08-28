@@ -61,7 +61,7 @@ export default function PageHubPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-line-strong border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -69,8 +69,8 @@ export default function PageHubPage() {
   if (!page) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-500 text-sm">Page not found</p>
-        <Link href="/dashboard" className="text-sm text-white underline mt-2 inline-block">Back to Dashboard</Link>
+        <p className="text-text-muted text-sm">Page not found</p>
+        <Link href="/dashboard" className="text-sm text-text underline mt-2 inline-block">Back to Dashboard</Link>
       </div>
     );
   }
@@ -78,7 +78,7 @@ export default function PageHubPage() {
   return (
     <div className="max-w-5xl">
       {/* Back */}
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-6">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text transition-colors mb-6">
         <ArrowLeft size={16} />
         Back to Pages
       </Link>
@@ -89,18 +89,18 @@ export default function PageHubPage() {
           {page.coverImage ? (
             <img src={page.coverImage} alt="" className="w-12 h-12 rounded-xl object-cover" />
           ) : (
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-lg font-semibold text-zinc-400">
+            <div className="w-12 h-12 rounded-xl bg-elevated flex items-center justify-center text-lg font-semibold text-text-muted">
               {page.name?.charAt(0)}
             </div>
           )}
           <div>
-            <h2 className="text-xl font-semibold text-white">{page.name}</h2>
-            <p className="text-sm text-zinc-500">/{page.slug} · {page.type || 'gallery'}</p>
+            <h2 className="text-xl font-semibold text-text">{page.name}</h2>
+            <p className="text-sm text-text-muted">/{page.slug} · {page.type || 'gallery'}</p>
           </div>
         </div>
         <Link
           href={`/user/${page.slug}`}
-          className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-zinc-800 text-sm text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-line text-sm text-text-muted hover:text-text transition-colors"
         >
           <Eye size={14} />
           View Public
@@ -108,20 +108,20 @@ export default function PageHubPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-zinc-800 mb-6">
+      <div className="flex gap-1 border-b border-line mb-6">
         {(['feed', 'items', 'settings'] as Tab[]).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab
-                ? 'border-white text-white'
-                : 'border-transparent text-zinc-500 hover:text-white'
+                ? 'border-line text-text'
+                : 'border-transparent text-text-muted hover:text-text'
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            {tab === 'items' && <span className="ml-1.5 text-xs text-zinc-600">{items.length}</span>}
-            {tab === 'feed' && <span className="ml-1.5 text-xs text-zinc-600">{posts.length}</span>}
+            {tab === 'items' && <span className="ml-1.5 text-xs text-text-secondary">{items.length}</span>}
+            {tab === 'feed' && <span className="ml-1.5 text-xs text-text-secondary">{posts.length}</span>}
           </button>
         ))}
       </div>
@@ -130,10 +130,10 @@ export default function PageHubPage() {
       {activeTab === 'items' && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-zinc-500">{items.length} item{items.length !== 1 ? 's' : ''}</p>
+            <p className="text-sm text-text-muted">{items.length} item{items.length !== 1 ? 's' : ''}</p>
             <Link
               href={`/dashboard/page/${pageId}/item/new`}
-              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors"
+              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-card text-text text-sm font-medium hover:bg-elevated transition-colors"
             >
               <Plus size={16} />
               Add Item
@@ -141,8 +141,8 @@ export default function PageHubPage() {
           </div>
 
           {items.length === 0 ? (
-            <div className="border border-dashed border-zinc-800 rounded-xl p-12 text-center">
-              <p className="text-zinc-500 text-sm mb-4">No items yet. Add your first item.</p>
+            <div className="border border-dashed border-line rounded-xl p-12 text-center">
+              <p className="text-text-muted text-sm mb-4">No items yet. Add your first item.</p>
               <ItemGrid items={[]} isOwner={true} aesthetic={page.aesthetic?.theme || page.aesthetic} />
             </div>
           ) : (
@@ -166,10 +166,10 @@ export default function PageHubPage() {
       {activeTab === 'feed' && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-zinc-500">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+            <p className="text-sm text-text-muted">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
             <Link
               href={`/dashboard/page/${pageId}/post/new`}
-              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors"
+              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-card text-text text-sm font-medium hover:bg-elevated transition-colors"
             >
               <Plus size={16} />
               Add Post
@@ -177,11 +177,11 @@ export default function PageHubPage() {
           </div>
 
           {posts.length === 0 ? (
-            <div className="border border-dashed border-zinc-800 rounded-xl p-12 text-center">
-              <p className="text-zinc-500 text-sm mb-4">No posts yet. Create a post to showcase your items.</p>
+            <div className="border border-dashed border-line rounded-xl p-12 text-center">
+              <p className="text-text-muted text-sm mb-4">No posts yet. Create a post to showcase your items.</p>
               <Link
                 href={`/dashboard/page/${pageId}/post/new`}
-                className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-colors"
+                className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-elevated text-text text-sm font-medium hover:brightness-110 transition-colors"
               >
                 <Plus size={16} />
                 Create Post
@@ -190,18 +190,18 @@ export default function PageHubPage() {
           ) : (
             <div className="space-y-4">
               {posts.map((post: any) => (
-                <div key={post._id} className="border border-zinc-800 rounded-xl p-5">
+                <div key={post._id} className="border border-line rounded-xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h3 className="text-sm font-medium text-white">{post.title}</h3>
-                      <p className="text-xs text-zinc-500 mt-0.5">{post.type || 'showcase'} · {post.itemIds?.length || 0} items</p>
+                      <h3 className="text-sm font-medium text-text">{post.title}</h3>
+                      <p className="text-xs text-text-muted mt-0.5">{post.type || 'showcase'} · {post.itemIds?.length || 0} items</p>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-md bg-zinc-800 text-zinc-400">{post.visibility || 'public'}</span>
+                    <span className="text-xs px-2 py-1 rounded-md bg-elevated text-text-muted">{post.visibility || 'public'}</span>
                   </div>
-                  {post.caption && <p className="text-sm text-zinc-400">{post.caption}</p>}
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-zinc-800/50">
-                    <span className="text-xs text-zinc-500">❤️ {post.engagement?.likes || 0}</span>
-                    <span className="text-xs text-zinc-500">💬 {post.engagement?.comments || 0}</span>
+                  {post.caption && <p className="text-sm text-text-muted">{post.caption}</p>}
+                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-line/50">
+                    <span className="text-xs text-text-muted">❤️ {post.engagement?.likes || 0}</span>
+                    <span className="text-xs text-text-muted">💬 {post.engagement?.comments || 0}</span>
                   </div>
                 </div>
               ))}
@@ -213,24 +213,24 @@ export default function PageHubPage() {
       {activeTab === 'settings' && (
         <div className="space-y-6 max-w-lg">
           <div>
-            <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Page Name</label>
+            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Page Name</label>
             <input
               value={page.name}
               readOnly
-              className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white focus:outline-none"
+              className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text focus:outline-none"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Aesthetic</label>
+            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Aesthetic</label>
             <input
               value={page.aesthetic?.theme || page.aesthetic || 'minimal'}
               readOnly
-              className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white focus:outline-none"
+              className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text focus:outline-none"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Visibility</label>
-            <span className="text-sm text-zinc-400">{page.settings?.isPublic !== false ? 'Public' : 'Private'}</span>
+            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Visibility</label>
+            <span className="text-sm text-text-muted">{page.settings?.isPublic !== false ? 'Public' : 'Private'}</span>
           </div>
         </div>
       )}

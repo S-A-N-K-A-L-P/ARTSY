@@ -87,7 +87,7 @@ export default function CollectionViewPage() {
       </div>
 
       {/* Mobile/Tablet Header */}
-      <header className="md:hidden px-6 h-20 flex items-center justify-between sticky top-0 backdrop-blur-3xl z-40 border-b border-white/5">
+      <header className="md:hidden px-6 h-20 flex items-center justify-between sticky top-0 backdrop-blur-3xl z-40 border-b border-line">
         <button onClick={() => router.push(`/dashboard/${username}`)} className="p-2 opacity-40">
            <ArrowLeft size={20} />
         </button>
@@ -137,7 +137,7 @@ export default function CollectionViewPage() {
                         />
                      ))}
                      {items.length === 0 && (
-                        <div className="col-span-full py-40 border-2 border-dashed border-white/5 rounded-[60px] flex flex-col items-center justify-center text-center">
+                        <div className="col-span-full py-40 border-2 border-dashed border-line rounded-[60px] flex flex-col items-center justify-center text-center">
                            <p className="opacity-20 font-bold uppercase tracking-[0.5em] text-xs underline underline-offset-8">No pieces found in this vibe</p>
                         </div>
                      )}
@@ -155,7 +155,7 @@ export default function CollectionViewPage() {
                              ...item,
                              onClick: () => router.push(`/dashboard/${username}/${slug}/${item._id}`) 
                            }}
-                           fallback={<div className="h-64 rounded-3xl bg-white/5" />}
+                           fallback={<div className="h-64 rounded-3xl bg-card/5" />}
                         />
                      ))}
                   </Masonry>

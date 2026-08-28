@@ -54,66 +54,66 @@ export default function CreatePagePage() {
   return (
     <div className="max-w-xl">
       {/* Back */}
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-6">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text transition-colors mb-6">
         <ArrowLeft size={16} />
         Back to Pages
       </Link>
 
-      <h2 className="text-xl font-semibold text-white mb-1">Create Page</h2>
-      <p className="text-sm text-zinc-500 mb-8">Set up a new page for your content.</p>
+      <h2 className="text-xl font-semibold text-text mb-1">Create Page</h2>
+      <p className="text-sm text-text-muted mb-8">Set up a new page for your content.</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name */}
         <div>
-          <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Name</label>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Name</label>
           <input
             value={form.name}
             onChange={(e) => handleSlugify(e.target.value)}
             placeholder="Streetwear Vault"
-            className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+            className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors"
           />
         </div>
 
         {/* Slug */}
         <div>
-          <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Slug</label>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Slug</label>
           <div className="flex items-center">
-            <span className="h-10 px-3 flex items-center rounded-l-lg bg-zinc-800 border border-r-0 border-zinc-700 text-sm text-zinc-500">/</span>
+            <span className="h-10 px-3 flex items-center rounded-l-lg bg-elevated border border-r-0 border-line-strong text-sm text-text-muted">/</span>
             <input
               value={form.slug}
               onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
               placeholder="streetwear-vault"
-              className="flex-1 h-10 px-3 rounded-r-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+              className="flex-1 h-10 px-3 rounded-r-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors"
             />
           </div>
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Description</label>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Description</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
             placeholder="A curated collection of..."
             rows={3}
-            className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors resize-none"
+            className="w-full px-3 py-2 rounded-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors resize-none"
           />
         </div>
 
         {/* Cover Image */}
         <div>
-          <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Cover Image URL</label>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Cover Image URL</label>
           <input
             value={form.coverImage}
             onChange={(e) => setForm(f => ({ ...f, coverImage: e.target.value }))}
             placeholder="https://..."
-            className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+            className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors"
           />
         </div>
 
         {/* Type */}
         <div>
-          <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Type</label>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Type</label>
           <div className="flex gap-2">
             {TYPES.map(t => (
               <button
@@ -122,8 +122,8 @@ export default function CreatePagePage() {
                 onClick={() => setForm(f => ({ ...f, type: t }))}
                 className={`h-9 px-4 rounded-lg text-sm font-medium transition-colors ${
                   form.type === t
-                    ? 'bg-white text-black'
-                    : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white'
+                    ? 'bg-card text-text'
+                    : 'bg-card border border-line text-text-muted hover:text-text'
                 }`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -134,7 +134,7 @@ export default function CreatePagePage() {
 
         {/* Aesthetic */}
         <div>
-          <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Aesthetic</label>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Aesthetic</label>
           <div className="flex flex-wrap gap-2">
             {AESTHETICS.map(a => (
               <button
@@ -143,8 +143,8 @@ export default function CreatePagePage() {
                 onClick={() => setForm(f => ({ ...f, aesthetic: a }))}
                 className={`h-8 px-3 rounded-md text-xs font-medium transition-colors ${
                   form.aesthetic === a
-                    ? 'bg-white text-black'
-                    : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white'
+                    ? 'bg-card text-text'
+                    : 'bg-card border border-line text-text-muted hover:text-text'
                 }`}
               >
                 {a.charAt(0).toUpperCase() + a.slice(1)}
@@ -158,13 +158,13 @@ export default function CreatePagePage() {
 
         {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
-          <Link href="/dashboard" className="h-9 px-4 rounded-lg border border-zinc-800 text-sm text-zinc-400 hover:text-white flex items-center transition-colors">
+          <Link href="/dashboard" className="h-9 px-4 rounded-lg border border-line text-sm text-text-muted hover:text-text flex items-center transition-colors">
             Cancel
           </Link>
           <button
             type="submit"
             disabled={loading || !form.name || !form.slug}
-            className="h-9 px-6 rounded-lg bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-9 px-6 rounded-lg bg-card text-text text-sm font-medium hover:bg-elevated transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating...' : 'Create Page'}
           </button>

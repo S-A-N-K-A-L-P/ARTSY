@@ -34,8 +34,8 @@ export function InventoryProductCard({ item, onEdit, onDelete }: InventoryProduc
         {/* Aesthetic Chip Overlay */}
         <div className="absolute top-4 left-4 flex gap-2">
             <div className="px-3 py-1.5 rounded-full bg-card/20 backdrop-blur-xl border border-white/30 flex items-center gap-1.5 shadow-2xl">
-                <Sparkles size={10} className="text-white" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-white leading-none">
+                <Sparkles size={10} className="text-text" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-text leading-none">
                     {item.aesthetic || 'minimal'}
                 </span>
             </div>

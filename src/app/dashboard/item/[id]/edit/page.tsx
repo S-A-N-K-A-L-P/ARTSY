@@ -131,8 +131,8 @@ export default function EditItemPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
-        <Loader2 className="w-8 h-8 text-white/20 animate-spin mb-4" />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Accessing Artifact Records...</p>
+        <Loader2 className="w-8 h-8 text-text/20 animate-spin mb-4" />
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text/20">Accessing Artifact Records...</p>
       </div>
     );
   }
@@ -151,8 +151,8 @@ export default function EditItemPage() {
              </div>
           </Link>
            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Edit Artifact Phase</p>
-              <h1 className="text-xl font-black tracking-tighter text-white">Modification Console</h1>
+              <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Edit Artifact Phase</p>
+              <h1 className="text-xl font-black tracking-tighter text-text">Modification Console</h1>
            </div>
         </div>
 
@@ -163,7 +163,7 @@ export default function EditItemPage() {
            >
               Redact Artifact
            </button>
-           <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5">
+           <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-card/5 border border-line">
               <Sparkles size={14} className="text-amber-400" />
               <span className="text-[10px] font-black uppercase tracking-widest opacity-40">{form.aesthetic} Mode</span>
            </div>
@@ -177,7 +177,7 @@ export default function EditItemPage() {
                key={step} 
                className={cn(
                   "h-1.5 flex-1 rounded-full transition-all duration-700",
-                  i <= currentIndex ? "bg-white" : "bg-white/5"
+                  i <= currentIndex ? "bg-card" : "bg-card/5"
                )} 
             />
          ))}
@@ -234,10 +234,10 @@ export default function EditItemPage() {
                   <section className="space-y-8">
                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {form.images.map((img, i) => (
-                           <motion.div layout key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group">
+                           <motion.div layout key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-line group">
                               <img src={img} alt="" className="w-full h-full object-cover" />
                               <button onClick={() => removeImage(i)} className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
-                                 <X size={20} className="text-white" />
+                                 <X size={20} className="text-text" />
                               </button>
                            </motion.div>
                         ))}
@@ -267,9 +267,9 @@ export default function EditItemPage() {
                               className="w-full h-16 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-lg font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
                            />
                         </div>
-                        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                        <div className="p-6 rounded-2xl bg-card/[0.02] border border-line flex items-center justify-between">
                            <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Marketplace Status</p>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Marketplace Status</p>
                               <p className="text-xs font-bold text-amber-400 mt-1">Artifact is Private / Listing Disabled</p>
                            </div>
                         </div>
@@ -288,7 +288,7 @@ export default function EditItemPage() {
                                  value={(form.externalLinks as any)[s] || ''}
                                  onChange={(e) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, [s]: e.target.value } }))}
                                  placeholder={`${s.charAt(0).toUpperCase() + s.slice(1)} URL`}
-                                 className="w-full h-14 px-6 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold placeholder:text-white/10 focus:outline-none focus:border-white/20 transition-all"
+                                 className="w-full h-14 px-6 rounded-2xl bg-card/5 border border-line text-[11px] font-bold placeholder:text-text/10 focus:outline-none focus:border-line transition-all"
                               />
                            </div>
                         ))}
@@ -299,10 +299,10 @@ export default function EditItemPage() {
                 {/* 5. Review */}
                 {currentStep === 'review' && (
                   <section className="space-y-8">
-                     <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 text-center">
-                        <Save className="w-12 h-12 text-white/10 mx-auto mb-4" />
-                        <h3 className="text-sm font-black uppercase tracking-widest text-white">Modifications Staged</h3>
-                        <p className="text-xs font-bold text-white/20 mt-2">Verify the artifact preview before synchronizing with the manifest.</p>
+                     <div className="p-8 rounded-3xl bg-card/[0.02] border border-line text-center">
+                        <Save className="w-12 h-12 text-text/10 mx-auto mb-4" />
+                        <h3 className="text-sm font-black uppercase tracking-widest text-text">Modifications Staged</h3>
+                        <p className="text-xs font-bold text-text/20 mt-2">Verify the artifact preview before synchronizing with the manifest.</p>
                      </div>
                   </section>
                 )}
@@ -314,7 +314,7 @@ export default function EditItemPage() {
               {currentIndex > 0 && (
                  <button 
                   onClick={() => setCurrentStep(steps[currentIndex - 1])}
-                  className="h-16 px-8 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all"
+                  className="h-16 px-8 rounded-2xl bg-card/5 border border-line flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-text/40 hover:text-text transition-all"
                  >
                     <ChevronLeft size={16} className="mr-2" /> Back
                  </button>
@@ -323,7 +323,7 @@ export default function EditItemPage() {
               {currentIndex < steps.length - 1 ? (
                  <button 
                     onClick={() => setCurrentStep(steps[currentIndex + 1])}
-                    className="flex-1 h-16 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.01] transition-all"
+                    className="flex-1 h-16 rounded-2xl bg-card text-text font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.01] transition-all"
                  >
                     Next Phase <ChevronRight size={16} className="inline ml-2" />
                  </button>
@@ -331,7 +331,7 @@ export default function EditItemPage() {
                  <button 
                     onClick={handleSave}
                     disabled={saving || !form.title}
-                    className="flex-1 h-16 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.01] transition-all disabled:opacity-30"
+                    className="flex-1 h-16 rounded-2xl bg-card text-text font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.01] transition-all disabled:opacity-30"
                  >
                     {saving ? 'Synchronizing...' : 'Save Modifications'}
                  </button>
@@ -348,11 +348,11 @@ export default function EditItemPage() {
         {/* Live Preview */}
         <div className="lg:col-span-5 relative">
           <div className="sticky top-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase tracking-widest mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-text text-[9px] font-black uppercase tracking-widest mb-6">
                <Sparkles size={10} /> Live Preview
             </div>
 
-            <div className="p-10 rounded-[48px] bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+            <div className="p-10 rounded-[48px] bg-card/[0.02] border border-line backdrop-blur-3xl shadow-2xl relative overflow-hidden">
                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-50" />
                <div className="relative z-10 flex justify-center">
                   <ItemCard
@@ -366,14 +366,14 @@ export default function EditItemPage() {
                </div>
 
                <div className="mt-10 space-y-4">
-                  <div className="h-px bg-white/5" />
+                  <div className="h-px bg-card/5" />
                   <div className="flex items-center justify-between">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Artifact Aesthetic</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Artifact Aesthetic</p>
                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">{form.aesthetic}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Ownership Record</p>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-white/60">@{page?.ownerId?.username || '...'}</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Ownership Record</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-text/60">@{page?.ownerId?.username || '...'}</p>
                   </div>
                </div>
             </div>

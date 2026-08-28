@@ -16,14 +16,14 @@ export const BrandStorySection = ({ title, story, image }: BrandStorySectionProp
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      className="flex flex-col md:flex-row gap-20 items-center py-32 px-10 border-y border-neutral-100 bg-white"
+      className="flex flex-col md:flex-row gap-20 items-center py-32 px-10 border-y border-line bg-card"
     >
       {image && (
         <motion.div 
           initial={{ x: -40, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full md:w-1/2 aspect-[4/5] rounded-[40px] overflow-hidden border border-neutral-100 shadow-[0_50px_100px_rgba(0,0,0,0.1)]"
+          className="w-full md:w-1/2 aspect-[4/5] rounded-[40px] overflow-hidden border border-line shadow-[0_50px_100px_rgba(0,0,0,0.1)]"
         >
           <img src={image} className="w-full h-full object-cover scale-110" />
         </motion.div>
@@ -42,7 +42,7 @@ export const BrandStorySection = ({ title, story, image }: BrandStorySectionProp
           <motion.h3 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-5xl font-black tracking-tighter text-neutral-900 leading-[0.85] italic"
+            className="text-5xl font-black tracking-tighter text-text leading-[0.85] italic"
           >
             {title}
           </motion.h3>
@@ -50,7 +50,7 @@ export const BrandStorySection = ({ title, story, image }: BrandStorySectionProp
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-neutral-400 leading-relaxed font-medium max-w-lg"
+            className="text-lg text-text-muted leading-relaxed font-medium max-w-lg"
           >
             {story}
           </motion.p>
@@ -60,9 +60,9 @@ export const BrandStorySection = ({ title, story, image }: BrandStorySectionProp
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="pt-10 border-t border-neutral-50"
+          className="pt-10 border-t border-line"
         >
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-200">Astl Archives • 2026 • Manifest Zero</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Astl Archives • 2026 • Manifest Zero</p>
         </motion.div>
       </div>
     </motion.div>

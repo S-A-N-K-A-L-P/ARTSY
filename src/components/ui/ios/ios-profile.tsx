@@ -94,7 +94,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
   const isOwner = !initialUser; // Simplification: if we fetch it via /me, we are the owner
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-neutral-900 pb-40">
+    <div className="flex flex-col min-h-screen bg-card text-text pb-40">
       {/* Minimal Header Section */}
       <div className="px-6 pt-12 pb-8">
         <div className="flex items-start justify-between mb-8">
@@ -102,34 +102,34 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                 <img 
                     src={user.image} 
                     alt={user.name} 
-                    className="w-20 h-20 rounded-2xl object-cover bg-neutral-100"
+                    className="w-20 h-20 rounded-2xl object-cover bg-elevated"
                 />
             </div>
             <div className="flex gap-2">
-                <button className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors">
+                <button className="p-2 text-text-muted hover:text-text transition-colors">
                     <Settings size={20} />
                 </button>
             </div>
         </div>
 
         <div className="mb-8">
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{user.name}</h1>
-            <p className="text-sm text-neutral-400 font-medium mt-1">@{user.username}</p>
+            <h1 className="text-2xl font-bold tracking-tight text-text">{user.name}</h1>
+            <p className="text-sm text-text-muted font-medium mt-1">@{user.username}</p>
             {user.bio && (
-                <p className="text-sm text-neutral-500 mt-4 leading-relaxed max-w-sm">
+                <p className="text-sm text-text-secondary mt-4 leading-relaxed max-w-sm">
                     {user.bio}
                 </p>
             )}
         </div>
 
         <div className="flex gap-3">
-          <button className="flex-1 bg-neutral-900 text-white h-12 rounded-xl text-sm font-semibold hover:bg-neutral-800 transition-all active:scale-[0.98]">
+          <button className="flex-1 bg-accent text-bg h-12 rounded-xl text-sm font-semibold hover:brightness-105 transition-all active:scale-[0.98]">
             {isOwner ? "Edit Profile" : "Follow"}
           </button>
           {isOwner && (
             <button 
               onClick={() => isOwner && setModifyingUserAesthetic(true)}
-              className="px-4 h-12 bg-neutral-50 border border-neutral-100 text-neutral-900 rounded-xl flex items-center justify-center hover:bg-neutral-100 transition-all"
+              className="px-4 h-12 bg-elevated border border-line text-text rounded-xl flex items-center justify-center hover:bg-elevated transition-all"
             >
                 <Palette size={20} />
             </button>
@@ -139,26 +139,26 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
 
       {/* Tabs */}
       <div className="px-6 mb-8 mt-2">
-          <div className="flex gap-8 border-b border-neutral-100">
+          <div className="flex gap-8 border-b border-line">
             <button 
                 onClick={() => setActiveTab("pages")}
                 className={cn(
                     "pb-4 text-sm font-semibold transition-all relative",
-                    activeTab === "pages" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600"
+                    activeTab === "pages" ? "text-text" : "text-text-muted hover:text-text-secondary"
                 )}
             >
                 Spaces
-                {activeTab === "pages" && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />}
+                {activeTab === "pages" && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
             </button>
             <button 
                 onClick={() => setActiveTab("activity")}
                 className={cn(
                     "pb-4 text-sm font-semibold transition-all relative",
-                    activeTab === "activity" ? "text-neutral-900" : "text-neutral-400 hover:text-neutral-600"
+                    activeTab === "activity" ? "text-text" : "text-text-muted hover:text-text-secondary"
                 )}
             >
                 Activity
-                {activeTab === "activity" && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />}
+                {activeTab === "activity" && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
             </button>
           </div>
       </div>
@@ -180,7 +180,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                     className="group cursor-pointer mb-6"
                     onClick={() => router.push(`/user/${user.username}/${page.slug || page._id}`)}
                 >
-                    <div className="rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-50 h-48">
+                    <div className="rounded-2xl overflow-hidden bg-elevated border border-line h-48">
                         <img 
                             src={page.coverImage || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"} 
                             className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
@@ -188,8 +188,8 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                         />
                     </div>
                     <div className="mt-3 px-1">
-                        <p className="text-sm font-semibold text-neutral-900 line-clamp-1">{page.name}</p>
-                        <p className="text-xs text-neutral-400 mt-0.5 font-medium uppercase tracking-widest">
+                        <p className="text-sm font-semibold text-text line-clamp-1">{page.name}</p>
+                        <p className="text-xs text-text-muted mt-0.5 font-medium uppercase tracking-widest">
                             {page.aesthetic?.theme || page.aesthetic || 'minimal'}
                         </p>
                     </div>
@@ -198,7 +198,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
         </Masonry>
 
         {user.pages?.length === 0 && (
-           <div className="py-20 text-center text-neutral-300">
+           <div className="py-20 text-center text-text-muted">
               <p className="text-xs font-medium uppercase tracking-widest">No spaces found</p>
            </div>
         )}
@@ -219,10 +219,10 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
                     transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    className="relative w-full max-w-lg bg-white rounded-t-[32px] p-10 z-10"
+                    className="relative w-full max-w-lg bg-card rounded-t-[32px] p-10 z-10"
                   >
-                      <h3 className="text-xl font-bold text-neutral-900 mb-2">Interface Aesthetic</h3>
-                      <p className="text-sm text-neutral-400 mb-8">Select your preferred visual identity</p>
+                      <h3 className="text-xl font-bold text-text mb-2">Interface Aesthetic</h3>
+                      <p className="text-sm text-text-muted mb-8">Select your preferred visual identity</p>
                       
                       <div className="grid grid-cols-2 gap-3 mb-10">
                           {Object.keys(themes).map((theme) => (
@@ -232,8 +232,8 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                                   className={cn(
                                       "h-14 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
                                       user.aesthetic === theme 
-                                          ? "bg-neutral-900 text-white" 
-                                          : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
+                                          ? "bg-accent text-bg" 
+                                          : "bg-elevated text-text-muted hover:bg-elevated"
                                   )}
                               >
                                   {theme}
@@ -243,7 +243,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
 
                       <button 
                         onClick={() => setModifyingUserAesthetic(false)}
-                        className="w-full h-14 rounded-xl border border-neutral-100 text-neutral-400 font-semibold text-sm hover:text-neutral-900 transition-colors"
+                        className="w-full h-14 rounded-xl border border-line text-text-muted font-semibold text-sm hover:text-text transition-colors"
                       >
                           Done
                       </button>

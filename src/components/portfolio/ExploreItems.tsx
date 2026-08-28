@@ -26,7 +26,7 @@ export default function ExploreItems() {
 
   if (loading) return (
     <Box sx={{ py: 10, display: 'flex', justifyContent: 'center' }}>
-       <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+       <div className="w-8 h-8 border-2 border-line border-t-white rounded-full animate-spin" />
     </Box>
   );
 

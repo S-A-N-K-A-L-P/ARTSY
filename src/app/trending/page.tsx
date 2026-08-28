@@ -39,7 +39,7 @@ export default function TrendingPage() {
                           className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl"
                           style={{ backgroundColor: trend.color }}
                         >
-                            <Sparkles size={24} className={cn(trend.name === 'Soft Minimal' ? 'text-black' : 'text-white')} />
+                            <Sparkles size={24} className={cn(trend.name === 'Soft Minimal' ? 'text-text' : 'text-text')} />
                         </div>
                         <div>
                             <h3 className="text-xl font-black tracking-tighter italic">{trend.name}</h3>

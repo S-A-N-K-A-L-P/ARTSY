@@ -28,12 +28,12 @@ const StyledInput = ({ label, description, ...props }: any) => {
   return (
     <div className="space-y-2">
       <div className="flex flex-col gap-0.5">
-        <label className="text-[11px] font-bold text-neutral-900 px-1">{label}</label>
-        {description && <p className="text-[10px] text-neutral-400 px-1">{description}</p>}
+        <label className="text-[11px] font-bold text-text px-1">{label}</label>
+        {description && <p className="text-[10px] text-text-muted px-1">{description}</p>}
       </div>
       <input
         {...props}
-        className="w-full h-14 px-5 rounded-2xl bg-neutral-50 border border-neutral-100 text-sm font-semibold text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all shadow-sm"
+        className="w-full h-14 px-5 rounded-2xl bg-elevated border border-line text-sm font-semibold text-text placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-card transition-all shadow-sm"
       />
     </div>
   );
@@ -128,23 +128,23 @@ export default function AddItemPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 pb-32">
+    <div className="min-h-screen bg-card text-text pb-32">
       <div className="max-w-4xl mx-auto px-6">
         {/* Minimal Header */}
-        <div className="flex items-center justify-between py-12 mb-8 border-b border-neutral-100">
+        <div className="flex items-center justify-between py-12 mb-8 border-b border-line">
           <Link href={`/dashboard/page/${pageId}`} className="group flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-neutral-100 transition-all">
-              <ArrowLeft size={18} className="text-neutral-400 group-hover:text-neutral-900" />
+            <div className="w-10 h-10 rounded-xl bg-elevated border border-line flex items-center justify-center group-hover:bg-elevated transition-all">
+              <ArrowLeft size={18} className="text-text-muted group-hover:text-text" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-neutral-900">New Item</h1>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mt-0.5">Manifest Artifact</p>
+              <h1 className="text-2xl font-bold tracking-tight text-text">New Item</h1>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mt-0.5">Manifest Artifact</p>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-50 border border-neutral-100">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-elevated border border-line">
             <Sparkles size={14} className="text-amber-500" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Astl v2 Active</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Astl v2 Active</span>
           </div>
         </div>
 
@@ -174,13 +174,13 @@ export default function AddItemPage() {
                             />
                         </div>
                         <div className="mt-6 space-y-2">
-                            <label className="text-[11px] font-bold text-neutral-900 px-1">Description</label>
+                            <label className="text-[11px] font-bold text-text px-1">Description</label>
                             <textarea
                                 value={form.description}
                                 onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
                                 placeholder="What defines this artifact..."
                                 rows={4}
-                                className="w-full p-5 rounded-2xl bg-neutral-50 border border-neutral-100 text-sm font-semibold text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all resize-none shadow-sm"
+                                className="w-full p-5 rounded-2xl bg-elevated border border-line text-sm font-semibold text-text placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-card transition-all resize-none shadow-sm"
                             />
                         </div>
                     </section>
@@ -197,7 +197,7 @@ export default function AddItemPage() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.8 }}
                                         key={i} 
-                                        className="relative aspect-square rounded-2xl overflow-hidden border border-neutral-100 bg-neutral-50 group"
+                                        className="relative aspect-square rounded-2xl overflow-hidden border border-line bg-elevated group"
                                     >
                                         <img src={img} alt="" className="w-full h-full object-cover" />
                                         <button 
@@ -213,11 +213,11 @@ export default function AddItemPage() {
                             
                             {form.images.length < 8 && (
                                 <label className={cn(
-                                    "relative aspect-square rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50 flex flex-col items-center justify-center cursor-pointer hover:border-neutral-900 hover:bg-neutral-100 transition-all",
+                                    "relative aspect-square rounded-2xl border-2 border-dashed border-line-strong bg-elevated flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-elevated transition-all",
                                     uploading && "opacity-50 cursor-not-allowed"
                                 )}>
-                                    {uploading ? <Loader2 className="animate-spin text-neutral-400" /> : <Plus size={24} className="text-neutral-400" />}
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 mt-2">Add Proof</span>
+                                    {uploading ? <Loader2 className="animate-spin text-text-muted" /> : <Plus size={24} className="text-text-muted" />}
+                                    <span className="text-[9px] font-bold uppercase tracking-widest text-text-muted mt-2">Add Proof</span>
                                     <input type="file" multiple className="hidden" onChange={handleImageChange} disabled={uploading} accept="image/*" />
                                 </label>
                             )}
@@ -259,7 +259,7 @@ export default function AddItemPage() {
                         <button 
                             type="submit"
                             disabled={loading || !form.title || form.images.length === 0}
-                            className="flex-1 h-14 rounded-2xl bg-neutral-900 text-white font-bold uppercase tracking-widest text-xs hover:bg-neutral-800 active:scale-[0.98] transition-all disabled:opacity-20 disabled:hover:scale-100 shadow-xl shadow-neutral-100"
+                            className="flex-1 h-14 rounded-2xl bg-accent text-bg font-bold uppercase tracking-widest text-xs hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-20 disabled:hover:scale-100 shadow-xl shadow-[var(--elevation-soft)]"
                         >
                             {loading ? 'Synchronizing...' : 'Deploy to Space'}
                         </button>

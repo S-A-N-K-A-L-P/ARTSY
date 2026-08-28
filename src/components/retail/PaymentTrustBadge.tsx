@@ -14,20 +14,20 @@ export const PaymentTrustBadge = () => {
       <div className="absolute top-0 right-0 w-64 h-64 bg-card/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       
       <div className="flex items-center gap-6 relative z-10">
-        <div className="w-16 h-16 rounded-2xl bg-card/10 border border-white/10 flex items-center justify-center text-amber-400 shadow-inner">
+        <div className="w-16 h-16 rounded-2xl bg-card/10 border border-line flex items-center justify-center text-amber-400 shadow-inner">
            <ShieldCheck size={28} strokeWidth={1.5} />
         </div>
         <div>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Payment Sovereignty</p>
-           <h4 className="text-xl font-black tracking-tighter text-white mt-1 italic">Encrypted Convergence</h4>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text/30">Payment Sovereignty</p>
+           <h4 className="text-xl font-black tracking-tighter text-text mt-1 italic">Encrypted Convergence</h4>
         </div>
       </div>
 
-      <div className="flex items-center gap-6 relative z-10 p-4 rounded-2xl bg-card/5 border border-white/5">
-        <CreditCard size={20} className="text-white/20" />
+      <div className="flex items-center gap-6 relative z-10 p-4 rounded-2xl bg-card/5 border border-line">
+        <CreditCard size={20} className="text-text/20" />
         <div className="h-4 w-px bg-card/10" />
         <Lock size={16} className="text-emerald-400" />
-        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Secure Node</span>
+        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-text/40">Secure Node</span>
       </div>
     </motion.div>
   );

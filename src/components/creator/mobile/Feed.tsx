@@ -15,7 +15,7 @@ export const PageTabsScroller = ({ pages, activeSlug, onSelect }: any) => (
         onClick={() => onSelect(p.slug)}
         className={cn(
           "px-6 h-10 rounded-full text-xs font-bold whitespace-nowrap transition-all border",
-          activeSlug === p.slug ? "bg-white text-black border-white" : "bg-white/5 text-white/40 border-white/5"
+          activeSlug === p.slug ? "bg-card text-text border-line" : "bg-card/5 text-text/40 border-line"
         )}
       >
         {p.name}
@@ -29,14 +29,14 @@ export const ItemCardMobile = ({ item, onClick }: { item: AestheticItem, onClick
   <motion.div 
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="relative aspect-[3/4] rounded-[32px] overflow-hidden bg-white/5 border border-white/5"
+    className="relative aspect-[3/4] rounded-[32px] overflow-hidden bg-card/5 border border-line"
   >
     <img src={item.images?.[0]} className="w-full h-full object-cover opacity-80" alt="" />
     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-6 flex flex-col justify-end">
        <h4 className="text-lg font-bold tracking-tight line-clamp-1">{item.title}</h4>
        <div className="flex items-center justify-between mt-2">
           <p className="text-sm font-bold italic">{item.currency} {item.price?.toLocaleString()}</p>
-          <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-card/10 backdrop-blur-xl flex items-center justify-center">
              <ShoppingBag size={14} />
           </div>
        </div>
@@ -56,7 +56,7 @@ export const ImageCarouselMobile = ({ images }: { images: string[] }) => (
      </div>
      <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2">
         {images.map((_, i) => (
-           <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/20" />
+           <div key={i} className="w-1.5 h-1.5 rounded-full bg-card/20" />
         ))}
      </div>
   </div>
@@ -66,22 +66,22 @@ export const ImageCarouselMobile = ({ images }: { images: string[] }) => (
 export const PagePreviewListMobile = ({ pages, onSelect }: any) => (
   <div className="space-y-4 px-6 pb-20">
     <div className="flex items-center justify-between mb-4">
-       <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-white/20">Aesthetic Spaces</h3>
-       <span className="px-2 py-1 rounded bg-white/5 text-[8px] font-bold uppercase tracking-widest opacity-40">{pages.length} Total</span>
+       <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-text/20">Aesthetic Spaces</h3>
+       <span className="px-2 py-1 rounded bg-card/5 text-[8px] font-bold uppercase tracking-widest opacity-40">{pages.length} Total</span>
     </div>
     {pages.map((p: any) => (
        <div 
          key={p._id} 
          onClick={() => onSelect(p.slug)}
-         className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 border border-white/5 active:scale-[0.98] transition-all cursor-pointer group hover:bg-white/10"
+         className="flex items-center gap-4 p-4 rounded-3xl bg-card/5 border border-line active:scale-[0.98] transition-all cursor-pointer group hover:bg-card/10"
        >
-          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white/10 relative">
+          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-card/10 relative">
              <img src={p.coverImage} className="w-full h-full object-cover" alt="" />
              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all" />
           </div>
           <div className="flex-1">
              <p className="font-bold tracking-tight text-lg leading-none mb-1">{p.name}</p>
-             <p className="text-[10px] text-white/20 uppercase font-black tracking-[0.2em]">{p.type} • {p.aesthetic}</p>
+             <p className="text-[10px] text-text/20 uppercase font-black tracking-[0.2em]">{p.type} • {p.aesthetic}</p>
           </div>
           <ChevronRight size={18} className="opacity-20 group-hover:opacity-100 transition-all" />
        </div>
@@ -108,7 +108,7 @@ export const CategoryScrollerMobile = ({ cats, selected, onSelect }: { cats: str
         <button 
           key={c}
           onClick={() => onSelect(c)}
-          className={cn("px-5 h-9 rounded-xl text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all", selected === c ? "bg-white text-black" : "bg-white/5 text-white/20")}
+          className={cn("px-5 h-9 rounded-xl text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all", selected === c ? "bg-card text-text" : "bg-card/5 text-text/20")}
         >
           {c}
         </button>

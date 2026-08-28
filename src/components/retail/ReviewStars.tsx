@@ -25,13 +25,13 @@ export const ReviewStars = ({ rating, count, size = 14, className }: ReviewStars
             <Star 
               size={size} 
               fill={s <= rating ? "#111111" : "transparent"} 
-              className={cn(s <= rating ? "text-neutral-900" : "text-neutral-200")} 
+              className={cn(s <= rating ? "text-text" : "text-text-muted")} 
             />
           </motion.div>
         ))}
       </div>
       {count !== undefined && (
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-300 ml-1">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-1">
           Archival Opinion ({count})
         </span>
       )}

@@ -25,9 +25,9 @@ export const CheckoutSteps = ({ currentStep }: CheckoutStepsProps) => {
                }}
                className={cn(
                   "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-700 border",
-                  i < currentStep ? "border-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]" : 
-                  i === currentStep ? "border-neutral-900 text-white shadow-2xl shadow-black/20" : 
-                  "bg-white text-neutral-200 border-neutral-100"
+                  i < currentStep ? "border-emerald-500 text-text shadow-[0_0_20px_rgba(16,185,129,0.3)]" : 
+                  i === currentStep ? "border-accent text-text shadow-2xl shadow-black/20" : 
+                  "bg-card text-text-muted border-line"
                )}
             >
                {i < currentStep ? <Check size={18} strokeWidth={3} /> : (
@@ -36,13 +36,13 @@ export const CheckoutSteps = ({ currentStep }: CheckoutStepsProps) => {
             </motion.div>
             <span className={cn(
               "text-[9px] font-black uppercase tracking-[0.3em] transition-colors duration-500",
-              i <= currentStep ? "text-neutral-900" : "text-neutral-300"
+              i <= currentStep ? "text-text" : "text-text-muted"
             )}>
               {step}
             </span>
           </div>
           {i < steps.length - 1 && (
-             <div className="h-[1px] flex-1 mx-6 mb-9 bg-neutral-100 relative overflow-hidden">
+             <div className="h-[1px] flex-1 mx-6 mb-9 bg-elevated relative overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: i < currentStep ? "100%" : "0%" }}

@@ -38,7 +38,7 @@ export default function ProfileMobile({
         component="ProfileHeader" 
         props={{ user: creator }} 
         fallback={
-          <div className="h-48 rounded-3xl bg-white/5 flex items-end p-8 mx-6 mt-6">
+          <div className="h-48 rounded-3xl bg-card/5 flex items-end p-8 mx-6 mt-6">
             <h1 className="text-3xl font-bold tracking-tighter">@{creator.username}</h1>
           </div>
         }
@@ -60,7 +60,7 @@ export default function ProfileMobile({
                 <CollectionCardMobile key={page._id} page={page} username={creator.username} />
               ))}
               {pages.length === 0 && (
-                <div className="py-20 text-center border border-dashed border-white/10 rounded-3xl">
+                <div className="py-20 text-center border border-dashed border-line rounded-3xl">
                   <p className="opacity-20 text-xs font-bold uppercase tracking-widest">Empty Space</p>
                 </div>
               )}
@@ -76,7 +76,7 @@ function CollectionCardMobile({ page, username }: { page: any; username: string 
   return (
     <motion.div 
       onClick={() => router.push(`/dashboard/${username}/${page.slug}`)}
-      className="relative h-64 rounded-[32px] overflow-hidden bg-white/5 border border-white/5"
+      className="relative h-64 rounded-[32px] overflow-hidden bg-card/5 border border-line"
     >
       <img src={page.coverImage} className="w-full h-full object-cover opacity-60" alt="" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 flex flex-col justify-end">
