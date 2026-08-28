@@ -49,7 +49,7 @@ export default function CartPage() {
             <Link
               href="/home"
               className="inline-block mt-6 h-10 px-6 leading-10 rounded-full text-[11px] font-bold uppercase tracking-[0.12em] active:scale-95 transition-transform"
-              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
             >
               Discover items
             </Link>
@@ -174,7 +174,7 @@ export default function CartPage() {
 
               <button
                 className="w-full h-11 rounded-full text-[11px] font-bold uppercase tracking-[0.12em] active:scale-[0.98] transition-transform"
-                style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
               >
                 Checkout
               </button>

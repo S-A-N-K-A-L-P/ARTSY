@@ -32,7 +32,7 @@ export const OptionPicker = ({ label, options, selected, onChange, type = 'butto
                 cn(
                   "px-8 h-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border",
                   selected === opt 
-                    ? "bg-accent border-accent text-bg shadow-xl shadow-black/10" 
+                    ? "bg-accent border-accent text-on-accent shadow-xl shadow-black/10" 
                     : "bg-card border-line text-text-muted hover:border-accent hover:text-text"
                 )
               ) : (

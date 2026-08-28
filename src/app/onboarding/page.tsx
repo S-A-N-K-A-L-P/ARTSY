@@ -1,253 +1,259 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  ChevronRight, 
-  ChevronLeft, 
-  Check, 
-  Sparkles,
-  Zap,
-  Moon,
-  Sun,
-  Palette,
-  Layers,
-  Code
-} from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Layers, Palette, Sparkles, Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button, Stack, Alert } from '@/components/ui';
 
-const steps = [
+interface Option {
+  id: string;
+  label: string;
+  description?: string;
+  image?: string;
+  swatch?: string;
+}
+
+interface Step {
+  id: string;
+  title: string;
+  description: string;
+  multi?: boolean;
+  options: Option[];
+}
+
+/**
+ * Aesthetic ids must match the keys in lib/theme/palettes.json. This step used
+ * to offer "solar" (Solarpunk), which is not a theme the app has — picking it
+ * silently produced no aesthetic at all.
+ */
+const STEPS: Step[] = [
   {
-    title: "Artistic Interests",
-    id: "interests",
+    id: 'interests',
+    title: 'What do you make?',
+    description: 'Pick as many as apply. This shapes what you see first.',
     multi: true,
     options: [
-      { id: "digital", label: "Digital Art", description: "CGI, AI, and generative pieces" },
-      { id: "physical", label: "Physical Fine Art", description: "Sculptures and paintings" },
-      { id: "ux", label: "UX & Products", description: "Industrial and interface design" },
-      { id: "fashion", label: "High Fashion", description: "Couture and street style" }
-    ]
+      { id: 'digital', label: 'Digital art', description: 'CGI, generative, AI-assisted' },
+      { id: 'physical', label: 'Physical work', description: 'Sculpture, painting, ceramics' },
+      { id: 'ux', label: 'Product & UX', description: 'Industrial and interface design' },
+      { id: 'fashion', label: 'Fashion', description: 'Couture, streetwear, textiles' },
+    ],
   },
   {
-    title: "Pick your Aesthetic",
-    id: "aesthetics",
+    id: 'aesthetics',
+    title: 'Pick your aesthetic',
+    description: 'This becomes the look of your storefront. You can change it later.',
     multi: true,
     options: [
-      { id: "minimal", label: "Zen Minimal", image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=200&auto=format&fit=crop" },
-      { id: "brutalist", label: "Brutalist Raw", image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=200&auto=format&fit=crop" },
-      { id: "vaporwave", label: "Vaporwave Retro", image: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=200&auto=format&fit=crop" },
-      { id: "solar", label: "Solarpunk Future", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200&auto=format&fit=crop" }
-    ]
+      { id: 'minimal', label: 'Minimal', description: 'Quiet, white, precise' },
+      { id: 'noir', label: 'Noir', description: 'Black, gold, serif' },
+      { id: 'brutalist', label: 'Brutalist', description: 'Raw, square, high contrast' },
+      { id: 'vaporwave', label: 'Vaporwave', description: 'Neon, retro, saturated' },
+      { id: 'cyberpunk', label: 'Cyberpunk', description: 'Dark, teal, monospace' },
+      { id: 'luxury', label: 'Luxury', description: 'Warm, gold, editorial' },
+    ],
   },
   {
-    title: "The Palette",
-    id: "palette",
+    id: 'palette',
+    title: 'Your palette',
+    description: 'The colour family your work sits in.',
     options: [
-      { id: "mono", label: "Monochrome Gray", color: "from-gray-800 to-black" },
-      { id: "earth", label: "Earth & Wood", color: "from-amber-800 to-amber-950" },
-      { id: "neon", label: "Cyber Neon", color: "from-fuchsia-600 to-purple-800" },
-      { id: "pastel", label: "Dreamy Pastel", color: "from-pink-100 to-blue-100" }
-    ]
+      { id: 'mono', label: 'Monochrome', swatch: 'linear-gradient(135deg,#3f3f46,#09090b)' },
+      { id: 'earth', label: 'Earth & wood', swatch: 'linear-gradient(135deg,#b45309,#451a03)' },
+      { id: 'neon', label: 'Neon', swatch: 'linear-gradient(135deg,#c026d3,#6b21a8)' },
+      { id: 'pastel', label: 'Pastel', swatch: 'linear-gradient(135deg,#fbcfe8,#bfdbfe)' },
+    ],
   },
   {
-    title: "Investment Budget",
-    id: "budget",
-    options: [
-      { id: "entry", label: "Entry Level", description: "Under $500" },
-      { id: "mid", label: "Mid Range", description: "$500 - $5,000" },
-      { id: "collector", label: "High Collector", description: "$5,000 - $50,000" },
-      { id: "ultimate", label: "Gallery Tier", description: "$50,000+" }
-    ]
-  },
-  {
-    title: "Product Medium",
-    id: "productType",
+    id: 'productType',
+    title: 'What will you sell?',
+    description: 'Pick as many as apply.',
     multi: true,
     options: [
-      { id: "prints", label: "Limited Prints" },
-      { id: "originals", label: "Original Works" },
-      { id: "digital_assets", label: "Digital Ownership" },
-      { id: "objects", label: "Sculptural Objects" }
-    ]
-  }
+      { id: 'prints', label: 'Limited prints' },
+      { id: 'originals', label: 'Original works' },
+      { id: 'digital_assets', label: 'Digital goods' },
+      { id: 'objects', label: 'Objects & sculpture' },
+    ],
+  },
 ];
 
+const ICONS: Record<string, React.ReactNode> = {
+  digital: <Sparkles size={18} />,
+  physical: <Palette size={18} />,
+  ux: <Zap size={18} />,
+  fashion: <Layers size={18} />,
+};
+
 export default function OnboardingPage() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<any>({
+  const router = useRouter();
+  const [step, setStep] = useState(0);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<Record<string, string | string[]>>({
     interests: [],
     aesthetics: [],
-    palette: [],
-    budget: '',
-    productType: []
+    palette: '',
+    productType: [],
   });
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const handleSelect = (id: string, value: string, isMulti?: boolean) => {
-    if (isMulti) {
-      const currentValues = formData[id] as string[];
-      if (currentValues.includes(value)) {
-        setFormData({ ...formData, [id]: currentValues.filter(v => v !== value) });
-      } else {
-        setFormData({ ...formData, [id]: [...currentValues, value] });
-      }
-    } else {
-      setFormData({ ...formData, [id]: value });
-    }
+  const current = STEPS[step];
+  const isLast = step === STEPS.length - 1;
+  const progress = ((step + 1) / STEPS.length) * 100;
+
+  const answered = useMemo(() => {
+    const v = data[current.id];
+    return Array.isArray(v) ? v.length > 0 : Boolean(v);
+  }, [data, current.id]);
+
+  const toggle = (optionId: string) => {
+    setError(null);
+    setData((d) => {
+      if (!current.multi) return { ...d, [current.id]: optionId };
+      const list = (d[current.id] as string[]) ?? [];
+      return {
+        ...d,
+        [current.id]: list.includes(optionId)
+          ? list.filter((v) => v !== optionId)
+          : [...list, optionId],
+      };
+    });
   };
 
   const next = async () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/onboarding', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        if (res.ok) {
-          router.push('/dashboard');
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+    if (!isLast) {
+      setStep((s) => s + 1);
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('Could not save your answers');
+      router.push('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setSaving(false);
     }
   };
 
-  const back = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
-  };
-
-  const currentStepData = steps[currentStep];
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
   return (
-    <div className="min-h-screen bg-[#050505] text-text flex flex-col font-sans">
-      {/* Progress Bar */}
-      <div className="h-1 bg-card/5 w-full fixed top-0 z-50">
-        <motion.div 
-          className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
+    // Themed, not a hardcoded #050505 slab: this runs after sign-up, so the
+    // user already has an aesthetic and the screen should honour it.
+    <div className="min-h-screen bg-bg text-text flex flex-col">
+      <div className="h-1 w-full bg-elevated fixed top-0 z-50">
+        <div
+          className="h-full bg-accent transition-[width] duration-500"
+          style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-valuenow={step + 1}
+          aria-valuemin={1}
+          aria-valuemax={STEPS.length}
+          aria-label="Onboarding progress"
         />
       </div>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-6 relative max-w-4xl mx-auto w-full">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-full"
+      <main className="flex-1 w-full max-w-3xl mx-auto px-5 pt-20 pb-40">
+        <Stack gap="lg">
+          <div>
+            <p className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">
+              Step {step + 1} of {STEPS.length}
+            </p>
+            <h1 className="mt-2 text-3xl md:text-4xl font-black tracking-tighter text-text">
+              {current.title}
+            </h1>
+            <p className="mt-2 text-sm text-text-secondary">{current.description}</p>
+          </div>
+
+          {error && <Alert tone="error">{error}</Alert>}
+
+          <div
+            className={cn(
+              'grid gap-3',
+              current.id === 'aesthetics' ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2'
+            )}
           >
-            <div className="mb-16 text-center">
-              <span className="text-xs font-bold text-text/20 uppercase tracking-[0.3em] block mb-4">Phase {currentStep + 1} of {steps.length}</span>
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tighter bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">{currentStepData.title}</h1>
-            </div>
+            {current.options.map((opt) => {
+              const value = data[current.id];
+              const selected = Array.isArray(value) ? value.includes(opt.id) : value === opt.id;
 
-            <div className={`grid gap-4 ${
-              currentStep === 1 ? 'grid-cols-2' : 
-              currentStep === 2 ? 'grid-cols-2 md:grid-cols-4' : 
-              'grid-cols-1 md:grid-cols-2'
-            }`}>
-              {currentStepData.options.map((option: any) => {
-                const isSelected = currentStepData.multi 
-                  ? (formData[currentStepData.id] as string[]).includes(option.id)
-                  : formData[currentStepData.id] === option.id;
-
-                return (
-                  <motion.div
-                    key={option.id}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => handleSelect(currentStepData.id, option.id, currentStepData.multi)}
-                    className={`cursor-pointer group relative overflow-hidden p-6 rounded-[32px] border transition-all duration-500 ${
-                      isSelected 
-                        ? 'bg-card/10 border-line shadow-[0_20px_40px_rgba(0,0,0,0.3)]' 
-                        : 'bg-card/[0.02] border-line hover:bg-card/[0.04] hover:border-line'
-                    }`}
-                  >
-                    {/* Background Visual for Aesthetics */}
-                    {currentStep === 1 && option.image && (
-                      <div className="absolute inset-0 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
-                        <img src={option.image} alt="" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
-                      </div>
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => toggle(opt.id)}
+                  aria-pressed={selected}
+                  className={cn(
+                    'text-left p-5 rounded-[var(--radius-lg)] border transition-colors',
+                    'active:scale-[0.99]',
+                    selected
+                      ? 'border-accent bg-accent-soft'
+                      : 'border-line bg-card hover:border-line-strong'
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    {opt.swatch ? (
+                      <span
+                        className="w-10 h-10 rounded-full shrink-0"
+                        style={{ backgroundImage: opt.swatch }}
+                      />
+                    ) : (
+                      <span
+                        className={cn(
+                          'w-10 h-10 rounded-[var(--radius-sm)] shrink-0 flex items-center justify-center',
+                          selected ? 'bg-accent text-on-accent' : 'bg-elevated text-text-muted'
+                        )}
+                      >
+                        {ICONS[opt.id] ?? <Sparkles size={18} />}
+                      </span>
                     )}
 
-                    <div className="relative z-10">
-                      <div className="flex justify-between items-center mb-6">
-                        {/* Icon or Color Circle */}
-                        {currentStep === 2 ? (
-                          <div className={`w-12 h-12 rounded-full bg-gradient-to-br shadow-lg ${option.color}`} />
-                        ) : (
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-500 ${
-                            isSelected ? 'bg-card text-text' : 'bg-card/5 text-text/40'
-                          }`}>
-                            {currentStep === 0 && (
-                              <>
-                                {option.id === 'digital' && <Sparkles size={22} />}
-                                {option.id === 'physical' && <Palette size={22} />}
-                                {option.id === 'ux' && <Zap size={22} />}
-                                {option.id === 'fashion' && <Layers size={22} />}
-                              </>
-                            )}
-                            {currentStep === 1 && <Sun size={22} />}
-                            {currentStep === 3 && <Moon size={22} />}
-                            {currentStep === 4 && <Check size={22} />}
-                          </div>
-                        )}
+                    {selected && (
+                      <span className="w-6 h-6 rounded-full bg-accent text-on-accent flex items-center justify-center shrink-0">
+                        <Check size={13} strokeWidth={3} />
+                      </span>
+                    )}
+                  </div>
 
-                        {isSelected && (
-                          <motion.div 
-                            initial={{ scale: 0, rotate: -45 }} 
-                            animate={{ scale: 1, rotate: 0 }}
-                            className="bg-card text-text w-6 h-6 rounded-full flex items-center justify-center shadow-xl"
-                          >
-                            <Check size={14} strokeWidth={3} />
-                          </motion.div>
-                        )}
-                      </div>
-
-                      <h3 className="font-bold text-xl tracking-tight mb-1">{option.label}</h3>
-                      {option.description && (
-                        <p className="text-text/40 text-sm font-medium leading-relaxed">{option.description}</p>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
-        </AnimatePresence>
+                  <p className="text-sm font-semibold text-text">{opt.label}</p>
+                  {opt.description && (
+                    <p className="mt-1 text-[var(--text-caption)] text-text-secondary leading-relaxed">
+                      {opt.description}
+                    </p>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </Stack>
       </main>
 
-      <footer className="p-10 flex items-center justify-center gap-6 fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent backdrop-blur-sm">
-        <button 
-          onClick={back}
-          disabled={currentStep === 0}
-          className={`flex items-center gap-2 pr-8 pl-6 py-4 rounded-2xl border border-line font-bold text-sm tracking-wide transition-all ${
-            currentStep === 0 ? 'opacity-0 pointer-events-none' : 'hover:bg-card/5'
-          }`}
-        >
-          <ChevronLeft size={18} />
-          Back
-        </button>
-        <button 
-          onClick={next}
-          disabled={!formData[currentStepData.id] || (currentStepData.multi && (formData[currentStepData.id] as string[]).length === 0)}
-          className="flex items-center gap-3 px-12 py-4 rounded-2xl bg-card text-text font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all disabled:opacity-30"
-        >
-          {loading ? "Initializing..." : currentStep === steps.length - 1 ? "Enter Workspace" : "Continue"}
-          {!loading && <ChevronRight size={18} />}
-        </button>
+      <footer className="fixed bottom-0 inset-x-0 border-t border-line bg-card/95 backdrop-blur-xl">
+        <div className="max-w-3xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+          <Button
+            variant="ghost"
+            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            disabled={step === 0}
+            iconLeft={<ChevronLeft size={16} />}
+          >
+            Back
+          </Button>
+
+          <Button
+            onClick={next}
+            disabled={!answered}
+            loading={saving}
+            size="lg"
+            iconRight={!isLast ? <ChevronRight size={16} /> : undefined}
+          >
+            {isLast ? 'Enter workspace' : 'Continue'}
+          </Button>
+        </div>
       </footer>
     </div>
   );

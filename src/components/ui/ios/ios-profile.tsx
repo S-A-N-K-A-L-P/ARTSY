@@ -123,7 +123,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
         </div>
 
         <div className="flex gap-3">
-          <button className="flex-1 bg-accent text-bg h-12 rounded-xl text-sm font-semibold hover:brightness-105 transition-all active:scale-[0.98]">
+          <button className="flex-1 bg-accent text-on-accent h-12 rounded-xl text-sm font-semibold hover:brightness-105 transition-all active:scale-[0.98]">
             {isOwner ? "Edit Profile" : "Follow"}
           </button>
           {isOwner && (
@@ -232,7 +232,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
                                   className={cn(
                                       "h-14 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
                                       user.aesthetic === theme 
-                                          ? "bg-accent text-bg" 
+                                          ? "bg-accent text-on-accent" 
                                           : "bg-elevated text-text-muted hover:bg-elevated"
                                   )}
                               >

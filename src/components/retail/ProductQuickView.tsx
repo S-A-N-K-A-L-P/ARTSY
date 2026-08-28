@@ -73,7 +73,7 @@ export const ProductQuickView = ({ isOpen, onClose, item, onAddToCart }: Product
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => { onAddToCart(item); onClose(); }}
-                    className="w-full h-14 rounded-2xl bg-accent text-bg font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.1)] active:brightness-95 transition-all"
+                    className="w-full h-14 rounded-2xl bg-accent text-on-accent font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.1)] active:brightness-95 transition-all"
                   >
                      <ShoppingBag size={18} /> Add to Manifest
                   </motion.button>

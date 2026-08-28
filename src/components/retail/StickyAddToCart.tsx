@@ -26,7 +26,7 @@ export const StickyAddToCart = ({ price, onAdd, isLoading }: StickyAddToCartProp
         whileTap={{ scale: 0.98 }}
         onClick={onAdd}
         disabled={isLoading}
-        className="h-16 px-10 rounded-2xl bg-accent text-bg font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-4 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.1)] disabled:opacity-30"
+        className="h-16 px-10 rounded-2xl bg-accent text-on-accent font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-4 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.1)] disabled:opacity-30"
       >
         {isLoading ? 'Synchronizing...' : (
           <>

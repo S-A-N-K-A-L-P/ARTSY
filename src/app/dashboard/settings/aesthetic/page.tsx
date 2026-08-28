@@ -38,7 +38,7 @@ export default function AestheticSettingsPage() {
                 <span
                   className={
                     selected
-                      ? 'shrink-0 w-7 h-7 rounded-full bg-accent text-bg flex items-center justify-center'
+                      ? 'shrink-0 w-7 h-7 rounded-full bg-accent text-on-accent flex items-center justify-center'
                       : 'shrink-0 w-7 h-7 rounded-full border border-line-strong'
                   }
                 >

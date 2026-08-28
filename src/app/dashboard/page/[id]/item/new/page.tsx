@@ -259,7 +259,7 @@ export default function AddItemPage() {
                         <button 
                             type="submit"
                             disabled={loading || !form.title || form.images.length === 0}
-                            className="flex-1 h-14 rounded-2xl bg-accent text-bg font-bold uppercase tracking-widest text-xs hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-20 disabled:hover:scale-100 shadow-xl shadow-[var(--elevation-soft)]"
+                            className="flex-1 h-14 rounded-2xl bg-accent text-on-accent font-bold uppercase tracking-widest text-xs hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-20 disabled:hover:scale-100 shadow-xl shadow-[var(--elevation-soft)]"
                         >
                             {loading ? 'Synchronizing...' : 'Deploy to Space'}
                         </button>

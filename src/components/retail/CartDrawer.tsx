@@ -91,7 +91,7 @@ export const CartDrawer = ({ isOpen, onClose, items, onRemove, onUpdateQuantity 
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-[var(--elevation-medium)] active:scale-[0.98] transition-all disabled:opacity-30" style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }} 
+                className="w-full h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-[var(--elevation-medium)] active:scale-[0.98] transition-all disabled:opacity-30" style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }} 
                 disabled={items.length === 0}
               >
                 Synchronize manifest

@@ -78,7 +78,7 @@ export function MobileInventoryView() {
             <h1 className="text-3xl font-black tracking-tighter italic text-text">Items</h1>
             <button 
                 onClick={() => router.push('/dashboard/item/create')}
-                className="w-12 h-12 bg-accent text-bg rounded-2xl flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+                className="w-12 h-12 bg-accent text-on-accent rounded-2xl flex items-center justify-center shadow-xl active:scale-90 transition-transform"
             >
                 <Plus size={20} />
             </button>

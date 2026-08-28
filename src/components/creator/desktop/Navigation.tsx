@@ -1,114 +1,73 @@
 'use client';
 
 import React from 'react';
-import { ArrowUpRight, ChevronDown, Search, Info, Palette } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
-import { Award } from 'lucide-react';
-import { PathItem, TabItem } from '@/types/creator';
+import { PathItem } from '@/types/creator';
+import { Section } from '@/components/ui';
 
-// 1. SidebarFilterPanel
-export const SidebarFilterPanel = ({ categories, selectedCat, onSelect }: { categories: string[], selectedCat: string, onSelect: (cat: string) => void }) => (
-  <aside className="w-80 h-[calc(100vh-6rem)] sticky top-24 overflow-y-auto pr-8 no-scrollbar hidden xl:block">
-    <div className="space-y-12">
-      <div className="space-y-6">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-text/20">Discovery</h3>
-        <div className="space-y-1">
-          {['New Arrivals', 'Best Sellers', 'Aesthetic Choice', 'Limited Edition'].map(f => (
-            <button key={f} className="w-full text-left px-4 py-3 rounded-xl hover:bg-card/5 transition-all text-sm font-bold opacity-40 hover:opacity-100 flex items-center justify-between group">
-              {f} <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-100 transition-all" />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-text/20">Categories</h3>
-        <div className="space-y-1">
-          {categories.map((c: string) => (
-            <button 
-              key={c} 
+/**
+ * Storefront category rail.
+ *
+ * The "Discovery" block above the categories (New Arrivals / Best Sellers /
+ * Aesthetic Choice / Limited Edition) was four buttons that filtered nothing,
+ * and the "Aesthetic Guarantee" panel was marketing copy asserting a
+ * verification process that does not exist. Both are gone; what remains
+ * actually drives the grid.
+ */
+export const SidebarFilterPanel = ({
+  categories,
+  selectedCat,
+  onSelect,
+}: {
+  categories: string[];
+  selectedCat: string;
+  onSelect: (cat: string) => void;
+}) => (
+  <aside className="w-64 shrink-0 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto hide-scrollbar hidden xl:block">
+    <Section title="Categories">
+      <div className="space-y-0.5">
+        {categories.map((c) => {
+          const active = selectedCat === c;
+          return (
+            <button
+              key={c}
               onClick={() => onSelect(c)}
+              aria-pressed={active}
               className={cn(
-                "w-full text-left px-4 py-3 rounded-xl transition-all text-sm font-bold flex items-center gap-3",
-                selectedCat === c ? "bg-card text-text" : "opacity-40 hover:opacity-100 hover:bg-card/5"
+                'w-full text-left px-3 h-11 rounded-[var(--radius-sm)] transition-colors',
+                'text-sm font-semibold flex items-center gap-2.5',
+                active
+                  ? 'bg-accent-soft text-accent'
+                  : 'text-text-secondary hover:text-text hover:bg-elevated'
               )}
             >
-              <div className={cn("w-2 h-2 rounded-full", selectedCat === c ? "bg-black" : "bg-card/20")} />
-              {c}
+              <span
+                className={cn(
+                  'w-1.5 h-1.5 rounded-full shrink-0',
+                  active ? 'bg-accent' : 'bg-line-strong'
+                )}
+              />
+              <span className="truncate">{c}</span>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
-
-      <div className="p-8 rounded-[40px] bg-gradient-to-br from-white/5 to-transparent border border-line">
-         <Award size={24} className="mb-4 text-text/40" />
-         <p className="font-bold tracking-tight mb-2">Aesthetic Guarantee</p>
-         <p className="text-[10px] text-text/40 font-medium leading-relaxed">Every item in this collection is verified for high-depth visual consistency.</p>
-      </div>
-    </div>
+    </Section>
   </aside>
 );
 
-// 7. BreadcrumbNavigation
 export const BreadcrumbNavigation = ({ paths }: { paths: PathItem[] }) => (
-  <nav className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest p-10">
-    <span className="opacity-20">Store</span>
+  <nav
+    aria-label="Breadcrumb"
+    className="flex items-center gap-2 text-[var(--text-label)] font-bold uppercase tracking-[0.14em]"
+  >
+    <span className="text-text-muted">Store</span>
     {paths.map((p, i) => (
       <React.Fragment key={i}>
-        <ChevronDown size={14} className="-rotate-90 opacity-10" />
-        <span className={cn(i === paths.length - 1 ? "text-text" : "opacity-40")}>{p.label}</span>
+        <ChevronRight size={12} className="text-text-muted opacity-50 shrink-0" />
+        <span className={i === paths.length - 1 ? 'text-text' : 'text-text-muted'}>{p.label}</span>
       </React.Fragment>
     ))}
   </nav>
-);
-
-// 11. SearchOverlayDesktop
-export const SearchOverlayDesktop = () => (
-   <div className="relative group max-w-sm">
-      <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-all" />
-      <input 
-        placeholder="Find aesthetic..." 
-        className="w-full h-14 bg-card/5 border border-line rounded-2xl pl-16 pr-6 text-sm font-bold placeholder:opacity-20 focus:outline-none focus:border-line transition-all font-mono"
-      />
-   </div>
-);
-
-// 20. MultiTabNavigationDesktop
-export const MultiTabNavigationDesktop = ({ tabs, active, onSelect }: { tabs: TabItem[], active: string, onSelect: (id: string) => void }) => (
-  <div className="flex items-center gap-12 border-b border-line px-10">
-     {tabs.map((t) => (
-        <button 
-           key={t.id} 
-           onClick={() => onSelect(t.id)}
-           className={cn("h-20 text-xs font-bold uppercase tracking-[0.3em] transition-all relative", active === t.id ? "text-text" : "opacity-20 hover:opacity-100")}
-        >
-           {t.label}
-           {active === t.id && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-1 bg-card rounded-t-full" />}
-        </button>
-     ))}
-  </div>
-);
-
-// 6. AestheticOverrideBadge
-export const AestheticOverrideBadge = ({ theme }: { theme: string }) => (
-  <div className="px-6 py-3 rounded-full bg-card/5 border border-line flex items-center gap-4 group cursor-help">
-     <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-     <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-text/40 group-hover:text-text transition-all">Theme Override Active: {theme}</span>
-     <Info size={14} className="opacity-20 group-hover:opacity-100 transition-all" />
-  </div>
-);
-
-// 16. AestheticPreviewLiveDesktop
-export const AestheticPreviewLiveDesktop = ({ theme }: { theme: string }) => (
-  <div className="p-8 rounded-[48px] bg-card text-text flex items-center justify-between">
-     <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center"><Palette size={20} className="text-white" /></div>
-        <div>
-           <p className="font-bold tracking-tight">Live: {theme}</p>
-           <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Draft Preview Mode</p>
-        </div>
-     </div>
-     <button className="h-12 px-6 rounded-xl bg-accent text-bg text-xs font-bold uppercase tracking-widest">Publish</button>
-  </div>
 );

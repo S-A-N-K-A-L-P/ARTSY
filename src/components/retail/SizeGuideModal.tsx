@@ -72,7 +72,7 @@ export const SizeGuideModal = ({ isOpen, onClose }: SizeGuideModalProps) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onClose}
-              className="w-full h-14 rounded-xl bg-accent text-bg font-black text-[10px] uppercase tracking-[0.2em] mt-10 shadow-lg active:brightness-95 transition-all"
+              className="w-full h-14 rounded-xl bg-accent text-on-accent font-black text-[10px] uppercase tracking-[0.2em] mt-10 shadow-lg active:brightness-95 transition-all"
             >
               Confirm Orientation
             </motion.button>

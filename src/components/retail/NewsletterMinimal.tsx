@@ -10,7 +10,7 @@ export const NewsletterMinimal = () => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="p-16 rounded-[48px] bg-accent text-bg space-y-12 relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.2)]"
+      className="p-16 rounded-[48px] bg-accent text-on-accent space-y-12 relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.2)]"
     >
       <div className="absolute top-0 right-0 w-96 h-96 bg-card/5 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       

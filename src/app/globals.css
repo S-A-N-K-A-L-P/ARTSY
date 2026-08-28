@@ -23,6 +23,10 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
+  /* Foreground for anything filled with --accent. Computed per theme for
+     contrast: assuming --bg-primary reads on the accent gave 1.59:1 on soft
+     and 2.25:1 on luxury, i.e. primary CTAs nobody could read. */
+  --color-on-accent: var(--on-accent);
 
   --color-line: var(--border-subtle);
   --color-line-strong: var(--border-strong);

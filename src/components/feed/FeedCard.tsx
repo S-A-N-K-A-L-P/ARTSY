@@ -146,7 +146,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
               onClick={handleAddToCart}
               aria-label={`Add ${item.title} to bag`}
               className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] active:scale-95 transition-transform shadow-[var(--elevation-soft)]"
-              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
             >
               <ShoppingBag size={13} />
               Add

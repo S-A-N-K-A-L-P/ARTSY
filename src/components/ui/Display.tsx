@@ -145,7 +145,7 @@ export function Tabs({
               // 44px target: these were 38px, under the minimum
               'inline-flex items-center gap-2 h-11 px-4 rounded-full transition-colors',
               'text-[var(--text-label)] font-bold uppercase tracking-[0.14em]',
-              active ? 'bg-accent text-bg' : 'text-text-muted hover:text-text'
+              active ? 'bg-accent text-on-accent' : 'text-text-muted hover:text-text'
             )}
           >
             {t.icon}

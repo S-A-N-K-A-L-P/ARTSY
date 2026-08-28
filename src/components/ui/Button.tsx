@@ -33,7 +33,7 @@ const RADII: Record<Size, string> = {
  * The one button.
  *
  * Every screen used to hand-roll its own
- * `h-14 rounded-2xl bg-accent text-bg text-[10px] uppercase
+ * `h-14 rounded-2xl bg-accent text-on-accent text-[10px] uppercase
  * tracking-[0.3em]`, which is why no two buttons in the app matched and why
  * none of them survived a dark aesthetic. Colours here are tokens only.
  */
@@ -54,7 +54,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   ref
 ) {
   const variants: Record<Variant, string> = {
-    primary: 'bg-accent text-bg hover:brightness-105 shadow-[var(--elevation-soft)]',
+    primary: 'bg-accent text-on-accent hover:brightness-105 shadow-[var(--elevation-soft)]',
     secondary: 'bg-card text-text border border-line hover:border-line-strong',
     ghost: 'bg-transparent text-text-secondary hover:text-text hover:bg-elevated',
     danger: 'bg-transparent text-red-500 border border-red-500/30 hover:bg-red-500/10',

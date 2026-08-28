@@ -149,7 +149,7 @@ export default function PublicPageClient({ page, user, items }: any) {
             <StoreStatus isOpen={page?.settings?.isPublic !== false} />
             <button
               onClick={() => setIsCartOpen(true)}
-              className="w-full h-14 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.24em] shadow-[var(--elevation-medium)] hover:scale-[1.02] active:scale-[0.98] transition-transform"
+              className="w-full h-14 rounded-2xl bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.24em] shadow-[var(--elevation-medium)] hover:scale-[1.02] active:scale-[0.98] transition-transform"
             >
               Open Manifest ({cartItems.length})
             </button>
@@ -168,7 +168,7 @@ export default function PublicPageClient({ page, user, items }: any) {
                   className={cn(
                     'px-4 h-9 rounded-full border text-[11px] font-bold uppercase tracking-wider shrink-0 transition-colors',
                     activeCategory === cat
-                      ? 'bg-accent border-accent text-bg'
+                      ? 'bg-accent border-accent text-on-accent'
                       : 'bg-card border-line text-text-muted'
                   )}
                 >
@@ -217,7 +217,7 @@ export default function PublicPageClient({ page, user, items }: any) {
       {/* Mobile cart bar — the desktop button lives in the rail */}
       <button
         onClick={() => setIsCartOpen(true)}
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-16 px-6 bg-accent text-bg font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 shadow-[var(--elevation-medium)]"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-16 px-6 bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 shadow-[var(--elevation-medium)]"
       >
         <ShoppingBag size={16} />
         Open Manifest ({cartItems.length})
@@ -319,7 +319,7 @@ function GalleryCard({ item, onSelect, onAdd }: any) {
                 onAdd(item);
               }}
               aria-label={`Add ${item.title} to bag`}
-              className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] bg-accent text-bg active:scale-95 transition-transform shadow-[var(--elevation-soft)]"
+              className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] bg-accent text-on-accent active:scale-95 transition-transform shadow-[var(--elevation-soft)]"
             >
               <ShoppingBag size={13} />
               Add
@@ -418,7 +418,7 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
               for (let i = 0; i < quantity; i++) onAddToCart(item);
               onClose();
             }}
-            className="w-full h-14 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+            className="w-full h-14 rounded-2xl bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
           >
             <ShoppingBag size={16} />
             Add to bag

@@ -51,7 +51,7 @@ export const FilterDrawer = ({ isOpen, onClose, categories, activeCategory, onSe
                     onClick={() => { onSelectCategory(cat); onClose(); }}
                     className={cn(
                         "w-full h-16 px-8 rounded-2xl flex items-center justify-between transition-all border",
-                        activeCategory === cat ? "bg-accent border-accent text-bg shadow-xl" : "bg-card/50 border-line text-text-muted hover:text-text"
+                        activeCategory === cat ? "bg-accent border-accent text-on-accent shadow-xl" : "bg-card/50 border-line text-text-muted hover:text-text"
                     )}
                   >
                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">{cat}</span>
@@ -62,7 +62,7 @@ export const FilterDrawer = ({ isOpen, onClose, categories, activeCategory, onSe
 
             <button 
               onClick={onClose}
-              className="w-full h-16 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.2em] shadow-[var(--elevation-medium)] active:scale-[0.98] transition-all"
+              className="w-full h-16 rounded-2xl bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.2em] shadow-[var(--elevation-medium)] active:scale-[0.98] transition-all"
             >
               Apply Selection
             </button>

@@ -22,7 +22,7 @@ export function CategoryBar({ categories, selectedCategory, onCategoryChange }: 
           className={cn(
             "px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border",
             selectedCategory === cat
-              ? "bg-accent text-bg border-accent shadow-xl scale-105"
+              ? "bg-accent text-on-accent border-accent shadow-xl scale-105"
               : "bg-card text-text-muted border-line hover:border-accent hover:text-text"
           )}
         >

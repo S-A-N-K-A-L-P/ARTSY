@@ -37,7 +37,7 @@ export default function DashboardSidebar() {
         <Link
           href="/dashboard/create"
           className="flex items-center gap-2 w-full h-11 px-4 rounded-2xl text-sm font-bold transition-all active:scale-95 shadow-md hover:shadow-lg transition-all"
-          style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
         >
           <Plus size={18} strokeWidth={2.5} />
           Create Space

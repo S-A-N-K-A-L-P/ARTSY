@@ -9,7 +9,7 @@ export const PaymentTrustBadge = () => {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-8 rounded-[32px] bg-accent text-bg flex flex-col md:flex-row gap-8 items-center justify-between relative overflow-hidden group shadow-[0_30px_60px_rgba(0,0,0,0.1)]"
+      className="p-8 rounded-[32px] bg-accent text-on-accent flex flex-col md:flex-row gap-8 items-center justify-between relative overflow-hidden group shadow-[0_30px_60px_rgba(0,0,0,0.1)]"
     >
       <div className="absolute top-0 right-0 w-64 h-64 bg-card/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       

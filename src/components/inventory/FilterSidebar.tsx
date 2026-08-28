@@ -35,7 +35,7 @@ export function FilterSidebar({
                     className={cn(
                         "flex items-center justify-between px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                         selectedCategory === cat 
-                            ? "bg-accent text-bg shadow-xl" 
+                            ? "bg-accent text-on-accent shadow-xl" 
                             : "bg-transparent text-text-muted hover:bg-elevated hover:text-text"
                     )}
                 >

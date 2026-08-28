@@ -114,7 +114,7 @@ export default function ItemsPage() {
          </div>
          <button 
            onClick={() => router.push('/dashboard/item/create')}
-           className="h-16 px-10 bg-accent text-bg rounded-3xl flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] transition-all shadow-2xl active:scale-95 w-full md:w-auto overflow-hidden relative group"
+           className="h-16 px-10 bg-accent text-on-accent rounded-3xl flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] transition-all shadow-2xl active:scale-95 w-full md:w-auto overflow-hidden relative group"
          >
             <Plus size={18} /> 
             <span>Create Manifest</span>

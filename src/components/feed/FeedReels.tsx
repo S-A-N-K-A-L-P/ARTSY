@@ -161,7 +161,7 @@ export default function FeedReels() {
           <div className="flex items-center gap-3 pt-1">
             <button
               onClick={() => addToCartFromRail(active)}
-              className="h-12 px-6 rounded-[var(--radius-md)] bg-accent text-bg text-xs font-bold uppercase tracking-[0.18em] flex items-center gap-2 active:scale-[0.98] transition-transform"
+              className="h-12 px-6 rounded-[var(--radius-md)] bg-accent text-on-accent text-xs font-bold uppercase tracking-[0.18em] flex items-center gap-2 active:scale-[0.98] transition-transform"
             >
               <ShoppingBag size={15} />
               Add to bag

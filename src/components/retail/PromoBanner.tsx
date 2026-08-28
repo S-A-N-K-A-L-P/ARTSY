@@ -18,7 +18,7 @@ export const PromoBanner = ({ message, onClose, isVisible }: PromoBannerProps) =
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
-          className="p-4 rounded-2xl bg-accent text-bg flex items-center justify-between relative overflow-hidden group shadow-lg"
+          className="p-4 rounded-2xl bg-accent text-on-accent flex items-center justify-between relative overflow-hidden group shadow-lg"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           

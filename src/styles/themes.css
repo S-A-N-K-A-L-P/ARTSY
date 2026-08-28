@@ -17,6 +17,7 @@
   --elevation-medium: 0 8px 32px rgba(0,0,0,0.05);
   --radius: 24px;
   --font: var(--font-inter), 'SF Pro', system-ui, sans-serif;
+  --on-accent: #0A0A0A;
   color-scheme: light;
 }
 
@@ -36,6 +37,7 @@
   --elevation-medium: 0 8px 32px rgba(0,0,0,0.05);
   --radius: 24px;
   --font: var(--font-inter), 'SF Pro', system-ui, sans-serif;
+  --on-accent: #0A0A0A;
   color-scheme: light;
 }
 [data-theme="noir"] {
@@ -54,6 +56,7 @@
   --elevation-medium: 0 12px 48px rgba(0,0,0,0.9);
   --radius: 0px;
   --font: var(--font-playfair), Georgia, serif;
+  --on-accent: #0A0A0A;
   color-scheme: dark;
 }
 [data-theme="minimal"] {
@@ -72,6 +75,7 @@
   --elevation-medium: 0 4px 16px rgba(0,0,0,0.05);
   --radius: 12px;
   --font: var(--font-inter), system-ui, sans-serif;
+  --on-accent: #FFFFFF;
   color-scheme: light;
 }
 [data-theme="cyberpunk"] {
@@ -90,6 +94,7 @@
   --elevation-medium: 0 0 30px rgba(0,245,212,0.3);
   --radius: 4px;
   --font: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --on-accent: #0A0A0A;
   color-scheme: dark;
 }
 [data-theme="vaporwave"] {
@@ -108,6 +113,7 @@
   --elevation-medium: 0 8px 32px rgba(255, 106, 213, 0.3);
   --radius: 32px;
   --font: var(--font-space-grotesk), system-ui, sans-serif;
+  --on-accent: #0A0A0A;
   color-scheme: dark;
 }
 [data-theme="brutalist"] {
@@ -126,6 +132,7 @@
   --elevation-medium: 10px 10px 0px #000000;
   --radius: 0px;
   --font: var(--font-space-mono), ui-monospace, monospace;
+  --on-accent: #0A0A0A;
   color-scheme: light;
 }
 [data-theme="grunge"] {
@@ -144,6 +151,7 @@
   --elevation-medium: 0 8px 24px rgba(0,0,0,0.8);
   --radius: 8px;
   --font: 'Courier New', ui-monospace, monospace;
+  --on-accent: #FFFFFF;
   color-scheme: dark;
 }
 [data-theme="fantasy"] {
@@ -162,6 +170,7 @@
   --elevation-medium: 0 12px 48px rgba(0,0,0,0.8);
   --radius: 20px;
   --font: var(--font-cinzel), Georgia, serif;
+  --on-accent: #0A0A0A;
   color-scheme: dark;
 }
 [data-theme="luxury"] {
@@ -180,5 +189,6 @@
   --elevation-medium: 0 12px 48px rgba(0,0,0,0.08);
   --radius: 16px;
   --font: var(--font-cormorant), Georgia, serif;
+  --on-accent: #0A0A0A;
   color-scheme: light;
 }

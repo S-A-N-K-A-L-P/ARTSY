@@ -144,7 +144,7 @@ export default function ItemDetailPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 gap-3">
-                   <button className="h-20 w-full bg-accent text-bg rounded-[24px] font-black uppercase tracking-[0.3em] text-[10px] active:scale-[0.98] transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-4 group">
+                   <button className="h-20 w-full bg-accent text-on-accent rounded-[24px] font-black uppercase tracking-[0.3em] text-[10px] active:scale-[0.98] transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-4 group">
                       Acquire Aesthetic <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                    </button>
                    <p className="text-center text-[9px] font-bold uppercase tracking-widest opacity-30 flex items-center justify-center gap-2">
