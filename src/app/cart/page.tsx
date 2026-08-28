@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
+import { useSession } from 'next-auth/react';
 import { useCart } from '@/components/cart/CartProvider';
 
 export default function CartPage() {
   const { items, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { status } = useSession();
+  const signedIn = status === 'authenticated';
 
   const money = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
@@ -172,12 +175,33 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <button
-                className="w-full h-11 rounded-full text-[11px] font-bold uppercase tracking-[0.12em] active:scale-[0.98] transition-transform"
-                style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
-              >
-                Checkout
-              </button>
+              {/* The bag is open to guests; /checkout still requires a
+                  session, so say so here rather than bouncing them to /login
+                  with no explanation. */}
+              {signedIn ? (
+                <button
+                  className="w-full h-11 rounded-full text-[11px] font-bold uppercase tracking-[0.12em] active:scale-[0.98] transition-transform"
+                  style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
+                >
+                  Checkout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/login?callbackUrl=%2Fcart"
+                    className="block w-full h-11 leading-[2.75rem] text-center rounded-full text-[11px] font-bold uppercase tracking-[0.12em] active:scale-[0.98] transition-transform"
+                    style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
+                  >
+                    Sign in to check out
+                  </Link>
+                  <p
+                    className="mt-2.5 text-center text-[var(--text-caption)]"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Your bag is saved on this device.
+                  </p>
+                </>
+              )}
 
               <button
                 onClick={clearCart}

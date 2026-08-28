@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, FileText, BarChart3, Settings, Plus, LogOut, Home } from 'lucide-react';
+import { LayoutGrid, FileText, BarChart3, Settings, Plus, LogIn, LogOut, Home } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -80,22 +80,65 @@ export default function DashboardSidebar() {
 
       {/* User */}
       <div className="p-4 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
-        <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold shadow-inner" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-subtle)', color: 'var(--accent)' }}>
-            {session?.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+        {session?.user ? (
+          <div className="flex items-center gap-3 px-2 py-2">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold shadow-inner"
+              style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--accent)',
+              }}
+            >
+              {session.user.name?.charAt(0)?.toUpperCase() || 'U'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>
+                {session.user.name || 'User'}
+              </p>
+              <p className="text-[9px] opacity-40 truncate" style={{ color: 'var(--text-muted)' }}>
+                {session.user.email}
+              </p>
+            </div>
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              aria-label="Sign out"
+              className="p-2 opacity-30 hover:opacity-100 transition-all"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              <LogOut size={16} />
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{session?.user?.name || 'User'}</p>
-            <p className="text-[9px] opacity-40 truncate" style={{ color: 'var(--text-muted)' }}>{session?.user?.email}</p>
-          </div>
-          <button 
-            onClick={() => signOut({ callbackUrl: '/login' })}
-            className="p-2 opacity-30 hover:opacity-100 transition-all"
-            style={{ color: 'var(--text-primary)' }}
+        ) : (
+          /*
+           * Guests can reach /cart now, and this footer used to show a made-up
+           * "User" with a blank email and a Sign out button to someone who was
+           * never signed in.
+           */
+          <Link
+            href="/login"
+            className="flex items-center gap-3 px-2 py-2.5 rounded-[var(--radius-sm)] transition-colors hover:bg-[var(--bg-tertiary)]"
           >
-            <LogOut size={16} />
-          </button>
-        </div>
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-muted)',
+              }}
+            >
+              <LogIn size={16} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>
+                Sign in
+              </p>
+              <p className="text-[9px] opacity-40 truncate" style={{ color: 'var(--text-muted)' }}>
+                To publish and check out
+              </p>
+            </div>
+          </Link>
+        )}
       </div>
     </aside>
   );
