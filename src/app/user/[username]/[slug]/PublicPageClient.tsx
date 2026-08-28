@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCart } from '@/components/cart/CartProvider';
+import { resolveTheme } from '@/lib/theme/themes';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import Masonry from 'react-masonry-css';
 import { ShoppingBag, X } from 'lucide-react';
@@ -12,7 +13,6 @@ import { ShoppingBag, X } from 'lucide-react';
 /* --- Retail Library Imports --- */
 import { StickyAddToCart } from '@/components/retail/StickyAddToCart';
 import { ReviewStars } from '@/components/retail/ReviewStars';
-import { InventoryBadge } from '@/components/retail/InventoryBadge';
 import { PromoBanner } from '@/components/retail/PromoBanner';
 import { BreadcrumbTrail } from '@/components/retail/BreadcrumbTrail';
 import { FilterDrawer } from '@/components/retail/FilterDrawer';
@@ -42,6 +42,11 @@ export default function PublicPageClient({ page, user, items }: any) {
   const [activeCategory, setActiveCategory] = useState('All Artifacts');
   const [showPromo, setShowPromo] = useState(true);
 
+  // The creator's chosen aesthetic, scoped to this storefront subtree. This is
+  // the whole product promise: a noir shop must actually render as noir. The
+  // page fetched aesthetic.theme from Mongo and previously discarded it.
+  const storeTheme = resolveTheme(page?.aesthetic?.theme);
+
   if (isMobile === null) return null;
 
   const handleAddToCart = (item: any) => {
@@ -54,10 +59,17 @@ export default function PublicPageClient({ page, user, items }: any) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    // fontFamily is set explicitly: body already resolved --font in the visitor's
+    // own theme, and an inherited font-family is a computed value, so the var
+    // would not be re-evaluated inside this scope without it.
+    <div
+      data-theme={storeTheme}
+      style={{ fontFamily: 'var(--font)' }}
+      className="min-h-screen bg-bg text-text"
+    >
       {/* 1. Global Announcement Depth */}
       <PromoBanner 
-        message="Astl v2 Archives: Winter Zenith Collection Now Manifesting" 
+        message={`${page.name} — curated by @${user.username}`} 
         isVisible={showPromo} 
         onClose={() => setShowPromo(false)} 
       />
@@ -121,18 +133,18 @@ function IOSView({ page, user, items, setSelectedItem, setIsCartOpen, setIsFilte
   return (
     <div className="pb-40">
       {/* Premium iOS Header */}
-      <div className="px-6 pt-12 pb-8 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-3xl z-40 border-b border-neutral-50/50">
+      <div className="px-6 pt-12 pb-8 flex items-center justify-between sticky top-0 bg-card/80 backdrop-blur-3xl z-40 border-b border-line">
         <StoreStatus isOpen={true} message="Active manifestation" />
         <div className="flex items-center gap-3">
-           <button onClick={() => setIsCartOpen(true)} className="relative w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-xl">
+           <button onClick={() => setIsCartOpen(true)} className="relative w-12 h-12 rounded-2xl bg-accent text-bg flex items-center justify-center shadow-xl">
               <ShoppingBag size={20} />
            </button>
         </div>
       </div>
 
       <div className="px-6 mb-12">
-        <h1 className="text-4xl font-black tracking-tighter text-neutral-900 leading-tight">{page.name}</h1>
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-300 mt-2">Compiled by @{user.username}</p>
+        <h1 className="text-4xl font-black tracking-tighter text-text leading-tight">{page.name}</h1>
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-text-muted mt-2">Compiled by @{user.username}</p>
       </div>
 
       {/* Tactical Category Chips */}
@@ -143,7 +155,7 @@ function IOSView({ page, user, items, setSelectedItem, setIsCartOpen, setIsFilte
               onClick={() => setIsFilterOpen(true)}
               className={cn(
                 "px-6 h-10 rounded-full border text-[10px] font-bold uppercase tracking-widest shrink-0 transition-all",
-                activeCategory === cat ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" : "bg-neutral-50 border-neutral-100 text-neutral-400"
+                activeCategory === cat ? "bg-accent border-accent text-bg shadow-lg" : "bg-elevated border-line text-text-muted"
               )}
             >
               {cat}
@@ -179,17 +191,17 @@ function IOSView({ page, user, items, setSelectedItem, setIsCartOpen, setIsFilte
 /* --- Desktop View (Cinematic & Immersive) --- */
 function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, activeCategory, setActiveCategory }: any) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen items-start">
       {/* Cinematic Left Panel */}
-      <div className="w-[480px] border-r border-neutral-100 p-16 flex flex-col justify-between bg-white z-50">
+      <div className="w-[380px] shrink-0 border-r border-line p-10 flex flex-col justify-between gap-10 bg-card sticky top-0 h-screen overflow-y-auto z-40">
         <div>
            <BreadcrumbTrail items={[{ label: page.name, href: '#' }]} />
-           <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-neutral-100 shadow-2xl mb-10">
-              <img src={page.coverImage} className="w-full h-full object-cover" />
+           <div className="w-24 h-24 rounded-ios overflow-hidden border border-line shadow-[var(--elevation-medium)] mb-10">
+              <img src={page.coverImage} alt="" className="w-full h-full object-cover" />
            </div>
-           <h1 className="text-5xl font-black tracking-tighter text-neutral-900 leading-tight mb-6">{page.name}</h1>
-           <p className="text-base text-neutral-500 font-medium leading-relaxed mb-12 max-w-xs">
-              A meticulously gathered archive of high-depth artifacts, curated for visual resonance and material integrity.
+           <h1 className="text-5xl font-black tracking-tighter text-text leading-tight mb-6">{page.name}</h1>
+           <p className="text-base text-text-secondary font-medium leading-relaxed mb-12 max-w-xs">
+              {page.description || `A collection by @${user.username}.`}
            </p>
            
            <DesktopCategoryNav 
@@ -203,7 +215,7 @@ function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, active
            <StoreStatus isOpen={true} />
            <button 
              onClick={() => setIsCartOpen(true)}
-             className="w-full h-18 rounded-2xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-[0.3em] shadow-2xl shadow-neutral-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+             className="w-full h-14 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.3em] shadow-[var(--elevation-medium)] hover:scale-[1.02] active:scale-[0.98] transition-transform"
            >
               Open Manifest ({items.length})
            </button>
@@ -211,7 +223,7 @@ function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, active
       </div>
 
       {/* Horizontal Cinematic Grid */}
-      <div className="flex-1 overflow-y-auto p-20 bg-neutral-50/20">
+      <div className="flex-1 min-w-0 p-10 xl:p-16 bg-bg">
          <BrandStorySection 
            title="archival depth" 
            story="Each piece in this collection has been selected for its unique manifestation of geometric balance and textural depth."
@@ -219,7 +231,11 @@ function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, active
          />
 
          <div className="mt-24">
-            <Masonry breakpointCols={3} className="flex gap-12" columnClassName="flex flex-col gap-12">
+            <Masonry
+              breakpointCols={{ default: 4, 1536: 3, 1280: 3, 1024: 2 }}
+              className="flex gap-5"
+              columnClassName="flex flex-col"
+            >
                {items.map((item: any, i: number) => (
                   <React.Fragment key={item._id}>
                      <GalleryCard item={item} onSelect={setSelectedItem} />
@@ -229,9 +245,18 @@ function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, active
             </Masonry>
          </div>
 
-         <div className="mt-32 border-t border-neutral-100 pt-32 mb-20">
-            <RelatedProducts items={items} onSelect={setSelectedItem} />
-         </div>
+         {items.length === 0 && (
+            <div className="py-32 text-center border border-dashed border-line rounded-ios">
+               <ShoppingBag size={36} className="mx-auto mb-4 text-text-muted opacity-40" />
+               <p className="text-sm font-medium text-text-secondary">This archive is empty for now.</p>
+            </div>
+         )}
+
+         {items.length > 0 && (
+           <div className="mt-24 border-t border-line pt-24 mb-20">
+              <RelatedProducts items={items} onSelect={setSelectedItem} />
+           </div>
+         )}
       </div>
     </div>
   );
@@ -239,26 +264,30 @@ function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, active
 
 /* --- Refined Gallery Card --- */
 function GalleryCard({ item, onSelect, isMobile }: any) {
-  const height = React.useMemo(() => {
-    const variants = isMobile ? [200, 240, 280] : [320, 380, 440, 360];
-    const seed = item._id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-    return variants[seed % variants.length];
-  }, [item._id, isMobile]);
+  // Aspect ratios rather than fixed pixel heights, so tiles scale with the
+  // column and the board staggers instead of cropping every image to a box.
+  const ratio = React.useMemo(() => {
+    const variants = ['3 / 4', '1 / 1', '4 / 5', '2 / 3'];
+    let hash = 0;
+    for (let i = 0; i < item._id.length; i++) hash = (hash * 31 + item._id.charCodeAt(i)) >>> 0;
+    return variants[hash % variants.length];
+  }, [item._id]);
 
   return (
-    <motion.div onClick={() => onSelect(item)} className="group cursor-pointer">
-      <div className="rounded-[40px] overflow-hidden bg-white border border-neutral-100 relative shadow-sm hover:shadow-2xl transition-all duration-1000" style={{ height: `${height}px` }}>
+    <motion.div onClick={() => onSelect(item)} className="group cursor-pointer mb-2">
+      <div className="rounded-ios overflow-hidden bg-elevated border border-line relative shadow-[var(--elevation-soft)] hover:shadow-[var(--elevation-medium)] transition-shadow duration-500 mb-5" style={{ aspectRatio: ratio }}>
         <img src={item.image || item.images?.[0]} className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
-        <div className="absolute inset-0 bg-neutral-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-           <div className="w-14 h-14 rounded-full bg-white text-neutral-900 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+           <div className="w-14 h-14 rounded-full bg-card text-text flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
               <ShoppingBag size={24} />
            </div>
         </div>
       </div>
       <div className="mt-5 px-2">
-         <InventoryBadge count={10} className="mb-2" />
-         <h4 className="text-sm font-bold text-neutral-900 truncate tracking-tight">{item.title}</h4>
-         <p className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest mt-1">₹{item.price}</p>
+         <h4 className="text-sm font-bold text-text truncate tracking-tight">{item.title}</h4>
+         <p className="text-xs font-bold text-text-secondary tabular-nums mt-1">
+            ₹{Number(item.price || 0).toLocaleString('en-IN')}
+         </p>
       </div>
     </motion.div>
   );
@@ -279,15 +308,15 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
-        className="relative w-full md:max-w-7xl min-h-[90vh] bg-white rounded-t-[48px] md:rounded-[48px] overflow-hidden flex flex-col md:flex-row shadow-2xl z-10"
+        className="relative w-full md:max-w-7xl min-h-[90vh] bg-card rounded-t-[48px] md:rounded-[48px] overflow-hidden flex flex-col md:flex-row shadow-2xl z-10"
       >
-        <div className="flex-1 bg-neutral-50/50 flex flex-col">
+        <div className="flex-1 bg-elevated flex flex-col">
            <div className="flex-1 overflow-hidden">
               <ImageCarousel images={item.images || [item.image]} className="h-full" />
            </div>
            
            {/* Detailed Table for Depth */}
-           <div className="p-12 bg-white border-t border-neutral-100 hidden md:block">
+           <div className="p-12 bg-card border-t border-line hidden md:block">
               <TechSpecsTable specs={[
                 { label: 'Origin', value: 'Astl Archives' },
                 { label: 'Material', value: 'Reinforced Digital Matter' },
@@ -296,39 +325,39 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
            </div>
         </div>
 
-        <div className="w-full md:w-[540px] p-10 md:p-20 overflow-y-auto bg-white border-l border-neutral-100 flex flex-col justify-between">
+        <div className="w-full md:w-[540px] p-10 md:p-20 overflow-y-auto bg-card border-l border-line flex flex-col justify-between">
            <div className="space-y-12">
               <div className="flex items-center justify-between">
                  <StoreStatus isOpen={true} />
-                 <button onClick={onClose} className="p-2 text-neutral-200 hover:text-neutral-900 transition-colors"><X size={24} /></button>
+                 <button onClick={onClose} className="p-2 text-text-muted hover:text-text transition-colors"><X size={24} /></button>
               </div>
 
               <div className="space-y-4">
                  <ReviewStars rating={4.8} count={24} />
-                 <h2 className="text-5xl font-black tracking-tighter text-neutral-900 leading-[0.9]">{item.title}</h2>
-                 <p className="text-base text-neutral-500 font-medium leading-relaxed">
+                 <h2 className="text-5xl font-black tracking-tighter text-text leading-[0.9]">{item.title}</h2>
+                 <p className="text-base text-text-secondary font-medium leading-relaxed">
                    Experience the silent resonance of an archival artifact designed for high-depth manifestation. Part of the limited v2 release.
                  </p>
               </div>
 
               <div className="grid grid-cols-2 gap-10">
                  <div className="space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 px-1">Inventory Value</span>
-                    <p className="text-3xl font-black text-neutral-900 tracking-tighter">₹{item.price}</p>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-1">Inventory Value</span>
+                    <p className="text-3xl font-black text-text tracking-tighter">₹{item.price}</p>
                  </div>
                  <div className="space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 px-1">Identity</span>
-                    <p className="text-xs font-bold text-neutral-900 uppercase tracking-widest leading-loose">#{item._id.slice(-6)}</p>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-1">Identity</span>
+                    <p className="text-xs font-bold text-text uppercase tracking-widest leading-loose">#{item._id.slice(-6)}</p>
                  </div>
               </div>
 
-              <div className="space-y-8 py-10 border-y border-neutral-50">
+              <div className="space-y-8 py-10 border-y border-line">
                  <OptionPicker label="select architecture" options={['Alpha', 'Beta', 'Gamma', 'Delta']} selected={size} onChange={setSize} />
-                 <button onClick={() => setShowSizeGuide(true)} className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-all flex items-center gap-2 underline decoration-neutral-100 underline-offset-4">
+                 <button onClick={() => setShowSizeGuide(true)} className="text-[10px] font-bold uppercase tracking-widest text-text-muted hover:text-text transition-all flex items-center gap-2 underline decoration-line underline-offset-4">
                     Dimension Protocols
                  </button>
                  <div className="space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 px-1">manifest quantity</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-1">manifest quantity</span>
                     <QuantitySelector quantity={quantity} onChange={setQuantity} />
                  </div>
               </div>
@@ -344,7 +373,7 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
            <div className="pt-16 pb-4 flex flex-col gap-4">
               <button 
                 onClick={() => { onAddToCart(item); onClose(); }} 
-                className="w-full h-18 rounded-2xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-neutral-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="w-full h-14 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-[var(--elevation-medium)] hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
                  <ShoppingBag size={20} /> Deploy manifest (₹{item.price * quantity})
               </button>

@@ -38,15 +38,27 @@
   --font-sans: var(--font);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/*
+ * This reset MUST stay inside @layer base.
+ *
+ * Unlayered CSS outranks every layered rule regardless of specificity, and
+ * Tailwind v4 emits its utilities in @layer utilities. An unlayered
+ * `* { margin: 0; padding: 0 }` therefore beat every p-*, m-*, px-*, mb-*
+ * utility in the codebase — all of them computed to 0px, app-wide, which is
+ * why nothing had any spacing. Tailwind's own preflight already zeroes these
+ * in @layer base; this just states the intent explicitly at the same rank.
+ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-* {
-  margin: 0;
-  padding: 0;
+  * {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 html,
