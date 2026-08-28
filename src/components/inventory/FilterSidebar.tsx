@@ -24,7 +24,7 @@ export function FilterSidebar({
   onStatusChange
 }: FilterSidebarProps) {
   return (
-    <aside className="w-64 flex-shrink-0 space-y-10 pr-8 border-r border-neutral-100 hidden md:block">
+    <aside className="w-64 flex-shrink-0 space-y-10 pr-8 border-r border-line hidden md:block">
       {/* Category Filter */}
       <FilterSection title="Manifest Category">
         <div className="flex flex-col gap-2">
@@ -35,8 +35,8 @@ export function FilterSidebar({
                     className={cn(
                         "flex items-center justify-between px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                         selectedCategory === cat 
-                            ? "bg-neutral-900 text-white shadow-xl" 
-                            : "bg-transparent text-neutral-400 hover:bg-neutral-50 hover:text-neutral-900"
+                            ? "bg-accent text-bg shadow-xl" 
+                            : "bg-transparent text-text-muted hover:bg-elevated hover:text-text"
                     )}
                 >
                     {cat}
@@ -70,7 +70,7 @@ export function FilterSidebar({
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-6">
-      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-300 px-1">{title}</h3>
+      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted px-1">{title}</h3>
       {children}
     </div>
   );
@@ -82,7 +82,7 @@ function PriceOption({ label, active, onClick }: { label: string; active: boolea
         onClick={onClick}
         className={cn(
             "w-full px-4 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest text-left transition-all",
-            active ? "bg-neutral-50 border-neutral-900 text-neutral-900" : "bg-transparent border-neutral-100 text-neutral-400 hover:border-neutral-300"
+            active ? "bg-elevated border-accent text-text" : "bg-transparent border-line text-text-muted hover:border-line-strong"
         )}
     >
         {label}
@@ -96,10 +96,10 @@ function StatusOption({ label, active, onClick }: { label: string; active: boole
           onClick={onClick}
           className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest text-left transition-all",
-              active ? "bg-neutral-50 border-neutral-900 text-neutral-900 shadow-sm" : "bg-transparent border-transparent text-neutral-400 hover:bg-neutral-50"
+              active ? "bg-elevated border-accent text-text shadow-sm" : "bg-transparent border-transparent text-text-muted hover:bg-elevated"
           )}
       >
-          <div className={cn("w-1.5 h-1.5 rounded-full", active ? "bg-emerald-500" : "bg-neutral-200")} />
+          <div className={cn("w-1.5 h-1.5 rounded-full", active ? "bg-emerald-500" : "bg-text-muted")} />
           {label}
       </button>
     );

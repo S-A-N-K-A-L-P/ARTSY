@@ -17,7 +17,7 @@ export const ImageCarousel = ({ images, className }: ImageCarouselProps) => {
   const prev = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div className={cn("relative group overflow-hidden bg-neutral-100", className)}>
+    <div className={cn("relative group overflow-hidden bg-elevated", className)}>
       <AnimatePresence mode="wait">
         <motion.div
            key={currentIndex}
@@ -38,12 +38,12 @@ export const ImageCarousel = ({ images, className }: ImageCarouselProps) => {
       {images.length > 1 && (
         <>
           <div className="absolute inset-y-0 left-0 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={prev} className="p-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg">
+            <button onClick={prev} className="p-2 bg-card/80 backdrop-blur-md rounded-full shadow-lg">
               <ChevronLeft size={16} />
             </button>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={next} className="p-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg">
+            <button onClick={next} className="p-2 bg-card/80 backdrop-blur-md rounded-full shadow-lg">
               <ChevronRight size={16} />
             </button>
           </div>
@@ -53,7 +53,7 @@ export const ImageCarousel = ({ images, className }: ImageCarouselProps) => {
               <div
                 key={i}
                 className={cn(
-                  "w-12 h-1 rounded-full bg-white transition-all duration-500",
+                  "w-12 h-1 rounded-full bg-card transition-all duration-500",
                   i === currentIndex ? "opacity-100 shadow-[0_0_10px_rgba(255,255,255,0.5)]" : "opacity-20 hover:opacity-40"
                 )}
               />

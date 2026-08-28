@@ -77,21 +77,20 @@ export default function HomePage() {
 
   return (
     <DashboardShell>
-      <div className="max-w-6xl mx-auto pb-40">
+      <div className="max-w-[1600px] mx-auto pb-24">
         {/* Cinematic Perspective Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
-           <div className="flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] text-[9px] font-black uppercase tracking-widest mb-4">
-                <Sparkles size={10} /> {aesthetic} Perspective
-              </div>
-              <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic leading-none" style={{ color: 'var(--text-primary)' }}>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+           <div className="flex items-baseline gap-3 min-w-0">
+              <h1 className="text-2xl md:text-3xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>
                 {view === 'reels' ? 'Artifacts' : gridMode === 'spaces' ? 'Spaces' : 'Items'}
               </h1>
-              <p className="mt-4 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.4em] opacity-40">Discovery through aesthetic convergence</p>
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] shrink-0">
+                <Sparkles size={10} /> {aesthetic}
+              </span>
            </div>
 
            {/* Premium Tab System */}
-           <div className="flex items-center p-1.5 rounded-[28px] bg-[var(--bg-secondary)] border border-[var(--border-subtle)] self-start md:self-auto shadow-2xl backdrop-blur-3xl">
+           <div className="flex items-center p-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-[var(--elevation-soft)]">
               <TabButton 
                 isActive={view === 'reels'} 
                 onClick={() => handleTabChange('reels')}
@@ -149,7 +148,7 @@ export default function HomePage() {
                    board; real masonry needs narrow columns and a tight gutter. */}
                <Masonry
                  breakpointCols={{
-                    default: 5,
+                    default: 6,
                     1536: 5,
                     1280: 4,
                     1024: 3,
