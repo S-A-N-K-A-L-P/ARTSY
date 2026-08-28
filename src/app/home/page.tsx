@@ -181,8 +181,10 @@ function TabButton({ isActive, onClick, icon, label }: { isActive: boolean; onCl
   return (
     <button 
       onClick={onClick}
+      aria-label={label}
+      aria-pressed={isActive}
       className={cn(
-          "flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all relative group",
+          "flex items-center gap-2 px-4 md:px-6 h-11 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all relative group",
           isActive ? "text-[var(--bg-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
       )}
     >
@@ -194,14 +196,7 @@ function TabButton({ isActive, onClick, icon, label }: { isActive: boolean; onCl
         />
       )}
       <span className="relative z-10">{icon}</span>
-      <span className="relative z-10 hidden md:block">{label}</span>
-      
-      {/* Tooltip for mobile */}
-      {!isActive && (
-        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-black text-white text-[9px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none md:hidden uppercase tracking-widest whitespace-nowrap">
-           {label}
-        </span>
-      )}
+      <span className="relative z-10">{label}</span>
     </button>
   );
 }

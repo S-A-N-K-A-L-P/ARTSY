@@ -96,7 +96,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
 
         {/* Scrim only on hover, so the board stays clean at rest — the way a pin
             grid reads before you engage with it. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/25 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/25 opacity-60 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
         {/* Save — top right, the primary affordance on a pin */}
         <button
@@ -108,8 +108,8 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
           aria-pressed={saved}
           className={cn(
             'absolute top-3 right-3 h-9 w-9 rounded-full flex items-center justify-center',
-            'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
-            'translate-y-1 group-hover:translate-y-0 transition-all duration-300',
+            '[@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+            '[@media(hover:hover)]:translate-y-1 group-hover:translate-y-0 transition-all duration-300',
             'active:scale-90 shadow-[var(--elevation-soft)]'
           )}
           style={{
@@ -122,14 +122,14 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
 
         {/* Aesthetic tag — the category axis this whole product is built on */}
         <span
-          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md [@media(hover:hover)]:opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
           style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
         >
           {item.aesthetic}
         </span>
 
         {/* Bottom action row */}
-        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:hover)]:translate-y-1 group-hover:translate-y-0 transition-all duration-300">
           {isPurchasable ? (
             <span
               className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums shadow-[var(--elevation-soft)]"
