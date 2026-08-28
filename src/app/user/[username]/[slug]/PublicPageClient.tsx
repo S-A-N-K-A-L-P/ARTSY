@@ -178,8 +178,8 @@ export default function PublicPageClient({ page, user, items }: any) {
 
           {visibleItems.length > 0 ? (
             <Masonry
-              breakpointCols={{ default: 4, 1536: 4, 1280: 3, 1024: 2, 640: 2 }}
-              className="flex gap-3 md:gap-4"
+              breakpointCols={{ default: 6, 1536: 5, 1280: 4, 1024: 3, 640: 2 }}
+              className="flex gap-3"
               columnClassName="flex flex-col"
             >
               {visibleItems.map((item: any) => (
@@ -283,7 +283,7 @@ function GalleryCard({ item, onSelect, onAdd }: any) {
           }
         }}
         aria-label={item.title}
-        className="relative w-full overflow-hidden cursor-zoom-in rounded-ios bg-elevated transition-shadow duration-300 hover:shadow-[var(--elevation-medium)]"
+        className="relative w-full overflow-hidden cursor-zoom-in rounded-2xl bg-elevated"
         style={{ aspectRatio: ratio }}
       >
         {image && (
@@ -291,11 +291,11 @@ function GalleryCard({ item, onSelect, onAdd }: any) {
             src={image}
             alt={item.title}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            className="w-full h-full object-cover"
           />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent opacity-60 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
         <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:hover)]:translate-y-1 group-hover:translate-y-0 transition-all duration-300">
           {item.price > 0 ? (

@@ -29,18 +29,18 @@ export const HoverPreviewCard = ({
       }}
       aria-label={item.title}
       // Ratio rather than a fixed h-[450px], so tiles scale with the column.
-      className="relative w-full aspect-[3/4] overflow-hidden cursor-pointer rounded-[var(--radius-lg)] bg-elevated border border-line transition-shadow duration-300 hover:shadow-[var(--elevation-medium)]"
+      className="relative w-full aspect-[3/4] overflow-hidden cursor-pointer rounded-2xl bg-elevated"
     >
       {item.images?.[0] && (
         <img
           src={item.images[0]}
           alt={item.title}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          className="w-full h-full object-cover"
         />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent opacity-60 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
       <span className="absolute top-3 right-3 w-9 h-9 rounded-full bg-card/90 backdrop-blur-md flex items-center justify-center text-text [@media(hover:hover)]:opacity-0 group-hover:opacity-100 transition-opacity">
         <Maximize2 size={15} />

@@ -84,84 +84,88 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
           }
         }}
         aria-label={`${item.title} by ${item.creator.username}`}
-        className="relative w-full overflow-hidden cursor-zoom-in rounded-[var(--radius)] transition-shadow duration-300 hover:shadow-[var(--elevation-medium)]"
-        style={{ aspectRatio: ratio, backgroundColor: 'var(--bg-tertiary)' }}
+        className="relative w-full overflow-hidden cursor-zoom-in rounded-2xl bg-elevated"
+        style={{ aspectRatio: ratio }}
       >
         <img
           src={item.image}
           alt={item.title}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          className="w-full h-full object-cover"
         />
 
         {/* Scrim only on hover, so the board stays clean at rest — the way a pin
             grid reads before you engage with it. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/25 opacity-60 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
-        {/* Save — top right, the primary affordance on a pin */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setSaved((s) => !s);
-          }}
-          aria-label={saved ? 'Remove from saved' : 'Save'}
-          aria-pressed={saved}
+        {/*
+          Pinterest puts its primary action — Save — as a filled pill in the
+          top-right of the pin. astl's primary action is Add to bag, so it takes
+          that slot. Save demotes to a quiet circle beside the price.
+        */}
+        <div
           className={cn(
-            'absolute top-3 right-3 h-9 w-9 rounded-full flex items-center justify-center',
-            '[@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
-            '[@media(hover:hover)]:translate-y-1 group-hover:translate-y-0 transition-all duration-300',
-            'active:scale-90 shadow-[var(--elevation-soft)]'
+            'absolute top-2.5 right-2.5 flex items-center gap-2',
+            '[@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100',
+            'transition-opacity duration-200'
           )}
-          style={{
-            backgroundColor: saved ? 'var(--accent)' : 'var(--bg-secondary)',
-            color: saved ? 'var(--bg-primary)' : 'var(--text-primary)',
-          }}
         >
-          <Heart size={15} fill={saved ? 'currentColor' : 'none'} />
-        </button>
+          {isPurchasable ? (
+            <button
+              onClick={handleAddToCart}
+              aria-label={`Add ${item.title} to bag`}
+              className="h-9 px-4 rounded-full flex items-center gap-1.5 text-[11px] font-bold tracking-tight active:scale-95 transition-transform"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
+            >
+              <ShoppingBag size={14} />
+              Add to bag
+            </button>
+          ) : (
+            isPage && (
+              <span
+                className="h-9 px-4 rounded-full flex items-center gap-1.5 text-[11px] font-bold tracking-tight"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
+              >
+                <Layers size={14} />
+                Visit
+              </span>
+            )
+          )}
+        </div>
 
-        {/* Aesthetic tag — the category axis this whole product is built on */}
-        <span
-          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md [@media(hover:hover)]:opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
-        >
-          {item.aesthetic}
-        </span>
-
-        {/* Bottom action row */}
-        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:hover)]:translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+        {/* Bottom row: price, then the quiet save */}
+        <div className="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-2 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
           {isPurchasable ? (
             <span
-              className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums shadow-[var(--elevation-soft)]"
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums"
               style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
             >
               {`₹${item.price!.toLocaleString('en-IN')}`}
             </span>
           ) : (
-            <span />
+            <span
+              className="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.1em]"
+              style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff' }}
+            >
+              {item.aesthetic}
+            </span>
           )}
 
-          {isPurchasable ? (
-            <button
-              onClick={handleAddToCart}
-              aria-label={`Add ${item.title} to bag`}
-              className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] active:scale-95 transition-transform shadow-[var(--elevation-soft)]"
-              style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
-            >
-              <ShoppingBag size={13} />
-              Add
-            </button>
-          ) : (
-            isPage && (
-              <span
-                className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] shadow-[var(--elevation-soft)]"
-                style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
-              >
-                <Layers size={13} />
-                Visit
-              </span>
-            )
-          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSaved((s) => !s);
+            }}
+            aria-label={saved ? 'Remove from saved' : 'Save'}
+            aria-pressed={saved}
+            className="h-8 w-8 rounded-full flex items-center justify-center active:scale-90 transition-transform shrink-0"
+            style={{
+              backgroundColor: saved ? 'var(--accent)' : 'var(--bg-secondary)',
+              color: saved ? 'var(--on-accent)' : 'var(--text-primary)',
+            }}
+          >
+            <Heart size={14} fill={saved ? 'currentColor' : 'none'} />
+          </button>
         </div>
       </div>
 

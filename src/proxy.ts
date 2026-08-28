@@ -12,8 +12,9 @@ export const config = {
         '/post/:path*',
         '/checkout/:path*',
         '/messages/:path*',
-        // Protecting main components from Phase 3 plan if they are added as routes
-        '/explore/:path*',
+        // /explore is deliberately NOT listed: it is public discovery, linked
+        // from the marketing navbar, the hero and the CTA on the logged-out
+        // landing page. Gating it sent every one of those visitors to /login.
         // /cart is deliberately NOT listed: a guest can build a bag, which
         // persists in localStorage. /checkout above still requires a session,
         // so authentication happens at payment rather than at the bag.

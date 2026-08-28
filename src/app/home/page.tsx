@@ -155,7 +155,7 @@ export default function HomePage() {
                     768: 3,
                     640: 2
                  }}
-                 className="flex gap-3 md:gap-4"
+                 className="flex gap-3"
                  columnClassName="flex flex-col"
                >
                   {items.map((item) => (

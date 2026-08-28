@@ -10,14 +10,22 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q');
 
-    let users;
-    if (query) {
-      users = await User.find({
-        username: { $regex: query, $options: 'i' }
-      }).select('username avatar aesthetic');
-    } else {
-      users = await User.find().limit(20).select('username avatar aesthetic');
-    }
+    /*
+     * `avatar` and `aesthetic` were selected as top-level fields, but the
+     * schema stores them at profile.avatar and aesthetic.name — so every
+     * result came back without an image or a theme.
+     */
+    const projection = 'username profile.name profile.avatar aesthetic.name followersCount';
+    const filter = query
+      ? {
+          $or: [
+            { username: { $regex: query, $options: 'i' } },
+            { 'profile.name': { $regex: query, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const users = await User.find(filter).limit(40).select(projection).lean();
 
     return NextResponse.json(users);
   } catch (error) {
