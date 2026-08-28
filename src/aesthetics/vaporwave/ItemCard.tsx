@@ -44,7 +44,7 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         {/* Actions */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
            <button 
-             onClick={(e) => { e.stopPropagation(); addToCart({ id, title, image, price }); }}
+             onClick={(e) => { e.stopPropagation(); addToCart({ id: String(id), title, image, price }); }}
              className="w-10 h-10 rounded-full backdrop-blur-xl flex items-center justify-center transition-all bg-[var(--accent-soft)] border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white"
            >
              <ShoppingBag size={14} />

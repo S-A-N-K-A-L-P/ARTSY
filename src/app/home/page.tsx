@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { LayoutGrid, PlayCircle, Sparkles, ShoppingBag, Loader2, Layers, Package } from 'lucide-react';
 import Masonry from 'react-masonry-css';
 import FeedReels from '@/components/feed/FeedReels';
@@ -113,23 +113,25 @@ export default function HomePage() {
            </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <motion.div 
-               key="loader"
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               className="flex justify-center py-40"
-            >
-               <Loader2 className="w-8 h-8 animate-spin text-neutral-200" />
-            </motion.div>
-          ) : view === 'reels' ? (
+        {/* The loader deliberately sits OUTSIDE AnimatePresence. It used to be
+            a presence child under mode="wait", and its exit animation never
+            completed -- so the incoming grid was never allowed to mount and the
+            feed spun forever with data already fetched. */}
+        {loading && (
+          <div className="flex justify-center py-40">
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--accent)' }} />
+          </div>
+        )}
+
+        {/* No AnimatePresence / exit animations here. Exit never completed in
+            this tree, so any presence-gated swap (loader -> grid, spaces ->
+            items) deadlocked and the view never changed. Keyed enter
+            animations give the same feel without anything to wait on. */}
+        {loading ? null : view === 'reels' ? (
             <motion.div
               key="reels"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
               className="flex justify-center"
             >
               <FeedReels />
@@ -139,19 +141,23 @@ export default function HomePage() {
               key={`${view}-${gridMode}`}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="mt-4"
             >
+               {/* Pin-board density. This was capped at 2 columns with a
+                   48px gutter, which reads as a two-up catalogue rather than a
+                   board; real masonry needs narrow columns and a tight gutter. */}
                <Masonry
                  breakpointCols={{
-                    default: 2,
-                    1100: 2,
-                    700: 2,
-                    500: 1
+                    default: 5,
+                    1536: 5,
+                    1280: 4,
+                    1024: 3,
+                    768: 3,
+                    640: 2
                  }}
-                 className="flex gap-4 md:gap-12"
-                 columnClassName="flex flex-col gap-4 md:gap-12"
+                 className="flex gap-3 md:gap-4"
+                 columnClassName="flex flex-col"
                >
                   {items.map((item) => (
                      <FeedCard key={item.id} item={item} />
@@ -159,14 +165,13 @@ export default function HomePage() {
                </Masonry>
 
                {items.length === 0 && (
-                  <div className="py-40 text-center text-neutral-300">
+                  <div className="py-40 text-center" style={{ color: 'var(--text-muted)' }}>
                     <ShoppingBag size={48} className="mx-auto mb-4 opacity-20" />
                     <p className="font-semibold text-xs uppercase tracking-widest italic opacity-40">No manifestations discovered in this node</p>
                   </div>
                )}
             </motion.div>
           )}
-        </AnimatePresence>
       </div>
     </DashboardShell>
   );

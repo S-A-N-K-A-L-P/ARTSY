@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, updateQuantity, removeFromCart } from '@/store/cartSlice';
+import { useCart } from '@/components/cart/CartProvider';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import Masonry from 'react-masonry-css';
 import { ShoppingBag, X } from 'lucide-react';
@@ -34,8 +34,7 @@ import { TechSpecsTable } from '@/components/retail/TechSpecsTable';
 import { CheckoutSteps } from '@/components/retail/CheckoutSteps';
 
 export default function PublicPageClient({ page, user, items }: any) {
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state: any) => state.cart.items);
+  const { items: cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
   const isMobile = useIsMobile(1024);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -46,12 +45,12 @@ export default function PublicPageClient({ page, user, items }: any) {
   if (isMobile === null) return null;
 
   const handleAddToCart = (item: any) => {
-    dispatch(addToCart({
+    addToCart({
       id: item._id,
       title: item.title,
       price: item.price,
-      image: item.images?.[0] || item.image
-    }));
+      image: item.images?.[0] || item.image,
+    });
   };
 
   return (
@@ -90,8 +89,8 @@ export default function PublicPageClient({ page, user, items }: any) {
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
         items={cartItems}
-        onRemove={(id) => dispatch(removeFromCart(id))}
-        onUpdateQuantity={(id, q) => dispatch(updateQuantity({ id, quantity: q }))}
+        onRemove={removeFromCart}
+        onUpdateQuantity={updateQuantity}
       />
 
       <FilterDrawer 

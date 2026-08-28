@@ -4,12 +4,11 @@ import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Badge as MuiBadge, Box } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
+import { useCart } from '@/components/cart/CartProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Navbar = () => {
-  const cartItemsCount = useSelector((state: RootState) => state.cart.items.length);
+  const { totalItems } = useCart();
   const [showModal, setShowModal] = useState(false);
 
   const handleLoginClick = (e: React.MouseEvent) => {
@@ -55,7 +54,7 @@ export const Navbar = () => {
 
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <IconButton color="inherit" component={Link} href="/cart">
-                <MuiBadge badgeContent={cartItemsCount} color="error">
+                <MuiBadge badgeContent={totalItems} color="error">
                   <ShoppingCartIcon />
                 </MuiBadge>
               </IconButton>
