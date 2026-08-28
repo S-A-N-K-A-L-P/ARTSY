@@ -1,48 +1,71 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useDispatch, useSelector } from 'react-redux';
 import { useCart } from '@/components/cart/CartProvider';
-import { useIsMobile } from '@/hooks/useIsMobile';
+import { resolveTheme } from '@/lib/theme/themes';
 import Masonry from 'react-masonry-css';
 import { ShoppingBag, X } from 'lucide-react';
 
-/* --- Retail Library Imports --- */
-import { StickyAddToCart } from '@/components/retail/StickyAddToCart';
-import { ReviewStars } from '@/components/retail/ReviewStars';
-import { InventoryBadge } from '@/components/retail/InventoryBadge';
 import { PromoBanner } from '@/components/retail/PromoBanner';
 import { BreadcrumbTrail } from '@/components/retail/BreadcrumbTrail';
 import { FilterDrawer } from '@/components/retail/FilterDrawer';
 import { QuantitySelector } from '@/components/retail/QuantitySelector';
-import { OptionPicker } from '@/components/retail/OptionPicker';
 import { StoreStatus } from '@/components/retail/StoreStatus';
 import { CartDrawer } from '@/components/retail/CartDrawer';
 import { DesktopCategoryNav } from '@/components/retail/DesktopCategoryNav';
 import { ImageCarousel } from '@/components/retail/ImageCarousel';
-import { ProductQuickView } from '@/components/retail/ProductQuickView';
-import { SizeGuideModal } from '@/components/retail/SizeGuideModal';
-import { ShippingStatus } from '@/components/retail/ShippingStatus';
-import { PaymentTrustBadge } from '@/components/retail/PaymentTrustBadge';
 import { RelatedProducts } from '@/components/retail/RelatedProducts';
-import { NewsletterMinimal } from '@/components/retail/NewsletterMinimal';
-import { StoreAnnouncement } from '@/components/retail/StoreAnnouncement';
-import { BrandStorySection } from '@/components/retail/BrandStorySection';
+import { PaymentTrustBadge } from '@/components/retail/PaymentTrustBadge';
 import { TechSpecsTable } from '@/components/retail/TechSpecsTable';
-import { CheckoutSteps } from '@/components/retail/CheckoutSteps';
+
+const ALL = 'All';
+
+const money = (n: number) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
+
+/** Real specs off the item, rather than the invented "Level 4 / Digital Matter". */
+function specsFor(item: any): { label: string; value: string }[] {
+  const specs: { label: string; value: string }[] = [];
+  const attrs = item?.attributes ?? {};
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (v != null && String(v).trim()) specs.push({ label: k, value: String(v) });
+  });
+  (item?.customFields ?? []).forEach((f: any) => {
+    if (f?.value != null && String(f.value).trim()) {
+      specs.push({ label: f.label || f.key || 'Detail', value: String(f.value) });
+    }
+  });
+  return specs;
+}
 
 export default function PublicPageClient({ page, user, items }: any) {
   const { items: cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
-  const isMobile = useIsMobile(1024);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('All Artifacts');
+  const [activeCategory, setActiveCategory] = useState(ALL);
   const [showPromo, setShowPromo] = useState(true);
 
-  if (isMobile === null) return null;
+  // The creator's chosen aesthetic, scoped to this storefront subtree. This is
+  // the whole product promise: a noir shop must actually render as noir.
+  const storeTheme = resolveTheme(page?.aesthetic?.theme);
+
+  // Categories come from the items that actually exist. This was a hardcoded
+  // ['All Artifacts','Ceramics','Textiles','Digital Matter'] on every
+  // storefront, and selecting one filtered nothing — it was decorative.
+  const categories = useMemo(() => {
+    const tags = new Set<string>();
+    (items ?? []).forEach((i: any) =>
+      (i.tags ?? []).forEach((t: string) => t?.trim() && tags.add(t.trim()))
+    );
+    return [ALL, ...Array.from(tags).sort()];
+  }, [items]);
+
+  const visibleItems = useMemo(() => {
+    if (activeCategory === ALL) return items ?? [];
+    return (items ?? []).filter((i: any) => (i.tags ?? []).includes(activeCategory));
+  }, [items, activeCategory]);
 
   const handleAddToCart = (item: any) => {
     addToCart({
@@ -54,305 +77,366 @@ export default function PublicPageClient({ page, user, items }: any) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* 1. Global Announcement Depth */}
-      <PromoBanner 
-        message="Astl v2 Archives: Winter Zenith Collection Now Manifesting" 
-        isVisible={showPromo} 
-        onClose={() => setShowPromo(false)} 
+    // fontFamily is set explicitly: body already resolved --font in the visitor's
+    // own theme, and an inherited font-family is a computed value, so the var
+    // would not be re-evaluated inside this scope without it.
+    <div
+      data-theme={storeTheme}
+      style={{ fontFamily: 'var(--font)' }}
+      className="min-h-screen bg-bg text-text"
+    >
+      <PromoBanner
+        message={`${page.name} — curated by @${user.username}`}
+        isVisible={showPromo}
+        onClose={() => setShowPromo(false)}
       />
 
-      {isMobile ? (
-        <IOSView 
-          page={page} 
-          user={user} 
-          items={items} 
-          setSelectedItem={setSelectedItem}
-          setIsCartOpen={setIsCartOpen}
-          setIsFilterOpen={setIsFilterOpen}
-          activeCategory={activeCategory}
-        />
-      ) : (
-        <DesktopView 
-          page={page} 
-          user={user} 
-          items={items} 
-          setSelectedItem={setSelectedItem}
-          setIsCartOpen={setIsCartOpen}
-          activeCategory={activeCategory}
-          setActiveCategory={setActiveCategory}
-        />
-      )}
+      {/*
+        One responsive layout. This was two entirely separate component trees
+        picked by useIsMobile(), which returns null on the server and on first
+        render — so the storefront rendered nothing, then swapped. The identity
+        panel is a stacked header on small screens and a sticky rail on large.
+      */}
+      <div className="lg:flex lg:items-start">
+        <aside
+          className={cn(
+            'bg-card border-line px-5 py-8 lg:p-10',
+            'border-b lg:border-b-0 lg:border-r',
+            'lg:w-[340px] xl:w-[380px] lg:shrink-0 lg:sticky lg:top-0 lg:h-screen',
+            'lg:overflow-y-auto flex flex-col gap-8'
+          )}
+        >
+          <div className="flex-1 min-w-0">
+            <div className="hidden lg:block">
+              <BreadcrumbTrail items={[{ label: page.name, href: '#' }]} />
+            </div>
 
-      {/* Shared Depth Layers */}
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
+            <div className="flex items-center gap-4 lg:block">
+              <div className="w-16 h-16 lg:w-24 lg:h-24 shrink-0 rounded-ios overflow-hidden border border-line lg:mb-8">
+                {page.coverImage && (
+                  <img src={page.coverImage} alt="" className="w-full h-full object-cover" />
+                )}
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-2xl lg:text-4xl font-black tracking-tighter leading-tight text-text truncate lg:whitespace-normal">
+                  {page.name}
+                </h1>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted mt-1">
+                  @{user.username}
+                </p>
+              </div>
+            </div>
+
+            {page.description && (
+              <p className="hidden lg:block text-sm text-text-secondary leading-relaxed mt-6">
+                {page.description}
+              </p>
+            )}
+
+            {/* Only offer filtering when there is something to filter by. */}
+            {categories.length > 1 && (
+              <div className="hidden lg:block mt-10">
+                <DesktopCategoryNav
+                  categories={categories}
+                  activeCategory={activeCategory}
+                  onSelectCategory={setActiveCategory}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="hidden lg:flex flex-col gap-5">
+            <StoreStatus isOpen={page?.settings?.isPublic !== false} />
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="w-full h-14 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.24em] shadow-[var(--elevation-medium)] hover:scale-[1.02] active:scale-[0.98] transition-transform"
+            >
+              Open Manifest ({cartItems.length})
+            </button>
+          </div>
+        </aside>
+
+        <main className="flex-1 min-w-0 px-4 py-6 lg:p-10 xl:p-14 pb-28 lg:pb-14">
+          {/* Mobile category chips — the desktop rail is hidden at this width */}
+          {categories.length > 1 && (
+            <div className="lg:hidden flex gap-2 overflow-x-auto hide-scrollbar pb-5 -mx-4 px-4">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  aria-pressed={activeCategory === cat}
+                  className={cn(
+                    'px-4 h-9 rounded-full border text-[11px] font-bold uppercase tracking-wider shrink-0 transition-colors',
+                    activeCategory === cat
+                      ? 'bg-accent border-accent text-bg'
+                      : 'bg-card border-line text-text-muted'
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {visibleItems.length > 0 ? (
+            <Masonry
+              breakpointCols={{ default: 4, 1536: 4, 1280: 3, 1024: 2, 640: 2 }}
+              className="flex gap-3 md:gap-4"
+              columnClassName="flex flex-col"
+            >
+              {visibleItems.map((item: any) => (
+                <GalleryCard
+                  key={item._id}
+                  item={item}
+                  onSelect={setSelectedItem}
+                  onAdd={handleAddToCart}
+                />
+              ))}
+            </Masonry>
+          ) : (
+            <div className="py-28 text-center border border-dashed border-line rounded-ios">
+              <ShoppingBag size={34} className="mx-auto mb-4 text-text-muted opacity-40" />
+              <p className="text-sm font-medium text-text-secondary">
+                {activeCategory === ALL
+                  ? 'This archive is empty for now.'
+                  : `Nothing tagged “${activeCategory}” yet.`}
+              </p>
+              {activeCategory !== ALL && (
+                <button
+                  onClick={() => setActiveCategory(ALL)}
+                  className="mt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-accent"
+                >
+                  Show everything
+                </button>
+              )}
+            </div>
+          )}
+        </main>
+      </div>
+
+      {/* Mobile cart bar — the desktop button lives in the rail */}
+      <button
+        onClick={() => setIsCartOpen(true)}
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-16 px-6 bg-accent text-bg font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 shadow-[var(--elevation-medium)]"
+      >
+        <ShoppingBag size={16} />
+        Open Manifest ({cartItems.length})
+      </button>
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
         items={cartItems}
         onRemove={removeFromCart}
         onUpdateQuantity={updateQuantity}
       />
 
-      <FilterDrawer 
+      <FilterDrawer
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        categories={['All Artifacts', 'Ceramics', 'Textiles', 'Obscure Objects', 'Digital Matter']}
+        categories={categories}
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
       />
 
       <AnimatePresence>
         {selectedItem && (
-           <ItemDetailOverlay 
-             item={selectedItem} 
-             onClose={() => setSelectedItem(null)} 
-             onAddToCart={handleAddToCart}
-             relatedItems={items.filter((it: any) => it._id !== selectedItem._id)}
-             setSelectedItem={setSelectedItem}
-           />
+          <ItemDetailOverlay
+            item={selectedItem}
+            onClose={() => setSelectedItem(null)}
+            onAddToCart={handleAddToCart}
+            relatedItems={(items ?? []).filter((it: any) => it._id !== selectedItem._id)}
+            setSelectedItem={setSelectedItem}
+          />
         )}
       </AnimatePresence>
     </div>
   );
 }
 
-/* --- iOS View (Tactile, Story-driven) --- */
-function IOSView({ page, user, items, setSelectedItem, setIsCartOpen, setIsFilterOpen, activeCategory }: any) {
+/* --- Gallery card --- */
+function GalleryCard({ item, onSelect, onAdd }: any) {
+  // Aspect ratios rather than fixed pixel heights, so tiles scale with the
+  // column and the board staggers instead of cropping every image to a box.
+  const ratio = useMemo(() => {
+    const variants = ['3 / 4', '1 / 1', '4 / 5', '2 / 3', '5 / 6'];
+    let hash = 0;
+    const id = String(item._id);
+    for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+    return variants[hash % variants.length];
+  }, [item._id]);
+
+  const image = item.images?.[0] || item.image;
+
   return (
-    <div className="pb-40">
-      {/* Premium iOS Header */}
-      <div className="px-6 pt-12 pb-8 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-3xl z-40 border-b border-neutral-50/50">
-        <StoreStatus isOpen={true} message="Active manifestation" />
-        <div className="flex items-center gap-3">
-           <button onClick={() => setIsCartOpen(true)} className="relative w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-xl">
-              <ShoppingBag size={20} />
-           </button>
-        </div>
-      </div>
+    <motion.article
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+      className="group mb-4"
+    >
+      <div
+        role="link"
+        tabIndex={0}
+        onClick={() => onSelect(item)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSelect(item);
+          }
+        }}
+        aria-label={item.title}
+        className="relative w-full overflow-hidden cursor-zoom-in rounded-ios bg-elevated transition-shadow duration-300 hover:shadow-[var(--elevation-medium)]"
+        style={{ aspectRatio: ratio }}
+      >
+        {image && (
+          <img
+            src={image}
+            alt={item.title}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        )}
 
-      <div className="px-6 mb-12">
-        <h1 className="text-4xl font-black tracking-tighter text-neutral-900 leading-tight">{page.name}</h1>
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-300 mt-2">Compiled by @{user.username}</p>
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent opacity-60 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-      {/* Tactical Category Chips */}
-      <div className="flex gap-2 px-6 overflow-x-auto pb-8 scrollbar-hide">
-         {['All Artifacts', 'Ceramics', 'Textiles', 'Obscure'].map((cat) => (
-            <button 
-              key={cat}
-              onClick={() => setIsFilterOpen(true)}
-              className={cn(
-                "px-6 h-10 rounded-full border text-[10px] font-bold uppercase tracking-widest shrink-0 transition-all",
-                activeCategory === cat ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" : "bg-neutral-50 border-neutral-100 text-neutral-400"
-              )}
+        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:hover)]:translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+          {item.price > 0 ? (
+            <span
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums shadow-[var(--elevation-soft)]"
+              style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
             >
-              {cat}
+              {money(item.price)}
+            </span>
+          ) : (
+            <span />
+          )}
+
+          {item.isForSale !== false && item.price > 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(item);
+              }}
+              aria-label={`Add ${item.title} to bag`}
+              className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] bg-accent text-bg active:scale-95 transition-transform shadow-[var(--elevation-soft)]"
+            >
+              <ShoppingBag size={13} />
+              Add
             </button>
-         ))}
-      </div>
-
-      {/* Lush Masonry with Depth Injections */}
-      <div className="px-6">
-        <Masonry breakpointCols={2} className="flex gap-4" columnClassName="flex flex-col gap-4">
-          {items.map((item: any, i: number) => (
-            <React.Fragment key={item._id}>
-              {/* Inject Brand Story & Announcements randomly for depth */}
-              {i === 2 && (
-                <div className="col-span-2 py-8">
-                   <StoreAnnouncement title="Convergence Notice" message="New archival objects arriving in 48 hours." />
-                </div>
-              )}
-              <GalleryCard item={item} onSelect={setSelectedItem} isMobile />
-              {i === 5 && (
-                <div className="col-span-2 py-8">
-                   <NewsletterMinimal />
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-        </Masonry>
-      </div>
-    </div>
-  );
-}
-
-/* --- Desktop View (Cinematic & Immersive) --- */
-function DesktopView({ page, user, items, setSelectedItem, setIsCartOpen, activeCategory, setActiveCategory }: any) {
-  return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Cinematic Left Panel */}
-      <div className="w-[480px] border-r border-neutral-100 p-16 flex flex-col justify-between bg-white z-50">
-        <div>
-           <BreadcrumbTrail items={[{ label: page.name, href: '#' }]} />
-           <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-neutral-100 shadow-2xl mb-10">
-              <img src={page.coverImage} className="w-full h-full object-cover" />
-           </div>
-           <h1 className="text-5xl font-black tracking-tighter text-neutral-900 leading-tight mb-6">{page.name}</h1>
-           <p className="text-base text-neutral-500 font-medium leading-relaxed mb-12 max-w-xs">
-              A meticulously gathered archive of high-depth artifacts, curated for visual resonance and material integrity.
-           </p>
-           
-           <DesktopCategoryNav 
-             categories={['All Artifacts', 'Ceramics', 'Textiles', 'Digital Matter']} 
-             activeCategory={activeCategory}
-             onSelectCategory={setActiveCategory}
-           />
-        </div>
-
-        <div className="space-y-8">
-           <StoreStatus isOpen={true} />
-           <button 
-             onClick={() => setIsCartOpen(true)}
-             className="w-full h-18 rounded-2xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-[0.3em] shadow-2xl shadow-neutral-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
-           >
-              Open Manifest ({items.length})
-           </button>
+          )}
         </div>
       </div>
 
-      {/* Horizontal Cinematic Grid */}
-      <div className="flex-1 overflow-y-auto p-20 bg-neutral-50/20">
-         <BrandStorySection 
-           title="archival depth" 
-           story="Each piece in this collection has been selected for its unique manifestation of geometric balance and textural depth."
-           image={items[0]?.image}
-         />
-
-         <div className="mt-24">
-            <Masonry breakpointCols={3} className="flex gap-12" columnClassName="flex flex-col gap-12">
-               {items.map((item: any, i: number) => (
-                  <React.Fragment key={item._id}>
-                     <GalleryCard item={item} onSelect={setSelectedItem} />
-                     {i === 3 && <div className="py-12"><NewsletterMinimal /></div>}
-                  </React.Fragment>
-               ))}
-            </Masonry>
-         </div>
-
-         <div className="mt-32 border-t border-neutral-100 pt-32 mb-20">
-            <RelatedProducts items={items} onSelect={setSelectedItem} />
-         </div>
+      <div className="mt-2 px-1">
+        <h3 className="text-[13px] font-semibold leading-snug line-clamp-2 text-text">{item.title}</h3>
+        {item.price > 0 && (
+          <p className="text-xs font-bold tabular-nums mt-1 text-text-secondary">{money(item.price)}</p>
+        )}
       </div>
-    </div>
+    </motion.article>
   );
 }
 
-/* --- Refined Gallery Card --- */
-function GalleryCard({ item, onSelect, isMobile }: any) {
-  const height = React.useMemo(() => {
-    const variants = isMobile ? [200, 240, 280] : [320, 380, 440, 360];
-    const seed = item._id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-    return variants[seed % variants.length];
-  }, [item._id, isMobile]);
-
-  return (
-    <motion.div onClick={() => onSelect(item)} className="group cursor-pointer">
-      <div className="rounded-[40px] overflow-hidden bg-white border border-neutral-100 relative shadow-sm hover:shadow-2xl transition-all duration-1000" style={{ height: `${height}px` }}>
-        <img src={item.image || item.images?.[0]} className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
-        <div className="absolute inset-0 bg-neutral-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-           <div className="w-14 h-14 rounded-full bg-white text-neutral-900 flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
-              <ShoppingBag size={24} />
-           </div>
-        </div>
-      </div>
-      <div className="mt-5 px-2">
-         <InventoryBadge count={10} className="mb-2" />
-         <h4 className="text-sm font-bold text-neutral-900 truncate tracking-tight">{item.title}</h4>
-         <p className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest mt-1">₹{item.price}</p>
-      </div>
-    </motion.div>
-  );
-}
-
-/* --- High-Depth Item Overlay --- */
+/* --- Item detail --- */
 function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelectedItem }: any) {
   const [quantity, setQuantity] = useState(1);
-  const [size, setSize] = useState('Gamma');
-  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const specs = useMemo(() => specsFor(item), [item]);
+  const images = (item.images?.length ? item.images : [item.image]).filter(Boolean);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/40 backdrop-blur-2xl p-0 md:p-12 overflow-y-auto">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title}
+      className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-xl p-0 md:p-10 overflow-y-auto"
+    >
       <div className="absolute inset-0" onClick={onClose} />
-      
-      <motion.div 
-        layoutId={`item-${item._id}`}
-        initial={{ y: "100%" }}
+
+      <motion.div
+        initial={{ y: '100%' }}
         animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        className="relative w-full md:max-w-7xl min-h-[90vh] bg-white rounded-t-[48px] md:rounded-[48px] overflow-hidden flex flex-col md:flex-row shadow-2xl z-10"
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 32, stiffness: 280 }}
+        className="relative w-full md:max-w-6xl max-h-[92vh] bg-card rounded-t-[32px] md:rounded-ios overflow-hidden flex flex-col md:flex-row shadow-[var(--elevation-medium)] z-10"
       >
-        <div className="flex-1 bg-neutral-50/50 flex flex-col">
-           <div className="flex-1 overflow-hidden">
-              <ImageCarousel images={item.images || [item.image]} className="h-full" />
-           </div>
-           
-           {/* Detailed Table for Depth */}
-           <div className="p-12 bg-white border-t border-neutral-100 hidden md:block">
-              <TechSpecsTable specs={[
-                { label: 'Origin', value: 'Astl Archives' },
-                { label: 'Material', value: 'Reinforced Digital Matter' },
-                { label: 'Integrity', value: 'Level 4' }
-              ]} />
-           </div>
+        <div className="md:flex-1 bg-elevated min-h-[38vh] md:min-h-0">
+          <ImageCarousel images={images} className="h-full" />
         </div>
 
-        <div className="w-full md:w-[540px] p-10 md:p-20 overflow-y-auto bg-white border-l border-neutral-100 flex flex-col justify-between">
-           <div className="space-y-12">
-              <div className="flex items-center justify-between">
-                 <StoreStatus isOpen={true} />
-                 <button onClick={onClose} className="p-2 text-neutral-200 hover:text-neutral-900 transition-colors"><X size={24} /></button>
-              </div>
+        <div className="w-full md:w-[460px] md:shrink-0 p-6 md:p-10 overflow-y-auto bg-card md:border-l border-line flex flex-col gap-8">
+          <div className="flex items-start justify-between gap-4">
+            <h2 className="text-3xl font-black tracking-tighter text-text leading-tight">{item.title}</h2>
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="shrink-0 p-2 text-text-muted hover:text-text transition-colors"
+            >
+              <X size={22} />
+            </button>
+          </div>
 
-              <div className="space-y-4">
-                 <ReviewStars rating={4.8} count={24} />
-                 <h2 className="text-5xl font-black tracking-tighter text-neutral-900 leading-[0.9]">{item.title}</h2>
-                 <p className="text-base text-neutral-500 font-medium leading-relaxed">
-                   Experience the silent resonance of an archival artifact designed for high-depth manifestation. Part of the limited v2 release.
-                 </p>
-              </div>
+          {item.description && (
+            <p className="text-sm text-text-secondary leading-relaxed">{item.description}</p>
+          )}
 
-              <div className="grid grid-cols-2 gap-10">
-                 <div className="space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 px-1">Inventory Value</span>
-                    <p className="text-3xl font-black text-neutral-900 tracking-tighter">₹{item.price}</p>
-                 </div>
-                 <div className="space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 px-1">Identity</span>
-                    <p className="text-xs font-bold text-neutral-900 uppercase tracking-widest leading-loose">#{item._id.slice(-6)}</p>
-                 </div>
-              </div>
+          <div className="flex items-baseline gap-3">
+            <p className="text-3xl font-black tabular-nums text-text tracking-tight">{money(item.price)}</p>
+            {item.currency && item.currency !== 'INR' && (
+              <span className="text-[11px] font-bold uppercase tracking-widest text-text-muted">
+                {item.currency}
+              </span>
+            )}
+          </div>
 
-              <div className="space-y-8 py-10 border-y border-neutral-50">
-                 <OptionPicker label="select architecture" options={['Alpha', 'Beta', 'Gamma', 'Delta']} selected={size} onChange={setSize} />
-                 <button onClick={() => setShowSizeGuide(true)} className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-all flex items-center gap-2 underline decoration-neutral-100 underline-offset-4">
-                    Dimension Protocols
-                 </button>
-                 <div className="space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 px-1">manifest quantity</span>
-                    <QuantitySelector quantity={quantity} onChange={setQuantity} />
-                 </div>
-              </div>
+          {item.tags?.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {item.tags.map((t: string) => (
+                <span
+                  key={t}
+                  className="px-2.5 py-1 rounded-full border border-line text-[10px] font-bold uppercase tracking-wider text-text-muted"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
 
-              <ShippingStatus status="ordered" date="December 24th" />
-              <PaymentTrustBadge />
+          {/* Only rendered when the item actually carries attributes/customFields */}
+          {specs.length > 0 && <TechSpecsTable specs={specs} />}
 
-              <div className="pt-10">
-                 <RelatedProducts items={relatedItems} onSelect={(it) => { onClose(); setSelectedItem(it); }} />
-              </div>
-           </div>
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Quantity</span>
+            <QuantitySelector quantity={quantity} onChange={setQuantity} />
+          </div>
 
-           <div className="pt-16 pb-4 flex flex-col gap-4">
-              <button 
-                onClick={() => { onAddToCart(item); onClose(); }} 
-                className="w-full h-18 rounded-2xl bg-neutral-900 text-white font-bold text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-neutral-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
-              >
-                 <ShoppingBag size={20} /> Deploy manifest (₹{item.price * quantity})
-              </button>
-           </div>
+          <button
+            onClick={() => {
+              for (let i = 0; i < quantity; i++) onAddToCart(item);
+              onClose();
+            }}
+            className="w-full h-14 rounded-2xl bg-accent text-bg font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+          >
+            <ShoppingBag size={16} />
+            Add to bag
+          </button>
+
+          <PaymentTrustBadge />
+
+          {relatedItems.length > 0 && (
+            <RelatedProducts
+              items={relatedItems.slice(0, 4)}
+              onSelect={(it: any) => {
+                onClose();
+                setSelectedItem(it);
+              }}
+            />
+          )}
         </div>
       </motion.div>
-
-      <SizeGuideModal isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
     </motion.div>
   );
 }

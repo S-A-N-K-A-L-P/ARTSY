@@ -6,7 +6,7 @@ import { IOSBottomNav } from '@/components/ui/ios/ios-bottom-nav';
 
 export default function InventoryPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-card">
       <MobileInventoryView />
       <IOSBottomNav />
     </main>

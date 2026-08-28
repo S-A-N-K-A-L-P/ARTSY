@@ -14,8 +14,8 @@ export const DesktopCategoryNav = ({ categories, activeCategory, onSelectCategor
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Archives</span>
-        <h3 className="text-xl font-bold text-neutral-900 tracking-tighter">Collections</h3>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Archives</span>
+        <h3 className="text-xl font-bold text-text tracking-tighter">Collections</h3>
       </div>
       
       <div className="flex flex-col gap-2">
@@ -27,13 +27,13 @@ export const DesktopCategoryNav = ({ categories, activeCategory, onSelectCategor
           >
             <span className={cn(
                "text-xs font-bold uppercase tracking-widest transition-all",
-               activeCategory === cat ? "text-neutral-900 border-b-2 border-neutral-900" : "text-neutral-400 group-hover:text-neutral-900"
+               activeCategory === cat ? "text-text border-b-2 border-accent" : "text-text-muted group-hover:text-text"
             )}>
               {cat}
             </span>
             <ChevronRight size={14} className={cn(
               "transition-all",
-              activeCategory === cat ? "text-neutral-900 translate-x-1" : "text-neutral-100 group-hover:text-neutral-400"
+              activeCategory === cat ? "text-text translate-x-1" : "text-text-muted opacity-30 group-hover:opacity-100"
             )} />
           </button>
         ))}

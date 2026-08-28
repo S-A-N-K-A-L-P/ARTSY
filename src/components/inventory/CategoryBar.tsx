@@ -22,8 +22,8 @@ export function CategoryBar({ categories, selectedCategory, onCategoryChange }: 
           className={cn(
             "px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border",
             selectedCategory === cat
-              ? "bg-neutral-900 text-white border-neutral-900 shadow-xl scale-105"
-              : "bg-white text-neutral-400 border-neutral-100 hover:border-neutral-900 hover:text-neutral-900"
+              ? "bg-accent text-bg border-accent shadow-xl scale-105"
+              : "bg-card text-text-muted border-line hover:border-accent hover:text-text"
           )}
         >
           {cat}

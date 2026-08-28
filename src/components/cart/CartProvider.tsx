@@ -138,7 +138,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2.5 px-5 py-3 rounded-full border shadow-[var(--elevation-medium)] backdrop-blur-xl"
+            className="fixed bottom-32 md:bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2.5 px-5 py-3 rounded-full border shadow-[var(--elevation-medium)] backdrop-blur-xl"
             style={{
               backgroundColor: 'var(--bg-secondary)',
               borderColor: 'var(--border-subtle)',

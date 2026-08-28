@@ -18,7 +18,7 @@ export const PromoBanner = ({ message, onClose, isVisible }: PromoBannerProps) =
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
-          className="p-4 rounded-2xl bg-neutral-900 text-white flex items-center justify-between relative overflow-hidden group shadow-lg"
+          className="p-4 rounded-2xl bg-accent text-bg flex items-center justify-between relative overflow-hidden group shadow-lg"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           
@@ -32,7 +32,7 @@ export const PromoBanner = ({ message, onClose, isVisible }: PromoBannerProps) =
               onClick={onClose}
               whileHover={{ scale: 1.05, x: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="relative z-10 px-6 py-2 bg-white text-neutral-900 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] shadow-md transition-all"
+              className="relative z-10 px-6 py-2 bg-card text-text rounded-xl text-[10px] font-black uppercase tracking-[0.3em] shadow-md transition-all"
             >
               Dismiss
             </motion.button>

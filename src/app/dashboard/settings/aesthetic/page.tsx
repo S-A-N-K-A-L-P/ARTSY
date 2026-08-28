@@ -1,95 +1,91 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import { Check, ChevronLeft } from 'lucide-react';
 import { useAesthetic } from '@/aesthetics/AestheticProvider';
 import { themes, ThemeName } from '@/lib/theme/themes';
-import { cn } from '@/lib/utils';
-import { Check, Sparkles } from 'lucide-react';
+import { Page, Button, CardButton } from '@/components/ui';
 
 export default function AestheticSettingsPage() {
   const { aesthetic, setAesthetic } = useAesthetic();
-
-  // Explicitly mapping themes to colors for the preview
-  const themeList = Object.entries(themes) as [ThemeName, any][];
+  const themeList = Object.entries(themes) as [ThemeName, Record<string, string>][];
 
   return (
-    <div className="max-w-4xl pb-20">
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-text tracking-tighter mb-2">Visual Identity</h2>
-        <p className="text-text-muted text-sm">Choose the global aesthetic for your storefront and dashboard.</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {themeList.map(([name, theme]) => (
-          <button
-            key={name}
-            onClick={() => setAesthetic(name)}
-            className={cn(
-              "group relative overflow-hidden rounded-[32px] border-2 transition-all text-left p-8",
-              aesthetic === name
-                ? "border-accent bg-accent-soft"
-                : "border-line bg-card hover:border-line-strong"
-            )}
-          >
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <h3 className="text-xl font-bold text-text capitalize">{name}</h3>
-                <p className="text-xs text-text-muted mt-1 uppercase tracking-widest font-bold">Aesthetic Model</p>
-              </div>
-              {aesthetic === name ? (
-                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shadow-lg">
-                  <Check size={16} className="text-bg" />
+    <Page
+      title="Visual identity"
+      description="The aesthetic applied across your dashboard and your public storefront."
+      actions={
+        <Link href="/dashboard/settings">
+          <Button variant="ghost" size="sm" iconLeft={<ChevronLeft size={15} />}>
+            Settings
+          </Button>
+        </Link>
+      }
+    >
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {themeList.map(([name, theme]) => {
+          const selected = aesthetic === name;
+          return (
+            <CardButton key={name} selected={selected} onClick={() => setAesthetic(name)}>
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="min-w-0">
+                  <h2 className="text-base font-bold capitalize text-text truncate">{name}</h2>
+                  <p className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted mt-0.5">
+                    {theme['--font']?.includes('mono') ? 'Monospace' : theme['--font']?.includes('serif') ? 'Serif' : 'Sans'}
+                  </p>
                 </div>
-              ) : (
-                <div className="w-8 h-8 rounded-full border border-line-strong transition-colors" />
-              )}
-            </div>
+                <span
+                  className={
+                    selected
+                      ? 'shrink-0 w-7 h-7 rounded-full bg-accent text-bg flex items-center justify-center'
+                      : 'shrink-0 w-7 h-7 rounded-full border border-line-strong'
+                  }
+                >
+                  {selected && <Check size={14} />}
+                </span>
+              </div>
 
-            {/* Live preview: a miniature of the aesthetic, painted with that
-                theme's own tokens rather than the currently active ones. */}
-            <div
-              className="rounded-2xl border p-4 flex items-center gap-3"
-              style={{
-                backgroundColor: theme["--bg-primary"],
-                borderColor: theme["--border-subtle"],
-                fontFamily: theme["--font"],
-              }}
-            >
+              {/*
+                Preview painted with that theme's own tokens, not the active
+                ones. This previously read theme["--bg"], a key no theme has,
+                so every swatch fell back to #000 and all nine looked identical.
+              */}
               <div
-                className="w-10 h-10 shrink-0"
+                className="rounded-[var(--radius-md)] border p-4 flex items-center gap-3"
                 style={{
-                  backgroundColor: theme["--accent"],
-                  borderRadius: theme["--radius"],
+                  backgroundColor: theme['--bg-primary'],
+                  borderColor: theme['--border-subtle'],
+                  fontFamily: theme['--font'],
                 }}
-              />
-              <div className="flex-1 min-w-0">
-                <div
-                  className="h-2 rounded-full w-3/4 mb-1.5"
-                  style={{ backgroundColor: theme["--text-primary"] }}
+              >
+                <span
+                  className="w-9 h-9 shrink-0"
+                  style={{ backgroundColor: theme['--accent'], borderRadius: theme['--radius'] }}
                 />
-                <div
-                  className="h-2 rounded-full w-1/2"
-                  style={{ backgroundColor: theme["--text-muted"] }}
+                <span className="flex-1 min-w-0 space-y-1.5">
+                  <span
+                    className="block h-2 rounded-full w-3/4"
+                    style={{ backgroundColor: theme['--text-primary'] }}
+                  />
+                  <span
+                    className="block h-2 rounded-full w-1/2"
+                    style={{ backgroundColor: theme['--text-muted'] }}
+                  />
+                </span>
+                <span
+                  className="w-12 h-7 shrink-0"
+                  style={{
+                    backgroundColor: theme['--bg-secondary'],
+                    border: `1px solid ${theme['--border-strong']}`,
+                    borderRadius: theme['--radius'],
+                  }}
                 />
               </div>
-              <div
-                className="w-14 h-7 shrink-0"
-                style={{
-                  backgroundColor: theme["--bg-secondary"],
-                  border: `1px solid ${theme["--border-strong"]}`,
-                  borderRadius: theme["--radius"],
-                }}
-              />
-            </div>
-
-            {aesthetic === name && (
-               <div className="absolute top-0 right-0 p-4">
-                  <Sparkles size={14} className="text-amber-400 animate-pulse" />
-               </div>
-            )}
-          </button>
-        ))}
+            </CardButton>
+          );
+        })}
       </div>
-    </div>
+    </Page>
   );
 }

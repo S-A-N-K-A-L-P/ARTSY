@@ -1,34 +1,46 @@
-'use client';
-
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Palette, User } from 'lucide-react';
+import { Page, Stack, Card } from '@/components/ui';
 
-const SETTINGS_SECTIONS = [
-  { href: '/dashboard/settings/profile', label: 'Profile', description: 'Manage your name, avatar, and bio' },
-  { href: '/dashboard/settings/aesthetic', label: 'Aesthetic', description: 'Change your default theme across pages' },
+const SECTIONS = [
+  {
+    href: '/dashboard/settings/profile',
+    label: 'Profile',
+    description: 'Your name, handle, avatar and bio',
+    icon: User,
+  },
+  {
+    href: '/dashboard/settings/aesthetic',
+    label: 'Aesthetic',
+    description: 'The theme applied across your dashboard and storefront',
+    icon: Palette,
+  },
 ];
 
 export default function SettingsPage() {
   return (
-    <div className="max-w-xl">
-      <h2 className="text-xl font-semibold text-white mb-1">Settings</h2>
-      <p className="text-sm text-zinc-500 mb-8">Manage your account preferences.</p>
-
-      <div className="space-y-2">
-        {SETTINGS_SECTIONS.map(section => (
-          <Link
-            key={section.href}
-            href={section.href}
-            className="flex items-center justify-between p-4 rounded-xl border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/50 transition-colors group"
-          >
-            <div>
-              <p className="text-sm font-medium text-white">{section.label}</p>
-              <p className="text-xs text-zinc-500 mt-0.5">{section.description}</p>
-            </div>
-            <ChevronRight size={16} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+    <Page title="Settings" description="Manage your account preferences." width="narrow">
+      <Stack gap="sm">
+        {SECTIONS.map((s) => (
+          <Link key={s.href} href={s.href} className="block">
+            <Card interactive className="flex items-center gap-4 group">
+              <span className="shrink-0 w-10 h-10 rounded-[var(--radius-sm)] bg-elevated border border-line flex items-center justify-center text-text-muted">
+                <s.icon size={17} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-text">{s.label}</p>
+                <p className="text-[var(--text-caption)] text-text-secondary mt-0.5">
+                  {s.description}
+                </p>
+              </div>
+              <ChevronRight
+                size={16}
+                className="shrink-0 text-text-muted group-hover:translate-x-0.5 transition-transform"
+              />
+            </Card>
           </Link>
         ))}
-      </div>
-    </div>
+      </Stack>
+    </Page>
   );
 }

@@ -17,12 +17,12 @@ export const BreadcrumbTrail = ({ items }: BreadcrumbTrailProps) => {
       animate={{ opacity: 1, x: 0 }}
       className="flex items-center gap-4 py-8"
     >
-      <Link href="/home" className="text-neutral-300 hover:text-neutral-900 transition-colors">
+      <Link href="/home" className="text-text-muted hover:text-text transition-colors">
         <Home size={16} />
       </Link>
       {items.map((item, i) => (
         <React.Fragment key={i}>
-          <ChevronRight size={14} className="text-neutral-200" />
+          <ChevronRight size={14} className="text-text-muted" />
           <motion.div
             whileHover={{ x: 2 }}
             className="flex"
@@ -31,7 +31,7 @@ export const BreadcrumbTrail = ({ items }: BreadcrumbTrailProps) => {
               href={item.href}
               className={cn(
                 "text-[10px] font-black uppercase tracking-[0.3em] transition-all",
-                i === items.length - 1 ? "text-neutral-900 italic underline decoration-neutral-100 underline-offset-4" : "text-neutral-400 hover:text-neutral-900"
+                i === items.length - 1 ? "text-text italic underline decoration-line underline-offset-4" : "text-text-muted hover:text-text"
               )}
             >
               {item.label}

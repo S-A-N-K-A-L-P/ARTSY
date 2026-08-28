@@ -1,39 +1,44 @@
-'use client';
-
-import { useIsMobile } from '@/hooks/useIsMobile';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 import DashboardTopbar from '@/components/dashboard/DashboardTopbar';
 import { IOSBottomNav } from '@/components/ui/ios/ios-bottom-nav';
 import { IOSNavBar } from '@/components/ui/ios/ios-navbar';
 
+/**
+ * App shell.
+ *
+ * This used to branch on useIsMobile(), which returns null on the server and
+ * on the first client render — so every page showed a full-screen spinner,
+ * then swapped in an entirely different component tree. That cost a guaranteed
+ * flash, a layout shift, and any SSR'd content.
+ *
+ * The breakpoint is now pure CSS and `children` is rendered exactly once, so
+ * there is one DOM, one mount, and no swap. Both sets of chrome are in the
+ * markup; only one is ever visible.
+ */
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
-  const isMobile = useIsMobile();
-
-  if (isMobile === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center transition-colors" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <div className="w-6 h-6 border-2 border-t-accent rounded-full animate-spin" style={{ borderColor: 'var(--border-subtle)' }} />
-      </div>
-    );
-  }
-
-  if (isMobile) {
-    return (
-      <div className="min-h-screen transition-colors duration-500 relative" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-        <IOSNavBar title="ASTL" />
-        <main className="p-5 pb-32 transition-all">{children}</main>
-        
-        <IOSBottomNav />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex transition-colors duration-500" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-      <DashboardSidebar />
-      <div className="flex-1 flex flex-col min-h-screen">
-        <DashboardTopbar />
-        <main className="flex-1 p-8 transition-all overflow-y-auto">{children}</main>
+    <div
+      className="min-h-screen lg:flex"
+      style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+    >
+      <div className="hidden lg:block">
+        <DashboardSidebar />
+      </div>
+
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+        <div className="lg:hidden">
+          <IOSNavBar title="ASTL" />
+        </div>
+        <div className="hidden lg:block">
+          <DashboardTopbar />
+        </div>
+
+        {/* pb-32 on mobile clears the fixed bottom nav */}
+        <main className="flex-1 p-5 pb-32 lg:p-8 lg:pb-8">{children}</main>
+      </div>
+
+      <div className="lg:hidden">
+        <IOSBottomNav />
       </div>
     </div>
   );
