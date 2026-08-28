@@ -1,135 +1,205 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Sparkles, Layers, Package } from 'lucide-react';
+import { ArrowUpRight, Heart, Layers, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/components/cart/CartProvider';
 
 interface DiscoveryItem {
-    id: string;
-    title: string;
-    description?: string;
-    image: string;
-    price?: number;
-    aesthetic: string;
-    pageSlug?: string;
-    creator: { username: string; avatar: string };
-    type: 'item' | 'page';
+  id: string;
+  title: string;
+  description?: string;
+  image: string;
+  price?: number;
+  aesthetic: string;
+  pageSlug?: string;
+  creator: { username: string; avatar: string };
+  type: 'item' | 'page';
+}
+
+/**
+ * Pinterest-style ratios. The old card used fixed pixel heights, so every tile
+ * was the same size regardless of column width and every image got cropped to
+ * fit. Ratios scale with the column instead, so the masonry staggers the way a
+ * pin board does.
+ */
+const ITEM_RATIOS = ['3 / 4', '1 / 1', '4 / 5', '2 / 3', '5 / 6'];
+const PAGE_RATIOS = ['4 / 3', '1 / 1', '5 / 4'];
+
+/** Stable per-id pick, so a tile keeps its shape across re-renders. */
+function pickRatio(id: string, ratios: string[]) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return ratios[hash % ratios.length];
 }
 
 export default function FeedCard({ item }: { item: DiscoveryItem }) {
-    const router = useRouter();
-    const isPage = item.type === 'page';
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const [saved, setSaved] = useState(false);
+  const isPage = item.type === 'page';
 
-    // Specialized geometry for "Spaces" (compact) vs "Items" (dynamic)
-    const height = useMemo(() => {
-        if (isPage) {
-            // Smaller, more consistent range for high-density Spaces grid
-            const variants = [200, 220, 240, 260];
-            const seed = item.id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-            return variants[seed % variants.length];
-        }
-        // Taller, more expressive range for Items
-        const variants = [280, 320, 380, 340];
-        const seed = item.id.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-        return variants[seed % variants.length];
-    }, [item.id, isPage]);
+  const ratio = useMemo(
+    () => pickRatio(item.id, isPage ? PAGE_RATIOS : ITEM_RATIOS),
+    [item.id, isPage]
+  );
 
-    const handleNavigate = () => {
-        if (isPage && item.pageSlug) {
-            router.push(`/user/${item.creator.username}/${item.pageSlug}`);
-        } else {
-            router.push(`/user/${item.creator.username}/${item.pageSlug || 'item'}/${item.id}`);
-        }
-    };
+  const handleNavigate = () => {
+    if (isPage && item.pageSlug) {
+      router.push(`/user/${item.creator.username}/${item.pageSlug}`);
+    } else {
+      router.push(`/user/${item.creator.username}/${item.pageSlug || 'item'}/${item.id}`);
+    }
+  };
 
-    return (
-        <motion.div 
-            onClick={handleNavigate}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -8 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="group cursor-pointer mb-8 relative"
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart({
+      id: item.id,
+      title: item.title,
+      price: item.price ?? 0,
+      image: item.image,
+    });
+  };
+
+  const isPurchasable = !isPage && typeof item.price === 'number' && item.price > 0;
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+      className="group mb-4"
+    >
+      <div
+        role="link"
+        tabIndex={0}
+        onClick={handleNavigate}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleNavigate();
+          }
+        }}
+        aria-label={`${item.title} by ${item.creator.username}`}
+        className="relative w-full overflow-hidden cursor-zoom-in rounded-[var(--radius)] transition-shadow duration-300 hover:shadow-[var(--elevation-medium)]"
+        style={{ aspectRatio: ratio, backgroundColor: 'var(--bg-tertiary)' }}
+      >
+        <img
+          src={item.image}
+          alt={item.title}
+          loading="lazy"
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+        />
+
+        {/* Scrim only on hover, so the board stays clean at rest — the way a pin
+            grid reads before you engage with it. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/25 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+        {/* Save — top right, the primary affordance on a pin */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setSaved((s) => !s);
+          }}
+          aria-label={saved ? 'Remove from saved' : 'Save'}
+          aria-pressed={saved}
+          className={cn(
+            'absolute top-3 right-3 h-9 w-9 rounded-full flex items-center justify-center',
+            'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+            'translate-y-1 group-hover:translate-y-0 transition-all duration-300',
+            'active:scale-90 shadow-[var(--elevation-soft)]'
+          )}
+          style={{
+            backgroundColor: saved ? 'var(--accent)' : 'var(--bg-secondary)',
+            color: saved ? 'var(--bg-primary)' : 'var(--text-primary)',
+          }}
         >
-            {/* High-Depth Image Node */}
-            <div 
-                className={cn(
-                    "relative overflow-hidden transition-all duration-700",
-                    isPage 
-                        ? "rounded-[32px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)]" 
-                        : "rounded-2xl border border-neutral-100 shadow-sm"
-                )}
-                style={{ height: `${height}px` }}
+          <Heart size={15} fill={saved ? 'currentColor' : 'none'} />
+        </button>
+
+        {/* Aesthetic tag — the category axis this whole product is built on */}
+        <span
+          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+        >
+          {item.aesthetic}
+        </span>
+
+        {/* Bottom action row */}
+        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+          {isPurchasable ? (
+            <span
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums shadow-[var(--elevation-soft)]"
+              style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
             >
-                <img 
-                    src={item.image} 
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ease-out" 
-                    alt={item.title}
-                />
-                
-                {/* Visual Depth Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
-                {/* Specialized Page Labels (Spaces) */}
-                {isPage && (
-                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
-                        <div className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-xl">
-                            <Sparkles size={10} className="text-white" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-white leading-none">
-                                {item.aesthetic}
-                            </span>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-500">
-                             <Layers size={14} />
-                        </div>
-                    </div>
-                )}
+              {`₹${item.price!.toLocaleString('en-IN')}`}
+            </span>
+          ) : (
+            <span />
+          )}
 
-                {/* Individual Item Labels */}
-                {!isPage && item.price && (
-                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-2xl border border-white pointer-events-none">
-                         <span className="text-[10px] font-black tracking-tight text-neutral-900 leading-none italic">
-                            ₹{item.price.toLocaleString()}
-                         </span>
-                    </div>
-                )}
-            </div>
+          {isPurchasable ? (
+            <button
+              onClick={handleAddToCart}
+              aria-label={`Add ${item.title} to bag`}
+              className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] active:scale-95 transition-transform shadow-[var(--elevation-soft)]"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+            >
+              <ShoppingBag size={13} />
+              Add
+            </button>
+          ) : (
+            isPage && (
+              <span
+                className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] shadow-[var(--elevation-soft)]"
+                style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+              >
+                <Layers size={13} />
+                Visit
+              </span>
+            )
+          )}
+        </div>
+      </div>
 
-            {/* Quiet Metadata Convergence */}
-            <div className="mt-4 px-2">
-                <div className="flex items-center justify-between gap-3">
-                    <h3 className={cn(
-                        "font-black tracking-tight line-clamp-1 leading-tight",
-                        isPage ? "text-base italic text-neutral-900" : "text-sm text-neutral-800"
-                    )}>
-                        {item.title}
-                    </h3>
-                    {isPage && <ArrowUpRight size={14} className="text-neutral-300 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />}
-                </div>
-                
-                <div className="flex items-center gap-2 mt-2">
-                    <div className="relative">
-                        <img 
-                            src={item.creator.avatar} 
-                            className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-50 shadow-sm" 
-                            alt={item.creator.username}
-                        />
-                        <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 border border-white shadow-sm" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-neutral-400 group-hover:text-neutral-900 transition-colors">
-                        @{item.creator.username}
-                    </span>
-                    
-                    {isPage && (
-                        <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="w-1 h-1 rounded-full bg-neutral-200" />
-                            <span className="text-[8px] font-bold text-neutral-300 uppercase tracking-widest leading-none">Perspective Node</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </motion.div>
-    );
+      {/* Caption sits outside the tile, unboxed — pin boards keep metadata quiet
+          so the imagery carries the grid. */}
+      <div className="mt-2 px-1">
+        <div className="flex items-start justify-between gap-2">
+          <h3
+            className="text-[13px] font-semibold leading-snug line-clamp-2"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {item.title}
+          </h3>
+          {isPage && (
+            <ArrowUpRight
+              size={14}
+              className="shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ color: 'var(--text-muted)' }}
+            />
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <img
+            src={item.creator.avatar}
+            alt=""
+            loading="lazy"
+            className="w-5 h-5 rounded-full object-cover"
+            style={{ backgroundColor: 'var(--bg-tertiary)' }}
+          />
+          <span
+            className="text-[11px] font-medium truncate"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {item.creator.username}
+          </span>
+        </div>
+      </div>
+    </motion.article>
+  );
 }
