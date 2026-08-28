@@ -3,35 +3,50 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { Bell } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 
-// Map routes to readable titles
-function getPageTitle(pathname: string): string {
+/** Section context for the breadcrumb — not the page title. */
+function getSection(pathname: string): string {
+  if (pathname.startsWith('/dashboard/settings')) return 'Settings';
+  if (pathname.startsWith('/dashboard/analytics')) return 'Analytics';
+  if (pathname.startsWith('/dashboard/items') || pathname.includes('/item/')) return 'Items';
+  if (pathname.startsWith('/dashboard/create') || pathname.startsWith('/dashboard/page')) return 'Pages';
   if (pathname === '/dashboard') return 'Pages';
-  if (pathname === '/dashboard/create') return 'Create Page';
-  if (pathname.includes('/item/new')) return 'Add Item';
-  if (pathname.includes('/post/new')) return 'Create Post';
-  if (pathname.includes('/edit')) return 'Edit Item';
-  if (pathname.match(/\/dashboard\/page\/.+/)) return 'Page';
-  if (pathname === '/dashboard/items') return 'Items';
-  if (pathname === '/dashboard/analytics') return 'Analytics';
-  if (pathname === '/dashboard/settings') return 'Settings';
   return 'Dashboard';
 }
 
+/**
+ * Topbar chrome.
+ *
+ * This used to render an <h1> with a route-derived title while every page
+ * rendered its own heading too — so each screen had two h1s and showed the
+ * same word twice ("Settings" over "Settings"), or a stale fallback over the
+ * real title ("Dashboard" over "Visual identity") because the route map had no
+ * entry for nested pages. The page owns its title; this is just orientation.
+ */
 export default function DashboardTopbar({ title: customTitle }: { title?: string }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const title = customTitle || getPageTitle(pathname);
+  const section = customTitle || getSection(pathname);
 
   return (
-    <header className="hidden md:flex h-16 border-b backdrop-blur-3xl sticky top-0 z-40 items-center justify-between px-8 transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 80%, transparent)', borderColor: 'var(--border-subtle)' }}>
-      <h1 className="text-xl font-bold tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>{title}</h1>
-      <div className="flex items-center gap-4">
-        <button className="p-2.5 opacity-40 hover:opacity-100 transition-all rounded-2xl hover:bg-[var(--bg-tertiary)]" style={{ color: 'var(--text-secondary)' }}>
-          <Bell size={20} />
-        </button>
-      </div>
+    <header
+      className="flex h-14 border-b backdrop-blur-3xl sticky top-0 z-40 items-center justify-between px-8"
+      style={{
+        backgroundColor: 'color-mix(in srgb, var(--bg-primary) 80%, transparent)',
+        borderColor: 'var(--border-subtle)',
+      }}
+    >
+      <nav aria-label="Breadcrumb">
+        <p className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">
+          {section}
+        </p>
+      </nav>
+
+      <button
+        aria-label="Notifications"
+        className="p-2.5 rounded-[var(--radius-sm)] text-text-muted hover:text-text hover:bg-elevated transition-colors"
+      >
+        <Bell size={18} />
+      </button>
     </header>
   );
 }

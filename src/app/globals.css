@@ -27,7 +27,28 @@
   --color-line: var(--border-subtle);
   --color-line-strong: var(--border-strong);
 
+  /*
+   * Radius scale, derived from the active aesthetic's own --radius so the
+   * whole system bends with the theme: noir and brutalist collapse to square,
+   * vaporwave stays very round, and nothing has to hard-code a corner.
+   */
+  --radius-xs: calc(var(--radius) * 0.25);
+  --radius-sm: calc(var(--radius) * 0.4);
+  --radius-md: calc(var(--radius) * 0.6);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.35);
   --radius-ios: var(--radius);
+
+  /*
+   * Type scale. Pages were hand-rolling text-[9px] / [10px] / [11px] / [13px]
+   * alongside xs/sm/base with no rhythm; these are the only sizes primitives
+   * use, so labels and captions stay consistent across screens.
+   */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.14em;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
 
   /* `shadow-strong` is used by several aesthetic ItemCards but never had a
      token; it maps to the medium elevation rather than resolving to nothing. */

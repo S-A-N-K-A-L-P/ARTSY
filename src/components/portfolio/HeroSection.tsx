@@ -55,12 +55,8 @@ export default function HeroSection() {
         </Typography>
         
         <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Button component={Link} href="/explore" variant="contained" size="large" sx={{ px: 4, py: 1.5, borderRadius: 2 }}>
-            Explore Creators
-          </Button>
-          <Button component={Link} href="/login" variant="outlined" size="large" sx={{ px: 4, py: 1.5, borderRadius: 2 }}>
-            Login / Sign Up
-          </Button>
+          <Link href="/explore"><Button size="lg">Explore Creators</Button></Link>
+          <Link href="/login"><Button size="lg" variant="secondary">Login / Sign Up</Button></Link>
         </Box>
       </motion.div>
     </Box>
