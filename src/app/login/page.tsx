@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -177,13 +177,18 @@ export default function LoginPage() {
 
             <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/[0.08] rounded-[32px] overflow-hidden shadow-2xl">
               <div className="p-8">
-                <AnimatePresence mode="wait">
-                  {isLogin ? (
+                {/*
+                  No AnimatePresence / exit animation here. Under mode="wait"
+                  the outgoing form's exit never completed, so the incoming one
+                  stayed frozen at its initial opacity:0 -- the register form
+                  was unreachable and nobody could sign up. A keyed enter
+                  animation gives the same feel with nothing to wait on.
+                */}
+                {isLogin ? (
                     <motion.form
                       key="login"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
                       onSubmit={handleLoginSubmit(onLogin)}
                       className="space-y-4"
                     >
@@ -221,7 +226,6 @@ export default function LoginPage() {
                       key="register"
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
                       onSubmit={handleRegisterSubmit(onRegister)}
                       className="space-y-4"
                     >
@@ -280,7 +284,6 @@ export default function LoginPage() {
                       </button>
                     </motion.form>
                   )}
-                </AnimatePresence>
               </div>
 
               <button 
