@@ -144,7 +144,7 @@ export default function AddItemPage() {
 
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-50 border border-neutral-100">
             <Sparkles size={14} className="text-amber-500" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Astal v2 Active</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Astl v2 Active</span>
           </div>
         </div>
 

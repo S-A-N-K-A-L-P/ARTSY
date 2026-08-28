@@ -25,7 +25,7 @@ export async function PUT(
       if (img.startsWith('data:image')) {
         try {
           const { uploadToCloudinary } = await import('@/lib/cloudinary');
-          return await uploadToCloudinary(img, 'artsy/artifacts');
+          return await uploadToCloudinary(img, 'astl/artifacts');
         } catch (err) {
           console.error('Cloudinary item upload failed:', err);
           return img;

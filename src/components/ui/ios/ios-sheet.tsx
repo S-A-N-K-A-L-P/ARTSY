@@ -26,7 +26,7 @@ export function ISSheet({
         <Dialog.Content 
           className={cn(
             "fixed bottom-0 left-0 right-0 z-50 max-h-[96dvh] w-full",
-            "bg-card rounded-t-[20px] shadow-2xl border-t border-white/10",
+            "bg-card rounded-t-[20px] shadow-2xl border-t border-line",
             "animate-in slide-in-from-bottom duration-500 ease-out fill-mode-forwards",
             "pb-safe focus:outline-none"
           )}

@@ -1,14 +1,10 @@
 import { createTheme } from '@mui/material/styles';
-import { themes, ThemeName } from '@/lib/theme/themes';
-
-const DARK_THEMES: ThemeName[] = ['noir', 'cyberpunk', 'grunge', 'fantasy', 'vaporwave'];
+import { themes, ThemeName, DARK_THEMES, resolveTheme } from '@/lib/theme/themes';
 
 export function generateMuiTheme(themeName: ThemeName) {
-  const config = themes[themeName];
-  const isDark = DARK_THEMES.includes(themeName);
-
-  // If theme not found, fallback to soft
-  const themeConfig = config || themes.soft;
+  const name = resolveTheme(themeName);
+  const themeConfig = themes[name];
+  const isDark = DARK_THEMES.includes(name);
 
   return createTheme({
     palette: {
@@ -33,6 +29,22 @@ export function generateMuiTheme(themeName: ThemeName) {
       fontFamily: themeConfig["--font"],
     },
     components: {
+      /*
+       * CssBaseline would otherwise bake the palette into `body` as literal
+       * colours, injected by emotion after globals.css and therefore winning
+       * the cascade. That makes the page ground follow React state instead of
+       * the data-theme attribute. Point it back at the CSS vars so the server-
+       * rendered theme and any later switch agree, with one owner.
+       */
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            backgroundColor: 'var(--bg-primary)',
+            color: 'var(--text-primary)',
+            fontFamily: 'var(--font)',
+          },
+        },
+      },
       MuiButton: {
         styleOverrides: {
           root: {

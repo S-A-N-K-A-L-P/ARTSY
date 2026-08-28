@@ -16,7 +16,7 @@ export function IOSBottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-3xl border-t border-white/5 pb-8">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-3xl border-t border-line pb-8">
       <div className="flex justify-around items-center h-16 px-6">
         {navItems.map((item) => {
           const isActive = pathname === item.href;

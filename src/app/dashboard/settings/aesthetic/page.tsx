@@ -15,8 +15,8 @@ export default function AestheticSettingsPage() {
   return (
     <div className="max-w-4xl pb-20">
       <div className="mb-12">
-        <h2 className="text-3xl font-bold text-white tracking-tighter mb-2">Visual Identity</h2>
-        <p className="text-zinc-500 text-sm">Choose the global aesthetic for your storefront and dashboard.</p>
+        <h2 className="text-3xl font-bold text-text tracking-tighter mb-2">Visual Identity</h2>
+        <p className="text-text-muted text-sm">Choose the global aesthetic for your storefront and dashboard.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -26,29 +26,60 @@ export default function AestheticSettingsPage() {
             onClick={() => setAesthetic(name)}
             className={cn(
               "group relative overflow-hidden rounded-[32px] border-2 transition-all text-left p-8",
-              aesthetic === name 
-                ? "border-white bg-white/5" 
-                : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
+              aesthetic === name
+                ? "border-accent bg-accent-soft"
+                : "border-line bg-card hover:border-line-strong"
             )}
           >
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h3 className="text-xl font-bold text-white capitalize">{name}</h3>
-                <p className="text-xs text-zinc-500 mt-1 uppercase tracking-widest font-bold">Aesthetic Model</p>
+                <h3 className="text-xl font-bold text-text capitalize">{name}</h3>
+                <p className="text-xs text-text-muted mt-1 uppercase tracking-widest font-bold">Aesthetic Model</p>
               </div>
               {aesthetic === name ? (
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-lg">
-                  <Check size={16} className="text-black" />
+                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shadow-lg">
+                  <Check size={16} className="text-bg" />
                 </div>
               ) : (
-                <div className="w-8 h-8 rounded-full border border-zinc-700 group-hover:border-zinc-500 transition-colors" />
+                <div className="w-8 h-8 rounded-full border border-line-strong transition-colors" />
               )}
             </div>
 
-            <div className="flex gap-2">
-               <div className="w-12 h-2 rounded-full" style={{ backgroundColor: theme["--accent"] || '#fff' }} />
-               <div className="w-12 h-2 rounded-full opacity-40" style={{ backgroundColor: theme["--text"] || '#fff' }} />
-               <div className="w-12 h-2 rounded-full" style={{ backgroundColor: theme["--bg"] || '#000' }} />
+            {/* Live preview: a miniature of the aesthetic, painted with that
+                theme's own tokens rather than the currently active ones. */}
+            <div
+              className="rounded-2xl border p-4 flex items-center gap-3"
+              style={{
+                backgroundColor: theme["--bg-primary"],
+                borderColor: theme["--border-subtle"],
+                fontFamily: theme["--font"],
+              }}
+            >
+              <div
+                className="w-10 h-10 shrink-0"
+                style={{
+                  backgroundColor: theme["--accent"],
+                  borderRadius: theme["--radius"],
+                }}
+              />
+              <div className="flex-1 min-w-0">
+                <div
+                  className="h-2 rounded-full w-3/4 mb-1.5"
+                  style={{ backgroundColor: theme["--text-primary"] }}
+                />
+                <div
+                  className="h-2 rounded-full w-1/2"
+                  style={{ backgroundColor: theme["--text-muted"] }}
+                />
+              </div>
+              <div
+                className="w-14 h-7 shrink-0"
+                style={{
+                  backgroundColor: theme["--bg-secondary"],
+                  border: `1px solid ${theme["--border-strong"]}`,
+                  borderRadius: theme["--radius"],
+                }}
+              />
             </div>
 
             {aesthetic === name && (

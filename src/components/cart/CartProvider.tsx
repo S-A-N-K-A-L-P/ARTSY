@@ -23,13 +23,15 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_KEY = 'astl_cart';
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [toast, setToast] = useState<string | null>(null);
 
   // Load cart from local storage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('astal_cart');
+    const savedCart = localStorage.getItem(CART_KEY);
     if (savedCart) {
       try {
         setItems(JSON.parse(savedCart));
@@ -41,7 +43,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Save cart to local storage whenever it changes
   useEffect(() => {
-    localStorage.setItem('artsy_cart', JSON.stringify(items));
+    localStorage.setItem(CART_KEY, JSON.stringify(items));
   }, [items]);
 
   const addToCart = (product: any) => {

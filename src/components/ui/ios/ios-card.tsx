@@ -9,7 +9,7 @@ export function IOSCard({
   className?: string;
 }) {
   return (
-    <div className={cn("bg-card rounded-ios shadow-sm overflow-hidden border border-white/5", className)}>
+    <div className={cn("bg-card rounded-ios shadow-sm overflow-hidden border border-line", className)}>
       {children}
     </div>
   );

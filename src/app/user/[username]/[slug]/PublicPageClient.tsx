@@ -58,7 +58,7 @@ export default function PublicPageClient({ page, user, items }: any) {
     <div className="min-h-screen bg-white">
       {/* 1. Global Announcement Depth */}
       <PromoBanner 
-        message="Astal v2 Archives: Winter Zenith Collection Now Manifesting" 
+        message="Astl v2 Archives: Winter Zenith Collection Now Manifesting" 
         isVisible={showPromo} 
         onClose={() => setShowPromo(false)} 
       />
@@ -290,7 +290,7 @@ function ItemDetailOverlay({ item, onClose, onAddToCart, relatedItems, setSelect
            {/* Detailed Table for Depth */}
            <div className="p-12 bg-white border-t border-neutral-100 hidden md:block">
               <TechSpecsTable specs={[
-                { label: 'Origin', value: 'Astal Archives' },
+                { label: 'Origin', value: 'Astl Archives' },
                 { label: 'Material', value: 'Reinforced Digital Matter' },
                 { label: 'Integrity', value: 'Level 4' }
               ]} />

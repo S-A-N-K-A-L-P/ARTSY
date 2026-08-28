@@ -27,7 +27,7 @@ export const Navbar = () => {
             href="/"
             sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit', fontWeight: 'bold', letterSpacing: 1 }}
           >
-            Astal
+            Astl
             <Box 
               component="span" 
               sx={{ 
@@ -169,7 +169,7 @@ export const Navbar = () => {
                 margin: '0 0 10px',
                 fontWeight: 500,
               }}>
-                Astal is launching at <span style={{ color: '#6246EA', fontWeight: 700 }}>Amphoria</span>
+                Astl is launching at <span style={{ color: '#6246EA', fontWeight: 700 }}>Amphoria</span>
               </p>
 
               <p style={{

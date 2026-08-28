@@ -1,9 +1,16 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { themes, applyTheme, ThemeName } from '@/lib/theme/themes';
+import { applyTheme, resolveTheme, ThemeName, DEFAULT_THEME } from '@/lib/theme/themes';
 import { generateMuiTheme } from './theme';
 
 interface AestheticContextType {
@@ -12,7 +19,7 @@ interface AestheticContextType {
 }
 
 const AestheticContext = createContext<AestheticContextType>({
-  aesthetic: 'soft',
+  aesthetic: DEFAULT_THEME,
   setAesthetic: () => {},
 });
 
@@ -20,17 +27,15 @@ export const useAesthetic = () => useContext(AestheticContext);
 
 export default function AestheticProvider({
   children,
-  currentAesthetic = 'soft',
+  currentAesthetic = DEFAULT_THEME,
 }: {
   children: React.ReactNode;
   currentAesthetic?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
-  const [aesthetic, setAestheticState] = useState<ThemeName>(
-    (themes[currentAesthetic as ThemeName] ? currentAesthetic : 'soft') as ThemeName
+  const [aesthetic, setAestheticState] = useState<ThemeName>(() =>
+    resolveTheme(currentAesthetic)
   );
 
-  // Persist aesthetic choice to DB
   const persistAesthetic = useCallback(async (name: ThemeName) => {
     try {
       await fetch('/api/user/aesthetic', {
@@ -43,44 +48,35 @@ export default function AestheticProvider({
     }
   }, []);
 
-  // Public setter: updates state + persists
-  const setAesthetic = useCallback((name: ThemeName) => {
-    if (!themes[name]) return;
-    setAestheticState(name);
-    persistAesthetic(name);
-  }, [persistAesthetic]);
+  const setAesthetic = useCallback(
+    (name: ThemeName) => {
+      const next = resolveTheme(name);
+      setAestheticState(next);
+      // Paint immediately; the network round-trip is not on the critical path.
+      applyTheme(next);
+      persistAesthetic(next);
+    },
+    [persistAesthetic]
+  );
 
+  // The server already stamped data-theme on <html>, so the first paint is
+  // correct and nothing is hidden. This only re-syncs on client-side changes
+  // and enables the colour transition once hydration is done.
   useEffect(() => {
-    setMounted(true);
-  }, []); // Only on mount
-
-  // Apply theme to document root whenever aesthetic changes
-  useEffect(() => {
-    if (mounted) {
-      applyTheme(aesthetic);
-    }
-  }, [aesthetic, mounted]);
+    applyTheme(aesthetic);
+    document.documentElement.setAttribute('data-theme-ready', '');
+  }, [aesthetic]);
 
   const muiTheme = useMemo(() => generateMuiTheme(aesthetic), [aesthetic]);
 
   return (
     <AestheticContext.Provider value={{ aesthetic, setAesthetic }}>
-      <div 
-        className={mounted ? "min-h-screen bg-bg text-text font-sans antialiased transition-colors duration-500" : "min-h-screen bg-bg text-text font-sans antialiased"}
-        style={{
-          backgroundColor: 'var(--bg)',
-          color: 'var(--text)',
-        }}
-      >
-        {mounted ? (
-          <MuiThemeProvider theme={muiTheme}>
-            <CssBaseline />
-            {children}
-          </MuiThemeProvider>
-        ) : (
-          <div style={{ visibility: 'hidden' }}>{children}</div>
-        )}
-      </div>
+      <MuiThemeProvider theme={muiTheme}>
+        {/* Safe to keep now that MUI's palette and the CSS vars are generated
+            from the same palettes.json — they no longer fight over body bg. */}
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
     </AestheticContext.Provider>
   );
 }
