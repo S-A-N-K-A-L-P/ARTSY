@@ -1,239 +1,278 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, MoreHorizontal, Trash2, Edit, Eye } from 'lucide-react';
+import { ChevronLeft, Eye, FileText, Package, Plus, Settings } from 'lucide-react';
 import { ItemGrid } from '@/components/items/ItemGrid';
+import {
+  Page,
+  Section,
+  Stack,
+  Card,
+  Button,
+  Badge,
+  Tabs,
+  Avatar,
+  EmptyState,
+  DescriptionList,
+  SkeletonGrid,
+  Skeleton,
+  Alert,
+} from '@/components/ui';
 
-type Tab = 'feed' | 'items' | 'settings';
+type Tab = 'items' | 'feed' | 'settings';
 
 export default function PageHubPage() {
   const params = useParams();
   const router = useRouter();
   const pageId = params.id as string;
-  
+
   const [page, setPage] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('items');
 
   useEffect(() => {
-    const fetchData = async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        // Fetch page details
-        const pageRes = await fetch('/api/creator/page');
-        const pageData = await pageRes.json();
+        const [pageRes, itemRes, postRes] = await Promise.all([
+          fetch('/api/creator/page'),
+          fetch(`/api/creator/item?pageId=${pageId}`),
+          fetch(`/api/creator/post?pageId=${pageId}`),
+        ]);
+        const [pageData, itemData, postData] = await Promise.all([
+          pageRes.json(),
+          itemRes.json(),
+          postRes.json(),
+        ]);
+        if (cancelled) return;
         if (pageData.success) {
-          const found = pageData.pages.find((p: any) => p._id === pageId);
-          if (found) setPage(found);
+          setPage(pageData.pages.find((p: any) => p._id === pageId) ?? null);
         }
-
-        // Fetch items
-        const itemRes = await fetch(`/api/creator/item?pageId=${pageId}`);
-        const itemData = await itemRes.json();
-        if (itemData.success) setItems(itemData.items || []);
-
-        // Fetch posts
-        const postRes = await fetch(`/api/creator/post?pageId=${pageId}`);
-        const postData = await postRes.json();
-        if (postData.success) setPosts(postData.posts || []);
-      } catch (err) {
-        console.error(err);
+        if (itemData.success) setItems(itemData.items ?? []);
+        if (postData.success) setPosts(postData.posts ?? []);
+      } catch {
+        if (!cancelled) setError('Could not load this space');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    fetchData();
   }, [pageId]);
 
   const handleDeleteItem = async (itemId: string) => {
     if (!confirm('Delete this item?')) return;
-    try {
-      await fetch(`/api/creator/item/${itemId}`, { method: 'DELETE' });
-      setItems(items.filter(i => i._id !== itemId));
-    } catch (err) {
-      console.error(err);
-    }
+    await fetch(`/api/creator/item/${itemId}`, { method: 'DELETE' });
+    setItems((prev) => prev.filter((i) => i._id !== itemId));
   };
+
+  const theme = page?.aesthetic?.theme ?? page?.aesthetic ?? 'minimal';
+
+  /*
+   * The public storefront lives at /user/[username]/[slug]. The "View public"
+   * link pointed at /user/[slug], which is a different route shape and 404'd.
+   */
+  const publicHref = useMemo(() => {
+    const username = page?.ownerId?.username;
+    return username && page?.slug ? `/user/${username}/${page.slug}` : null;
+  }, [page]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-6 h-6 border-2 border-line-strong border-t-white rounded-full animate-spin" />
-      </div>
+      <Page width="wide">
+        <Stack gap="lg">
+          <Skeleton className="h-16 w-72" />
+          <SkeletonGrid count={6} />
+        </Stack>
+      </Page>
     );
   }
 
   if (!page) {
     return (
-      <div className="text-center py-20">
-        <p className="text-text-muted text-sm">Page not found</p>
-        <Link href="/dashboard" className="text-sm text-text underline mt-2 inline-block">Back to Dashboard</Link>
-      </div>
+      <Page width="narrow">
+        <EmptyState
+          icon={<Package size={34} />}
+          title="Space not found"
+          description={error ?? 'This space may have been deleted.'}
+          action={
+            <Link href="/dashboard">
+              <Button>Back to spaces</Button>
+            </Link>
+          }
+        />
+      </Page>
     );
   }
 
+  const TABS = [
+    { id: 'items', label: 'Items', icon: <Package size={14} /> },
+    { id: 'feed', label: 'Posts', icon: <FileText size={14} /> },
+    { id: 'settings', label: 'Settings', icon: <Settings size={14} /> },
+  ];
+
   return (
-    <div className="max-w-5xl">
-      {/* Back */}
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text transition-colors mb-6">
-        <ArrowLeft size={16} />
-        Back to Pages
-      </Link>
-
-      {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          {page.coverImage ? (
-            <img src={page.coverImage} alt="" className="w-12 h-12 rounded-xl object-cover" />
-          ) : (
-            <div className="w-12 h-12 rounded-xl bg-elevated flex items-center justify-center text-lg font-semibold text-text-muted">
-              {page.name?.charAt(0)}
-            </div>
-          )}
-          <div>
-            <h2 className="text-xl font-semibold text-text">{page.name}</h2>
-            <p className="text-sm text-text-muted">/{page.slug} · {page.type || 'gallery'}</p>
-          </div>
-        </div>
-        <Link
-          href={`/user/${page.slug}`}
-          className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-line text-sm text-text-muted hover:text-text transition-colors"
-        >
-          <Eye size={14} />
-          View Public
-        </Link>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-line mb-6">
-        {(['feed', 'items', 'settings'] as Tab[]).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab
-                ? 'border-line text-text'
-                : 'border-transparent text-text-muted hover:text-text'
-            }`}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            {tab === 'items' && <span className="ml-1.5 text-xs text-text-secondary">{items.length}</span>}
-            {tab === 'feed' && <span className="ml-1.5 text-xs text-text-secondary">{posts.length}</span>}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'items' && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-text-muted">{items.length} item{items.length !== 1 ? 's' : ''}</p>
-            <Link
-              href={`/dashboard/page/${pageId}/item/new`}
-              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-card text-text text-sm font-medium hover:bg-elevated transition-colors"
-            >
-              <Plus size={16} />
-              Add Item
+    <Page
+      width="wide"
+      actions={
+        <>
+          <Link href="/dashboard">
+            <Button variant="ghost" size="sm" iconLeft={<ChevronLeft size={15} />}>
+              Spaces
+            </Button>
+          </Link>
+          {publicHref && (
+            <Link href={publicHref}>
+              <Button variant="secondary" size="sm" iconLeft={<Eye size={14} />}>
+                View public
+              </Button>
             </Link>
-          </div>
-
-          {items.length === 0 ? (
-            <div className="border border-dashed border-line rounded-xl p-12 text-center">
-              <p className="text-text-muted text-sm mb-4">No items yet. Add your first item.</p>
-              <ItemGrid items={[]} isOwner={true} aesthetic={page.aesthetic?.theme || page.aesthetic} />
-            </div>
-          ) : (
-            <div className="mt-4">
-              <ItemGrid 
-                items={items.map(i => ({
-                  id: i._id,
-                  title: i.title,
-                  price: i.price,
-                  image: i.images?.[0] || '',
-                  author: page.ownerId?.username || 'creator'
-                }))} 
-                isOwner={true} 
-                aesthetic={page.aesthetic?.theme || page.aesthetic} 
-              />
-            </div>
           )}
+        </>
+      }
+    >
+      {error && <Alert tone="error" className="mb-6">{error}</Alert>}
+
+      <div className="flex items-center gap-4 mb-8">
+        <Avatar src={page.coverImage} name={page.name} size="lg" />
+        <div className="min-w-0">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tighter text-text truncate">
+            {page.name}
+          </h1>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <Badge tone="accent">{theme}</Badge>
+            <Badge>{page.type ?? 'gallery'}</Badge>
+            <Badge tone={page.settings?.isPublic !== false ? 'success' : 'neutral'}>
+              {page.settings?.isPublic !== false ? 'Public' : 'Private'}
+            </Badge>
+          </div>
         </div>
+      </div>
+
+      <div className="mb-6">
+        <Tabs items={TABS} value={activeTab} onChange={(id) => setActiveTab(id as Tab)} />
+      </div>
+
+      {activeTab === 'items' && (
+        <Section
+          title={`${items.length} item${items.length === 1 ? '' : 's'}`}
+          actions={
+            <Link href={`/dashboard/page/${pageId}/item/new`}>
+              <Button size="sm" iconLeft={<Plus size={15} />}>
+                Add item
+              </Button>
+            </Link>
+          }
+        >
+          {items.length === 0 ? (
+            <EmptyState
+              icon={<Package size={34} />}
+              title="No items yet"
+              description="Items are the things people browse and buy in this space."
+              action={
+                <Link href={`/dashboard/page/${pageId}/item/new`}>
+                  <Button iconLeft={<Plus size={16} />}>Add your first item</Button>
+                </Link>
+              }
+            />
+          ) : (
+            <ItemGrid
+              items={items.map((i) => ({
+                id: i._id,
+                title: i.title,
+                price: i.price,
+                image: i.images?.[0] || '',
+                author: page.ownerId?.username || 'creator',
+              }))}
+              isOwner
+              aesthetic={theme}
+            />
+          )}
+        </Section>
       )}
 
       {activeTab === 'feed' && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-text-muted">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
-            <Link
-              href={`/dashboard/page/${pageId}/post/new`}
-              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-card text-text text-sm font-medium hover:bg-elevated transition-colors"
-            >
-              <Plus size={16} />
-              Add Post
+        <Section
+          title={`${posts.length} post${posts.length === 1 ? '' : 's'}`}
+          actions={
+            <Link href={`/dashboard/page/${pageId}/post/new`}>
+              <Button size="sm" iconLeft={<Plus size={15} />}>
+                Add post
+              </Button>
             </Link>
-          </div>
-
+          }
+        >
           {posts.length === 0 ? (
-            <div className="border border-dashed border-line rounded-xl p-12 text-center">
-              <p className="text-text-muted text-sm mb-4">No posts yet. Create a post to showcase your items.</p>
-              <Link
-                href={`/dashboard/page/${pageId}/post/new`}
-                className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-elevated text-text text-sm font-medium hover:brightness-110 transition-colors"
-              >
-                <Plus size={16} />
-                Create Post
-              </Link>
-            </div>
+            <EmptyState
+              icon={<FileText size={34} />}
+              title="No posts yet"
+              description="A post groups items into a drop, showcase or editorial."
+              action={
+                <Link href={`/dashboard/page/${pageId}/post/new`}>
+                  <Button iconLeft={<Plus size={16} />}>Create a post</Button>
+                </Link>
+              }
+            />
           ) : (
-            <div className="space-y-4">
+            <Stack gap="sm">
               {posts.map((post: any) => (
-                <div key={post._id} className="border border-line rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="text-sm font-medium text-text">{post.title}</h3>
-                      <p className="text-xs text-text-muted mt-0.5">{post.type || 'showcase'} · {post.itemIds?.length || 0} items</p>
+                <Card key={post._id}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold text-text">{post.title}</h3>
+                      <p className="text-[var(--text-caption)] text-text-muted mt-0.5">
+                        {post.type ?? 'showcase'} · {post.itemIds?.length ?? 0} items
+                      </p>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-md bg-elevated text-text-muted">{post.visibility || 'public'}</span>
+                    <Badge>{post.visibility ?? 'public'}</Badge>
                   </div>
-                  {post.caption && <p className="text-sm text-text-muted">{post.caption}</p>}
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-line/50">
-                    <span className="text-xs text-text-muted">❤️ {post.engagement?.likes || 0}</span>
-                    <span className="text-xs text-text-muted">💬 {post.engagement?.comments || 0}</span>
+                  {post.caption && (
+                    <p className="text-sm text-text-secondary mt-3">{post.caption}</p>
+                  )}
+                  <div className="flex items-center gap-5 mt-4 pt-3 border-t border-line text-[var(--text-caption)] text-text-muted tabular-nums">
+                    <span>{post.engagement?.likes ?? 0} likes</span>
+                    <span>{post.engagement?.comments ?? 0} comments</span>
                   </div>
-                </div>
+                </Card>
               ))}
-            </div>
+            </Stack>
           )}
-        </div>
+        </Section>
       )}
 
       {activeTab === 'settings' && (
-        <div className="space-y-6 max-w-lg">
-          <div>
-            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Page Name</label>
-            <input
-              value={page.name}
-              readOnly
-              className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text focus:outline-none"
+        <Section
+          title="Space settings"
+          description="Editing a space is not built yet — these are the current values."
+        >
+          <Card>
+            {/*
+              These were three readOnly <input>s styled to look editable, which
+              invites a change that silently does nothing. A description list
+              reads as information, which is what it is.
+            */}
+            <DescriptionList
+              items={[
+                { label: 'Name', value: page.name },
+                { label: 'URL', value: `/${page.slug}` },
+                { label: 'Type', value: page.type ?? 'gallery' },
+                { label: 'Aesthetic', value: theme },
+                {
+                  label: 'Visibility',
+                  value: page.settings?.isPublic !== false ? 'Public' : 'Private',
+                },
+                { label: 'Items', value: String(items.length) },
+              ]}
             />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Aesthetic</label>
-            <input
-              value={page.aesthetic?.theme || page.aesthetic || 'minimal'}
-              readOnly
-              className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Visibility</label>
-            <span className="text-sm text-text-muted">{page.settings?.isPublic !== false ? 'Public' : 'Private'}</span>
-          </div>
-        </div>
+          </Card>
+        </Section>
       )}
-    </div>
+    </Page>
   );
 }

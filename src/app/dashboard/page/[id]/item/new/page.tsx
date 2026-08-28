@@ -1,43 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, Sparkles, Loader2, Plus } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ImagePlus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { THEME_NAMES, themes } from '@/lib/theme/themes';
+import {
+  Page,
+  Stack,
+  Card,
+  Field,
+  Input,
+  Textarea,
+  Button,
+  Label,
+  Alert,
+  Badge,
+} from '@/components/ui';
 
-const COLORS = {
-  bg: '#ffffff',
-  surface: '#ffffff',
-  border: '#f0f0f0',
-  accent: '#111111',
-  text: '#111111',
-  muted: '#888888',
-};
-
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <div className="mb-4 mt-8">
-    <span className="text-[10px] font-bold uppercase tracking-widest text-[#888888]">
-      {children}
-    </span>
-  </div>
-);
-
-const StyledInput = ({ label, description, ...props }: any) => {
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-col gap-0.5">
-        <label className="text-[11px] font-bold text-text px-1">{label}</label>
-        {description && <p className="text-[10px] text-text-muted px-1">{description}</p>}
-      </div>
-      <input
-        {...props}
-        className="w-full h-14 px-5 rounded-2xl bg-elevated border border-line text-sm font-semibold text-text placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-card transition-all shadow-sm"
-      />
-    </div>
-  );
-};
+const MAX_IMAGES = 8;
 
 export default function AddItemPage() {
   const params = useParams();
@@ -46,8 +28,8 @@ export default function AddItemPage() {
 
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [tagDraft, setTagDraft] = useState('');
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -59,215 +41,291 @@ export default function AddItemPage() {
   });
 
   useEffect(() => {
-    const fetchPage = async () => {
+    let cancelled = false;
+    (async () => {
       try {
         const res = await fetch('/api/creator/page');
         const data = await res.json();
-        if (data.success) {
-          const found = data.pages.find((p: any) => p._id === pageId);
-          if (found) {
-            setPage(found);
-            setForm(f => ({ ...f, aesthetic: found.aesthetic?.theme || found.aesthetic || 'minimal' }));
-          }
+        if (cancelled || !data.success) return;
+        const found = data.pages.find((p: any) => p._id === pageId);
+        if (found) {
+          setPage(found);
+          // Default to the space's own aesthetic rather than always 'minimal'.
+          setForm((f) => ({
+            ...f,
+            aesthetic: found.aesthetic?.theme || found.aesthetic || 'minimal',
+          }));
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
+        /* the form still works without the page's default aesthetic */
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    fetchPage();
   }, [pageId]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    
-    setUploading(true);
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach((file) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setForm(prev => ({ 
-            ...prev, 
-            images: [...prev.images, reader.result as string].slice(0, 8) 
+      reader.onloadend = () =>
+        setForm((prev) => ({
+          ...prev,
+          images: [...prev.images, reader.result as string].slice(0, MAX_IMAGES),
         }));
-        setUploading(false);
-      };
       reader.readAsDataURL(file);
     });
+    e.target.value = '';
   };
 
-  const removeImage = (index: number) => {
-    setForm(prev => ({ 
-        ...prev, 
-        images: prev.images.filter((_, i) => i !== index) 
-    }));
+  const removeImage = (index: number) =>
+    setForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+
+  const addTag = () => {
+    const t = tagDraft.trim();
+    if (!t || form.tags.includes(t)) return;
+    setForm((f) => ({ ...f, tags: [...f.tags, t] }));
+    setTagDraft('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title) return;
-
     setLoading(true);
     setError('');
     try {
       const res = await fetch('/api/creator/item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, pageId, price: Number(form.price) }),
+        body: JSON.stringify({ ...form, pageId, price: Number(form.price) || 0 }),
       });
       const data = await res.json();
-      if (data.success) {
-        router.push(`/dashboard/page/${pageId}`);
-      } else {
-        setError(data.error || 'Failed to add item');
-      }
+      if (!data.success) throw new Error(data.error || 'Could not add the item');
+      router.push(`/dashboard/page/${pageId}`);
     } catch (err) {
-      setError('Something went wrong');
-    } finally {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-card text-text pb-32">
-      <div className="max-w-4xl mx-auto px-6">
-        {/* Minimal Header */}
-        <div className="flex items-center justify-between py-12 mb-8 border-b border-line">
-          <Link href={`/dashboard/page/${pageId}`} className="group flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-elevated border border-line flex items-center justify-center group-hover:bg-elevated transition-all">
-              <ArrowLeft size={18} className="text-text-muted group-hover:text-text" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-text">New Item</h1>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mt-0.5">Manifest Artifact</p>
-            </div>
-          </Link>
+    <Page
+      title="New item"
+      description={page ? `Adding to ${page.name}.` : 'Adding to this space.'}
+      width="narrow"
+      actions={
+        <Link href={`/dashboard/page/${pageId}`}>
+          <Button variant="ghost" size="sm" iconLeft={<ChevronLeft size={15} />}>
+            Space
+          </Button>
+        </Link>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <Stack gap="lg">
+          {error && <Alert tone="error">{error}</Alert>}
 
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-elevated border border-line">
-            <Sparkles size={14} className="text-amber-500" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Astl v2 Active</span>
-          </div>
-        </div>
+          <Card>
+            <Stack gap="md">
+              <Field label="Title" required>
+                {(id) => (
+                  <Input
+                    id={id}
+                    value={form.title}
+                    onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                    placeholder="Obsidian vessel"
+                    autoFocus
+                  />
+                )}
+              </Field>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-12 space-y-12">
-                <form onSubmit={handleSubmit} className="space-y-12">
-                    {/* Basic Info */}
-                    <section>
-                        <SectionLabel>Artifact Intelligence</SectionLabel>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                            <StyledInput 
-                                label="Title" 
-                                name="title"
-                                value={form.title}
-                                onChange={(e: any) => setForm(f => ({ ...f, title: e.target.value }))}
-                                placeholder="e.g. The Glass Prism" 
-                                required 
-                            />
-                            <StyledInput 
-                                label="Inventory Value (₹)" 
-                                name="price"
-                                type="number"
-                                value={form.price}
-                                onChange={(e: any) => setForm(f => ({ ...f, price: e.target.value }))}
-                                placeholder="0" 
-                                required 
-                            />
-                        </div>
-                        <div className="mt-6 space-y-2">
-                            <label className="text-[11px] font-bold text-text px-1">Description</label>
-                            <textarea
-                                value={form.description}
-                                onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-                                placeholder="What defines this artifact..."
-                                rows={4}
-                                className="w-full p-5 rounded-2xl bg-elevated border border-line text-sm font-semibold text-text placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-card transition-all resize-none shadow-sm"
-                            />
-                        </div>
-                    </section>
+              <Field label="Description">
+                {(id) => (
+                  <Textarea
+                    id={id}
+                    rows={4}
+                    value={form.description}
+                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                    placeholder="Material, process, dimensions…"
+                  />
+                )}
+              </Field>
 
-                    {/* Media */}
-                    <section>
-                        <SectionLabel>Visual Record</SectionLabel>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 mt-6">
-                            <AnimatePresence mode="popLayout">
-                                {form.images.map((img, i) => (
-                                    <motion.div 
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.8 }}
-                                        key={i} 
-                                        className="relative aspect-square rounded-2xl overflow-hidden border border-line bg-elevated group"
-                                    >
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                        <button 
-                                            type="button"
-                                            onClick={() => removeImage(i)}
-                                            className="absolute top-2 right-2 w-6 h-6 bg-black/80 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all active:scale-95"
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                            
-                            {form.images.length < 8 && (
-                                <label className={cn(
-                                    "relative aspect-square rounded-2xl border-2 border-dashed border-line-strong bg-elevated flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-elevated transition-all",
-                                    uploading && "opacity-50 cursor-not-allowed"
-                                )}>
-                                    {uploading ? <Loader2 className="animate-spin text-text-muted" /> : <Plus size={24} className="text-text-muted" />}
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-text-muted mt-2">Add Proof</span>
-                                    <input type="file" multiple className="hidden" onChange={handleImageChange} disabled={uploading} accept="image/*" />
-                                </label>
-                            )}
-                        </div>
-                    </section>
+              <Field label="Price" hint="Leave at 0 if this piece is not for sale.">
+                {(id, describedBy) => (
+                  <Input
+                    id={id}
+                    aria-describedby={describedBy}
+                    type="number"
+                    min={0}
+                    inputMode="numeric"
+                    value={form.price}
+                    onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                    placeholder="0"
+                  />
+                )}
+              </Field>
+            </Stack>
+          </Card>
 
-                    {/* Secondary Data */}
-                    <section>
-                        <SectionLabel>External Connectivity</SectionLabel>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                            <StyledInput 
-                                label="Instagram" 
-                                value={form.externalLinks.instagram}
-                                onChange={(e: any) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, instagram: e.target.value } }))}
-                                placeholder="@username or link" 
-                            />
-                            <StyledInput 
-                                label="YouTube" 
-                                value={form.externalLinks.youtube}
-                                onChange={(e: any) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, youtube: e.target.value } }))}
-                                placeholder="Video link" 
-                            />
-                            <StyledInput 
-                                label="Website" 
-                                value={form.externalLinks.website}
-                                onChange={(e: any) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, website: e.target.value } }))}
-                                placeholder="Store or portfolio" 
-                            />
-                        </div>
-                    </section>
-
-                    {error && (
-                        <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-500 text-[11px] font-bold uppercase tracking-widest">
-                            {error}
-                        </div>
-                    )}
-
-                    <div className="pt-12 flex items-center gap-4">
-                        <button 
-                            type="submit"
-                            disabled={loading || !form.title || form.images.length === 0}
-                            className="flex-1 h-14 rounded-2xl bg-accent text-on-accent font-bold uppercase tracking-widest text-xs hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-20 disabled:hover:scale-100 shadow-xl shadow-[var(--elevation-soft)]"
-                        >
-                            {loading ? 'Synchronizing...' : 'Deploy to Space'}
-                        </button>
+          <Card>
+            <Stack gap="md">
+              <div className="space-y-2.5">
+                <Label>Images</Label>
+                <div className="grid grid-cols-4 gap-3">
+                  {form.images.map((src, i) => (
+                    <div
+                      key={i}
+                      className="relative aspect-square rounded-[var(--radius-md)] overflow-hidden border border-line group"
+                    >
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        aria-label={`Remove image ${i + 1}`}
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      >
+                        <X size={13} />
+                      </button>
                     </div>
-                </form>
-            </div>
-        </div>
-      </div>
-    </div>
+                  ))}
+
+                  {form.images.length < MAX_IMAGES && (
+                    <label
+                      className={cn(
+                        'aspect-square rounded-[var(--radius-md)] border border-dashed border-line',
+                        'flex flex-col items-center justify-center gap-1.5 cursor-pointer',
+                        'text-text-muted hover:border-line-strong hover:text-text transition-colors'
+                      )}
+                    >
+                      <ImagePlus size={18} />
+                      <span className="text-[var(--text-label)] font-bold uppercase tracking-[0.12em]">
+                        Add
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageChange}
+                        className="sr-only"
+                      />
+                    </label>
+                  )}
+                </div>
+                <p className="text-[var(--text-caption)] text-text-muted">
+                  {form.images.length} of {MAX_IMAGES}. The first image is used as the cover.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <Label>Tags</Label>
+                {/* Tags drive the category filters on the public storefront. */}
+                <div className="flex gap-2">
+                  <Input
+                    value={tagDraft}
+                    onChange={(e) => setTagDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addTag();
+                      }
+                    }}
+                    placeholder="ceramics"
+                    aria-label="Add a tag"
+                  />
+                  <Button type="button" variant="secondary" onClick={addTag}>
+                    Add
+                  </Button>
+                </div>
+                {form.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {form.tags.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() =>
+                          setForm((f) => ({ ...f, tags: f.tags.filter((x) => x !== t) }))
+                        }
+                        aria-label={`Remove tag ${t}`}
+                        className="group"
+                      >
+                        <Badge icon={<X size={10} className="opacity-50 group-hover:opacity-100" />}>
+                          {t}
+                        </Badge>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2.5">
+                <Label>Aesthetic</Label>
+                <div className="flex flex-wrap gap-2">
+                  {THEME_NAMES.map((a) => {
+                    const selected = form.aesthetic === a;
+                    return (
+                      <button
+                        key={a}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setForm((f) => ({ ...f, aesthetic: a }))}
+                        className={cn(
+                          'h-10 pl-2 pr-4 rounded-full border inline-flex items-center gap-2 transition-colors',
+                          'text-[var(--text-label)] font-bold uppercase tracking-[0.12em]',
+                          selected
+                            ? 'border-accent bg-accent-soft text-accent'
+                            : 'border-line bg-card text-text-muted hover:text-text'
+                        )}
+                      >
+                        <span
+                          className="w-5 h-5 rounded-full border border-line shrink-0"
+                          style={{ backgroundColor: themes[a]['--accent'] }}
+                        />
+                        {a}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </Stack>
+          </Card>
+
+          <Card>
+            <Stack gap="md">
+              <Label>External links</Label>
+              {(['instagram', 'youtube', 'website'] as const).map((k) => (
+                <Field key={k} label={k}>
+                  {(id) => (
+                    <Input
+                      id={id}
+                      value={form.externalLinks[k]}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          externalLinks: { ...f.externalLinks, [k]: e.target.value },
+                        }))
+                      }
+                      placeholder="https://…"
+                      inputMode="url"
+                    />
+                  )}
+                </Field>
+              ))}
+            </Stack>
+          </Card>
+
+          <div className="flex items-center justify-end gap-3">
+            <Link href={`/dashboard/page/${pageId}`}>
+              <Button variant="ghost">Cancel</Button>
+            </Link>
+            <Button type="submit" size="lg" loading={loading} disabled={!form.title}>
+              Add item
+            </Button>
+          </div>
+        </Stack>
+      </form>
+    </Page>
   );
 }

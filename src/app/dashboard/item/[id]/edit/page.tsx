@@ -1,15 +1,38 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, ImageIcon, Trash2, Sparkles, Upload, Loader2, Plus, ChevronRight, ChevronLeft, Save } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ItemCard } from '@/components/items/ItemCard';
+import { ChevronLeft, ImagePlus, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { THEME_NAMES, themes } from '@/lib/theme/themes';
+import {
+  Page,
+  Stack,
+  Card,
+  Field,
+  Input,
+  Textarea,
+  Button,
+  Label,
+  Alert,
+  Badge,
+  Skeleton,
+  EmptyState,
+} from '@/components/ui';
 
-type CreationStep = 'identity' | 'visuals' | 'valorization' | 'convergence' | 'review';
+const MAX_IMAGES = 8;
 
+/**
+ * Edit an item.
+ *
+ * This was a five-step wizard ('identity' → 'visuals' → 'valorization' →
+ * 'convergence' → 'review'), which is a creation pattern: to change one price
+ * you had to walk the whole sequence. Editing is a single form you save.
+ *
+ * It also located the item by listing every page and then requesting each
+ * page's items in turn. It now reads GET /api/creator/item/[id] directly.
+ */
 export default function EditItemPage() {
   const params = useParams();
   const router = useRouter();
@@ -17,10 +40,13 @@ export default function EditItemPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState('');
+  const [saved, setSaved] = useState(false);
   const [page, setPage] = useState<any>(null);
-  const [currentStep, setCurrentStep] = useState<CreationStep>('identity');
+  const [tagDraft, setTagDraft] = useState('');
+  const [attrDraft, setAttrDraft] = useState({ key: '', value: '' });
 
   const [form, setForm] = useState({
     title: '',
@@ -34,352 +60,401 @@ export default function EditItemPage() {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        const pagesRes = await fetch('/api/creator/page');
-        const pagesData = await pagesRes.json();
-        if (!pagesData.success) return;
-
-        let foundItem: any = null;
-        let foundPage: any = null;
-
-        for (const p of pagesData.pages) {
-          const itemsRes = await fetch(`/api/creator/item?pageId=${p._id}`);
-          const itemsData = await itemsRes.json();
-          if (itemsData.success) {
-            const item = itemsData.items?.find((i: any) => i._id === itemId);
-            if (item) {
-              foundItem = item;
-              foundPage = p;
-              break;
-            }
-          }
+        const res = await fetch(`/api/creator/item/${itemId}`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (!data.success || !data.item) {
+          setNotFound(true);
+          return;
         }
-
-        if (foundItem) {
-          setPage(foundPage);
-          setForm({
-            title: foundItem.title || '',
-            description: foundItem.description || '',
-            price: foundItem.price?.toString() || '',
-            images: foundItem.images || [],
-            tags: foundItem.tags || [],
-            aesthetic: foundPage.aesthetic?.theme || foundPage.aesthetic || 'minimal',
-            externalLinks: foundItem.externalLinks || { instagram: '', youtube: '', website: '' },
-            attributes: foundItem.attributes || {},
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Failed to fetch artifact data');
+        const it = data.item;
+        setPage(data.page ?? null);
+        setForm({
+          title: it.title ?? '',
+          description: it.description ?? '',
+          price: it.price?.toString() ?? '',
+          images: it.images ?? [],
+          tags: it.tags ?? [],
+          aesthetic: it.aesthetic ?? data.page?.aesthetic?.theme ?? 'minimal',
+          externalLinks: {
+            instagram: it.externalLinks?.instagram ?? '',
+            youtube: it.externalLinks?.youtube ?? '',
+            website: it.externalLinks?.website ?? '',
+          },
+          attributes: it.attributes ?? {},
+        });
+      } catch {
+        if (!cancelled) setError('Could not load this item');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    fetchData();
   }, [itemId]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setForm(f => ({ ...f, images: [...f.images, reader.result as string] }));
-      setUploading(false);
-    };
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () =>
+        setForm((prev) => ({
+          ...prev,
+          images: [...prev.images, reader.result as string].slice(0, MAX_IMAGES),
+        }));
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
   };
 
-  const removeImage = (idx: number) => {
-    setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== idx) }));
+  const addTag = () => {
+    const t = tagDraft.trim();
+    if (!t || form.tags.includes(t)) return;
+    setForm((f) => ({ ...f, tags: [...f.tags, t] }));
+    setTagDraft('');
   };
 
-  const handleSave = async () => {
+  const addAttribute = () => {
+    const { key, value } = attrDraft;
+    if (!key.trim() || !value.trim()) return;
+    setForm((f) => ({ ...f, attributes: { ...f.attributes, [key.trim()]: value.trim() } }));
+    setAttrDraft({ key: '', value: '' });
+  };
+
+  const removeAttribute = (key: string) =>
+    setForm((f) => {
+      const next = { ...f.attributes };
+      delete next[key];
+      return { ...f, attributes: next };
+    });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setSaving(true);
     setError('');
+    setSaved(false);
     try {
       const res = await fetch(`/api/creator/item/${itemId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, price: Number(form.price) }),
+        body: JSON.stringify({ ...form, price: Number(form.price) || 0 }),
       });
       const data = await res.json();
-      if (data.success) {
-        router.push(`/dashboard/page/${page?._id}`);
-      } else {
-        setError(data.error || 'Failed to sync modifications');
-      }
+      if (!data.success) throw new Error(data.error || 'Could not save this item');
+      setSaved(true);
     } catch (err) {
-      setError('Something went wrong during synchronization');
+      setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('Permanently redact this artifact from the manifest?')) return;
-    try {
-      await fetch(`/api/creator/item/${itemId}`, { method: 'DELETE' });
-      router.push(`/dashboard/page/${page?._id}`);
-    } catch (err) {
-      console.error(err);
-    }
+    if (!confirm('Delete this item permanently?')) return;
+    setDeleting(true);
+    await fetch(`/api/creator/item/${itemId}`, { method: 'DELETE' });
+    router.push(page ? `/dashboard/page/${page._id}` : '/dashboard/items');
   };
+
+  const backHref = page ? `/dashboard/page/${page._id}` : '/dashboard/items';
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
-        <Loader2 className="w-8 h-8 text-text/20 animate-spin mb-4" />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text/20">Accessing Artifact Records...</p>
-      </div>
+      <Page title="Edit item" width="narrow">
+        <Stack gap="md">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-40 w-full" />
+        </Stack>
+      </Page>
     );
   }
 
-  const steps: CreationStep[] = ['identity', 'visuals', 'valorization', 'convergence', 'review'];
-  const currentIndex = steps.indexOf(currentStep);
+  if (notFound) {
+    return (
+      <Page width="narrow">
+        <EmptyState
+          icon={<Trash2 size={34} />}
+          title="Item not found"
+          description="It may have been deleted, or it belongs to another account."
+          action={
+            <Link href="/dashboard/items">
+              <Button>Back to items</Button>
+            </Link>
+          }
+        />
+      </Page>
+    );
+  }
 
   return (
-    <div className="min-h-screen pb-20 px-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between py-10">
-        <div className="flex items-center gap-6">
-          <Link href={`/dashboard/page/${page?._id}`} className="group flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:bg-[var(--bg-tertiary)] transition-all">
-                <ArrowLeft size={18} className="text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
-             </div>
-          </Link>
-           <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Edit Artifact Phase</p>
-              <h1 className="text-xl font-black tracking-tighter text-text">Modification Console</h1>
-           </div>
-        </div>
+    <Page
+      title="Edit item"
+      description={page ? `In ${page.name}.` : undefined}
+      width="narrow"
+      actions={
+        <Link href={backHref}>
+          <Button variant="ghost" size="sm" iconLeft={<ChevronLeft size={15} />}>
+            Back
+          </Button>
+        </Link>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <Stack gap="lg">
+          {error && <Alert tone="error">{error}</Alert>}
+          {saved && <Alert tone="success">Item saved.</Alert>}
 
-        <div className="flex items-center gap-3">
-           <button 
-              onClick={handleDelete}
-              className="px-4 py-2 rounded-xl border border-red-500/10 text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 hover:bg-red-500/5 transition-all"
-           >
-              Redact Artifact
-           </button>
-           <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-card/5 border border-line">
-              <Sparkles size={14} className="text-amber-400" />
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">{form.aesthetic} Mode</span>
-           </div>
-        </div>
-      </div>
-
-      {/* Progress Rail */}
-      <div className="flex gap-2 mb-12">
-         {steps.map((step, i) => (
-            <div 
-               key={step} 
-               className={cn(
-                  "h-1.5 flex-1 rounded-full transition-all duration-700",
-                  i <= currentIndex ? "bg-card" : "bg-card/5"
-               )} 
-            />
-         ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Step Manager */}
-        <div className="lg:col-span-7">
-           <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="space-y-10"
-              >
-                {/* 1. Identity */}
-                {currentStep === 'identity' && (
-                  <section className="space-y-8">
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Artifact Title</label>
-                        <input
-                           value={form.title}
-                           onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-                           placeholder="The Eternal Drape"
-                           className="w-full h-16 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-lg font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
-                        />
-                     </div>
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Manifesto / Description</label>
-                        <textarea
-                           value={form.description}
-                           onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-                           placeholder="Describe the aesthetic significance..."
-                           rows={6}
-                           className="w-full p-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all resize-none"
-                        />
-                     </div>
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Artifact Tags (Comma Separated)</label>
-                        <input
-                           value={form.tags.join(', ')}
-                           onChange={(e) => setForm(f => ({ ...f, tags: e.target.value.split(',').map(t => t.trim()).filter(t => t) }))}
-                           placeholder="minimal, noir, artisan"
-                           className="w-full h-14 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-[11px] font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
-                        />
-                     </div>
-                  </section>
-                )}
-
-                {/* 2. Visuals */}
-                {currentStep === 'visuals' && (
-                  <section className="space-y-8">
-                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {form.images.map((img, i) => (
-                           <motion.div layout key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-line group">
-                              <img src={img} alt="" className="w-full h-full object-cover" />
-                              <button onClick={() => removeImage(i)} className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
-                                 <X size={20} className="text-text" />
-                              </button>
-                           </motion.div>
-                        ))}
-                        <label className={cn(
-                           "relative aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all",
-                           uploading ? "opacity-30 cursor-not-allowed" : "bg-[var(--bg-secondary)] border-[var(--border-subtle)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--accent)]"
-                        )}>
-                           {uploading ? <Loader2 className="animate-spin text-[var(--text-muted)]" /> : <Plus size={24} className="text-[var(--text-muted)]" />}
-                           <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-2">Replace Artifact</span>
-                           <input type="file" className="hidden" onChange={handleFileUpload} disabled={uploading} accept="image/*" />
-                        </label>
-                     </div>
-                  </section>
-                )}
-
-                {/* 3. Valorization */}
-                {currentStep === 'valorization' && (
-                  <section className="space-y-8">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">Artifact Value (₹)</label>
-                           <input
-                              type="number"
-                              value={form.price}
-                              onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
-                              placeholder="0.00"
-                              className="w-full h-16 px-6 rounded-2xl bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-lg font-bold placeholder:text-[var(--text-muted)] opacity-50 focus:opacity-100 focus:outline-none focus:border-[var(--accent)] transition-all"
-                           />
-                        </div>
-                        <div className="p-6 rounded-2xl bg-card/[0.02] border border-line flex items-center justify-between">
-                           <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Marketplace Status</p>
-                              <p className="text-xs font-bold text-amber-400 mt-1">Artifact is Private / Listing Disabled</p>
-                           </div>
-                        </div>
-                     </div>
-                  </section>
-                )}
-
-                {/* 4. Convergence */}
-                {currentStep === 'convergence' && (
-                  <section className="space-y-8">
-                     <div className="grid grid-cols-1 gap-4">
-                        {['instagram', 'youtube', 'website'].map((s) => (
-                           <div key={s} className="space-y-2">
-                              <label className="text-[10px] font-black uppercase tracking-widest opacity-30 px-1">{s} Node</label>
-                              <input
-                                 value={(form.externalLinks as any)[s] || ''}
-                                 onChange={(e) => setForm(f => ({ ...f, externalLinks: { ...f.externalLinks, [s]: e.target.value } }))}
-                                 placeholder={`${s.charAt(0).toUpperCase() + s.slice(1)} URL`}
-                                 className="w-full h-14 px-6 rounded-2xl bg-card/5 border border-line text-[11px] font-bold placeholder:text-text/10 focus:outline-none focus:border-line transition-all"
-                              />
-                           </div>
-                        ))}
-                     </div>
-                  </section>
-                )}
-
-                {/* 5. Review */}
-                {currentStep === 'review' && (
-                  <section className="space-y-8">
-                     <div className="p-8 rounded-3xl bg-card/[0.02] border border-line text-center">
-                        <Save className="w-12 h-12 text-text/10 mx-auto mb-4" />
-                        <h3 className="text-sm font-black uppercase tracking-widest text-text">Modifications Staged</h3>
-                        <p className="text-xs font-bold text-text/20 mt-2">Verify the artifact preview before synchronizing with the manifest.</p>
-                     </div>
-                  </section>
-                )}
-              </motion.div>
-           </AnimatePresence>
-
-           {/* Navigation */}
-           <div className="pt-20 flex items-center gap-4">
-              {currentIndex > 0 && (
-                 <button 
-                  onClick={() => setCurrentStep(steps[currentIndex - 1])}
-                  className="h-16 px-8 rounded-2xl bg-card/5 border border-line flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-text/40 hover:text-text transition-all"
-                 >
-                    <ChevronLeft size={16} className="mr-2" /> Back
-                 </button>
-              )}
-              
-              {currentIndex < steps.length - 1 ? (
-                 <button 
-                    onClick={() => setCurrentStep(steps[currentIndex + 1])}
-                    className="flex-1 h-16 rounded-2xl bg-card text-text font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.01] transition-all"
-                 >
-                    Next Phase <ChevronRight size={16} className="inline ml-2" />
-                 </button>
-              ) : (
-                 <button 
-                    onClick={handleSave}
-                    disabled={saving || !form.title}
-                    className="flex-1 h-16 rounded-2xl bg-card text-text font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-white/10 hover:scale-[1.01] transition-all disabled:opacity-30"
-                 >
-                    {saving ? 'Synchronizing...' : 'Save Modifications'}
-                 </button>
-              )}
-           </div>
-
-           {error && (
-              <div className="mt-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest">
-                {error}
-              </div>
-           )}
-        </div>
-
-        {/* Live Preview */}
-        <div className="lg:col-span-5 relative">
-          <div className="sticky top-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-text text-[9px] font-black uppercase tracking-widest mb-6">
-               <Sparkles size={10} /> Live Preview
-            </div>
-
-            <div className="p-10 rounded-[48px] bg-card/[0.02] border border-line backdrop-blur-3xl shadow-2xl relative overflow-hidden">
-               <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-50" />
-               <div className="relative z-10 flex justify-center">
-                  <ItemCard
-                    id={itemId}
-                    title={form.title || "The Unnamed Artifact"}
-                    price={Number(form.price) || 0}
-                    author={page?.ownerId?.username || "creator"}
-                    image={form.images[0] || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"}
-                    aesthetic={form.aesthetic}
+          <Card>
+            <Stack gap="md">
+              <Field label="Title" required>
+                {(id) => (
+                  <Input
+                    id={id}
+                    value={form.title}
+                    onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                   />
-               </div>
+                )}
+              </Field>
 
-               <div className="mt-10 space-y-4">
-                  <div className="h-px bg-card/5" />
-                  <div className="flex items-center justify-between">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Artifact Aesthetic</p>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">{form.aesthetic}</p>
+              <Field label="Description">
+                {(id) => (
+                  <Textarea
+                    id={id}
+                    rows={4}
+                    value={form.description}
+                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  />
+                )}
+              </Field>
+
+              <Field label="Price" hint="Leave at 0 if this piece is not for sale.">
+                {(id, describedBy) => (
+                  <Input
+                    id={id}
+                    aria-describedby={describedBy}
+                    type="number"
+                    min={0}
+                    inputMode="numeric"
+                    value={form.price}
+                    onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                  />
+                )}
+              </Field>
+            </Stack>
+          </Card>
+
+          <Card>
+            <Stack gap="md">
+              <div className="space-y-2.5">
+                <Label>Images</Label>
+                <div className="grid grid-cols-4 gap-3">
+                  {form.images.map((src, i) => (
+                    <div
+                      key={i}
+                      className="relative aspect-square rounded-[var(--radius-md)] overflow-hidden border border-line group"
+                    >
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm((f) => ({ ...f, images: f.images.filter((_, x) => x !== i) }))
+                        }
+                        aria-label={`Remove image ${i + 1}`}
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  ))}
+                  {form.images.length < MAX_IMAGES && (
+                    <label className="aspect-square rounded-[var(--radius-md)] border border-dashed border-line flex flex-col items-center justify-center gap-1.5 cursor-pointer text-text-muted hover:border-line-strong hover:text-text transition-colors">
+                      <ImagePlus size={18} />
+                      <span className="text-[var(--text-label)] font-bold uppercase tracking-[0.12em]">
+                        Add
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageChange}
+                        className="sr-only"
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <Label>Tags</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={tagDraft}
+                    onChange={(e) => setTagDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addTag();
+                      }
+                    }}
+                    placeholder="ceramics"
+                    aria-label="Add a tag"
+                  />
+                  <Button type="button" variant="secondary" onClick={addTag}>
+                    Add
+                  </Button>
+                </div>
+                {form.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {form.tags.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() =>
+                          setForm((f) => ({ ...f, tags: f.tags.filter((x) => x !== t) }))
+                        }
+                        aria-label={`Remove tag ${t}`}
+                      >
+                        <Badge icon={<X size={10} className="opacity-50" />}>{t}</Badge>
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex items-center justify-between">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-text/20">Ownership Record</p>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-text/60">@{page?.ownerId?.username || '...'}</p>
+                )}
+              </div>
+
+              <div className="space-y-2.5">
+                <Label>Specifications</Label>
+                {/* These surface on the public item detail as the specs table. */}
+                <div className="flex gap-2">
+                  <Input
+                    value={attrDraft.key}
+                    onChange={(e) => setAttrDraft((a) => ({ ...a, key: e.target.value }))}
+                    placeholder="Material"
+                    aria-label="Specification name"
+                  />
+                  <Input
+                    value={attrDraft.value}
+                    onChange={(e) => setAttrDraft((a) => ({ ...a, value: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addAttribute();
+                      }
+                    }}
+                    placeholder="Stoneware"
+                    aria-label="Specification value"
+                  />
+                  <Button type="button" variant="secondary" onClick={addAttribute}>
+                    Add
+                  </Button>
+                </div>
+                {Object.keys(form.attributes).length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    {Object.entries(form.attributes).map(([k, v]) => (
+                      <div
+                        key={k}
+                        className="flex items-center justify-between gap-3 px-3 h-11 rounded-[var(--radius-sm)] bg-elevated"
+                      >
+                        <span className="text-[var(--text-label)] font-bold uppercase tracking-[0.12em] text-text-muted">
+                          {k}
+                        </span>
+                        <span className="text-sm text-text flex-1 truncate">{v}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeAttribute(k)}
+                          aria-label={`Remove ${k}`}
+                          className="text-text-muted hover:text-text transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-               </div>
+                )}
+              </div>
+
+              <div className="space-y-2.5">
+                <Label>Aesthetic</Label>
+                <div className="flex flex-wrap gap-2">
+                  {THEME_NAMES.map((a) => {
+                    const selected = form.aesthetic === a;
+                    return (
+                      <button
+                        key={a}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setForm((f) => ({ ...f, aesthetic: a }))}
+                        className={cn(
+                          'h-10 pl-2 pr-4 rounded-full border inline-flex items-center gap-2 transition-colors',
+                          'text-[var(--text-label)] font-bold uppercase tracking-[0.12em]',
+                          selected
+                            ? 'border-accent bg-accent-soft text-accent'
+                            : 'border-line bg-card text-text-muted hover:text-text'
+                        )}
+                      >
+                        <span
+                          className="w-5 h-5 rounded-full border border-line shrink-0"
+                          style={{ backgroundColor: themes[a]['--accent'] }}
+                        />
+                        {a}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </Stack>
+          </Card>
+
+          <Card>
+            <Stack gap="md">
+              <Label>External links</Label>
+              {(['instagram', 'youtube', 'website'] as const).map((k) => (
+                <Field key={k} label={k}>
+                  {(id) => (
+                    <Input
+                      id={id}
+                      value={form.externalLinks[k]}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          externalLinks: { ...f.externalLinks, [k]: e.target.value },
+                        }))
+                      }
+                      placeholder="https://…"
+                      inputMode="url"
+                    />
+                  )}
+                </Field>
+              ))}
+            </Stack>
+          </Card>
+
+          <div className="flex items-center justify-between gap-3">
+            <Button
+              type="button"
+              variant="danger"
+              onClick={handleDelete}
+              loading={deleting}
+              iconLeft={<Trash2 size={15} />}
+            >
+              Delete
+            </Button>
+            <div className="flex items-center gap-3">
+              <Link href={backHref}>
+                <Button variant="ghost">Cancel</Button>
+              </Link>
+              <Button type="submit" size="lg" loading={saving} disabled={!form.title}>
+                Save changes
+              </Button>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </Stack>
+      </form>
+    </Page>
   );
 }

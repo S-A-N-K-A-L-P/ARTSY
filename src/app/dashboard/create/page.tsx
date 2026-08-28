@@ -2,11 +2,27 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { THEME_NAMES, themes } from '@/lib/theme/themes';
+import {
+  Page,
+  Stack,
+  Card,
+  Field,
+  Input,
+  Textarea,
+  Button,
+  Alert,
+  Label,
+} from '@/components/ui';
 
-const TYPES = ['gallery', 'store', 'portfolio'];
-const AESTHETICS = ['minimal', 'noir', 'cyberpunk', 'vaporwave', 'brutalist', 'soft', 'grunge'];
+const TYPES = [
+  { id: 'gallery', label: 'Gallery', hint: 'Showcase work' },
+  { id: 'store', label: 'Store', hint: 'Sell items' },
+  { id: 'portfolio', label: 'Portfolio', hint: 'Personal record' },
+];
 
 export default function CreatePagePage() {
   const router = useRouter();
@@ -21,15 +37,16 @@ export default function CreatePagePage() {
     coverImage: '',
   });
 
-  const handleSlugify = (name: string) => {
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    setForm(f => ({ ...f, name, slug }));
-  };
+  const setName = (name: string) =>
+    setForm((f) => ({
+      ...f,
+      name,
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+    }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.slug) return;
-
     setLoading(true);
     setError('');
     try {
@@ -39,137 +56,166 @@ export default function CreatePagePage() {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      if (data.success) {
-        router.push(`/dashboard/page/${data.page._id}`);
-      } else {
-        setError(data.error || 'Failed to create page');
-      }
+      if (!data.success) throw new Error(data.error || 'Could not create the space');
+      router.push(`/dashboard/page/${data.page._id}`);
     } catch (err) {
-      setError('Something went wrong');
-    } finally {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-xl">
-      {/* Back */}
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text transition-colors mb-6">
-        <ArrowLeft size={16} />
-        Back to Pages
-      </Link>
+    <Page
+      title="New space"
+      description="A space is a themed storefront for one body of work."
+      width="narrow"
+      actions={
+        <Link href="/dashboard">
+          <Button variant="ghost" size="sm" iconLeft={<ChevronLeft size={15} />}>
+            Spaces
+          </Button>
+        </Link>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <Stack gap="lg">
+          {error && <Alert tone="error">{error}</Alert>}
 
-      <h2 className="text-xl font-semibold text-text mb-1">Create Page</h2>
-      <p className="text-sm text-text-muted mb-8">Set up a new page for your content.</p>
+          <Card>
+            <Stack gap="md">
+              <Field label="Name" required>
+                {(id) => (
+                  <Input
+                    id={id}
+                    value={form.name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Design Sanctum"
+                    autoFocus
+                  />
+                )}
+              </Field>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name */}
-        <div>
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Name</label>
-          <input
-            value={form.name}
-            onChange={(e) => handleSlugify(e.target.value)}
-            placeholder="Streetwear Vault"
-            className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors"
-          />
-        </div>
+              <Field label="URL" hint={`/user/…/${form.slug || 'your-space'}`} required>
+                {(id, describedBy) => (
+                  <Input
+                    id={id}
+                    aria-describedby={describedBy}
+                    value={form.slug}
+                    onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                    placeholder="design-sanctum"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                  />
+                )}
+              </Field>
 
-        {/* Slug */}
-        <div>
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Slug</label>
-          <div className="flex items-center">
-            <span className="h-10 px-3 flex items-center rounded-l-lg bg-elevated border border-r-0 border-line-strong text-sm text-text-muted">/</span>
-            <input
-              value={form.slug}
-              onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
-              placeholder="streetwear-vault"
-              className="flex-1 h-10 px-3 rounded-r-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors"
-            />
+              <Field label="Description">
+                {(id) => (
+                  <Textarea
+                    id={id}
+                    rows={3}
+                    value={form.description}
+                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                    placeholder="What lives in this space?"
+                  />
+                )}
+              </Field>
+
+              <Field label="Cover image URL">
+                {(id) => (
+                  <Input
+                    id={id}
+                    value={form.coverImage}
+                    onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))}
+                    placeholder="https://…"
+                    inputMode="url"
+                  />
+                )}
+              </Field>
+            </Stack>
+          </Card>
+
+          <Card>
+            <Stack gap="md">
+              <div className="space-y-2.5">
+                <Label>Type</Label>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {TYPES.map((t) => {
+                    const selected = form.type === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setForm((f) => ({ ...f, type: t.id }))}
+                        className={cn(
+                          'text-left px-4 py-3 rounded-[var(--radius-md)] border transition-colors',
+                          // selected and unselected were both bg-card, so the
+                          // choice was invisible
+                          selected
+                            ? 'border-accent bg-accent-soft'
+                            : 'border-line bg-card hover:border-line-strong'
+                        )}
+                      >
+                        <span className="block text-sm font-semibold text-text">{t.label}</span>
+                        <span className="block text-[var(--text-caption)] text-text-muted mt-0.5">
+                          {t.hint}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <Label>Aesthetic</Label>
+                {/* Driven by the real theme list — this was a hardcoded array
+                    of seven that omitted fantasy and luxury. */}
+                <div className="flex flex-wrap gap-2">
+                  {THEME_NAMES.map((a) => {
+                    const selected = form.aesthetic === a;
+                    return (
+                      <button
+                        key={a}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setForm((f) => ({ ...f, aesthetic: a }))}
+                        className={cn(
+                          'h-10 pl-2 pr-4 rounded-full border inline-flex items-center gap-2 transition-colors',
+                          'text-[var(--text-label)] font-bold uppercase tracking-[0.12em]',
+                          selected
+                            ? 'border-accent bg-accent-soft text-accent'
+                            : 'border-line bg-card text-text-muted hover:text-text'
+                        )}
+                      >
+                        <span
+                          className="w-5 h-5 rounded-full border border-line shrink-0"
+                          style={{ backgroundColor: themes[a]['--accent'] }}
+                        />
+                        {a}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </Stack>
+          </Card>
+
+          <div className="flex items-center justify-end gap-3">
+            <Link href="/dashboard">
+              <Button variant="ghost">Cancel</Button>
+            </Link>
+            <Button
+              type="submit"
+              size="lg"
+              loading={loading}
+              disabled={!form.name || !form.slug}
+            >
+              Create space
+            </Button>
           </div>
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Description</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-            placeholder="A curated collection of..."
-            rows={3}
-            className="w-full px-3 py-2 rounded-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors resize-none"
-          />
-        </div>
-
-        {/* Cover Image */}
-        <div>
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Cover Image URL</label>
-          <input
-            value={form.coverImage}
-            onChange={(e) => setForm(f => ({ ...f, coverImage: e.target.value }))}
-            placeholder="https://..."
-            className="w-full h-10 px-3 rounded-lg bg-card border border-line text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-accent transition-colors"
-          />
-        </div>
-
-        {/* Type */}
-        <div>
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Type</label>
-          <div className="flex gap-2">
-            {TYPES.map(t => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setForm(f => ({ ...f, type: t }))}
-                className={`h-9 px-4 rounded-lg text-sm font-medium transition-colors ${
-                  form.type === t
-                    ? 'bg-card text-text'
-                    : 'bg-card border border-line text-text-muted hover:text-text'
-                }`}
-              >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Aesthetic */}
-        <div>
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Aesthetic</label>
-          <div className="flex flex-wrap gap-2">
-            {AESTHETICS.map(a => (
-              <button
-                key={a}
-                type="button"
-                onClick={() => setForm(f => ({ ...f, aesthetic: a }))}
-                className={`h-8 px-3 rounded-md text-xs font-medium transition-colors ${
-                  form.aesthetic === a
-                    ? 'bg-card text-text'
-                    : 'bg-card border border-line text-text-muted hover:text-text'
-                }`}
-              >
-                {a.charAt(0).toUpperCase() + a.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && <p className="text-sm text-red-400">{error}</p>}
-
-        {/* Actions */}
-        <div className="flex items-center gap-3 pt-2">
-          <Link href="/dashboard" className="h-9 px-4 rounded-lg border border-line text-sm text-text-muted hover:text-text flex items-center transition-colors">
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            disabled={loading || !form.name || !form.slug}
-            className="h-9 px-6 rounded-lg bg-card text-text text-sm font-medium hover:bg-elevated transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Creating...' : 'Create Page'}
-          </button>
-        </div>
+        </Stack>
       </form>
-    </div>
+    </Page>
   );
 }

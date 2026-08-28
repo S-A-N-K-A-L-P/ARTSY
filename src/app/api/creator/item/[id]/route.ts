@@ -4,6 +4,44 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Item from '@/models/Item';
 import Page from '@/models/Page';
+import User from '@/models/User';
+
+/**
+ * Fetch a single item the caller owns.
+ *
+ * Without this the edit screen had to list every page and then request each
+ * page's items in turn just to locate one record — an N+1 walk on every load.
+ */
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await dbConnect();
+    const user = await User.findOne({ email: session.user.email }).select('_id');
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Scoped to the owner so an id alone cannot read someone else's item.
+    const item = await Item.findOne({ _id: id, ownerId: user._id }).lean();
+    if (!item) {
+      return NextResponse.json({ success: false, error: 'Item not found' }, { status: 404 });
+    }
+
+    const page = await Page.findById((item as any).pageId).lean();
+    return NextResponse.json({ success: true, item, page });
+  } catch (err) {
+    console.error('Item fetch failed:', err);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 
 export async function PUT(
   req: NextRequest,

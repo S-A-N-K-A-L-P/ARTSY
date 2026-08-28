@@ -2,194 +2,184 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { Package, Plus, Search, Filter as FilterIcon, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { StatsStrip } from '@/components/inventory/StatsStrip';
+import { Package, Plus, Search } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { InventoryProductCard } from '@/components/inventory/InventoryProductCard';
 import { FilterSidebar } from '@/components/inventory/FilterSidebar';
 import { CategoryBar } from '@/components/inventory/CategoryBar';
+import { Page, Stat, Button, EmptyState, SkeletonGrid, Input, Alert } from '@/components/ui';
 
 export default function ItemsPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Filter States
+  const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, Infinity]);
   const [status, setStatus] = useState('all');
 
   useEffect(() => {
-    const fetchAllItems = async () => {
+    if (!session?.user) {
+      if (session === null) setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
       try {
         const res = await fetch('/api/creator/items/all');
         const data = await res.json();
-        if (data.success) {
-          setItems(data.items || []);
-        }
+        if (cancelled) return;
+        if (!data.success) throw new Error(data.error || 'Could not load your items');
+        setItems(data.items ?? []);
       } catch (err) {
-        console.error('Failed to fetch items:', err);
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Something went wrong');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-
-    if (session?.user) {
-      fetchAllItems();
-    } else if (session === null) {
-      setLoading(false);
-    }
   }, [session]);
 
   const handleDelete = async (itemId: string) => {
-    if (!confirm('Permanently de-archive this item?')) return;
+    if (!confirm('Delete this item permanently?')) return;
     await fetch(`/api/creator/item/${itemId}`, { method: 'DELETE' });
-    setItems(items.filter(i => i._id !== itemId));
+    setItems((prev) => prev.filter((i) => i._id !== itemId));
   };
 
   const categories = useMemo(() => {
-    const cats = new Set(items.map(item => item.tags?.[0] || 'Uncategorized'));
+    const cats = new Set(items.map((item) => item.tags?.[0] || 'Uncategorized'));
     return Array.from(cats);
   }, [items]);
 
   const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      const matchesSearch = item.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          item.pageName?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || (item.tags?.[0] || 'Uncategorized') === selectedCategory;
-      const matchesPrice = item.price >= priceRange[0] && item.price <= priceRange[1];
-      const matchesStatus = status === 'all' || (status === 'synced' && item.isForSale); // Simplified logic
-      
+    const q = searchQuery.toLowerCase();
+    return items.filter((item) => {
+      const matchesSearch =
+        !q ||
+        item.title?.toLowerCase().includes(q) ||
+        item.pageName?.toLowerCase().includes(q);
+      const matchesCategory =
+        selectedCategory === 'All' || (item.tags?.[0] || 'Uncategorized') === selectedCategory;
+      const price = item.price ?? 0;
+      const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
+      const matchesStatus = status === 'all' || (status === 'synced' && item.isForSale);
       return matchesSearch && matchesCategory && matchesPrice && matchesStatus;
     });
   }, [items, searchQuery, selectedCategory, priceRange, status]);
 
   const totalValue = items.reduce((acc, item) => acc + (item.price || 0), 0);
+  const money = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center text-white shadow-xl"
-        >
-          <Package size={24} />
-        </motion.div>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Synchronizing Manifest...</p>
-      </div>
+      <Page title="Items" description="Everything across all of your spaces." width="wide">
+        <SkeletonGrid count={8} />
+      </Page>
     );
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto px-6 py-10 space-y-10 pb-40">
-      {/* Top Section: Navigation & Metrics */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pt-4">
-        <div className="space-y-1">
-          <h1 className="text-5xl font-black tracking-tighter text-text italic leading-[0.8]">Inventory Sovereignty</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Discovery Node Management</p>
-        </div>
-        <StatsStrip 
-          totalItems={items.length} 
-          totalValue={totalValue} 
-          syncHealth="100%" 
+    <Page
+      title="Items"
+      description="Everything across all of your spaces."
+      width="wide"
+      actions={
+        /* An item belongs to a space, so creation starts there. This button
+           used to push /dashboard/item/create — a route that does not exist. */
+        <Link href="/dashboard">
+          <Button iconLeft={<Plus size={16} />}>New item</Button>
+        </Link>
+      }
+    >
+      {error && <Alert tone="error" className="mb-6">{error}</Alert>}
+
+      {/* The old strip also reported a "100% sync health" that nothing measured. */}
+      <div className="grid gap-3 sm:grid-cols-2 mb-6 max-w-md">
+        <Stat label="Items" value={items.length} icon={<Package size={16} />} />
+        <Stat label="Catalogue value" value={money(totalValue)} />
+      </div>
+
+      <div className="mb-6">
+        <Input
+          type="search"
+          placeholder="Search your items…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          icon={<Search size={16} />}
+          aria-label="Search items"
         />
       </div>
 
-      {/* Hero Action Bar (Amazon Style Search) */}
-      <div className="flex flex-col md:flex-row gap-4 items-center">
-         <div className="relative flex-1 group w-full">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-text transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search your global archives..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-16 pr-8 h-16 bg-card border border-line rounded-3xl text-sm font-medium focus:ring-4 focus:ring-[var(--accent-soft)] focus:border-accent transition-all shadow-sm outline-none"
-            />
-         </div>
-         <button 
-           onClick={() => router.push('/dashboard/item/create')}
-           className="h-16 px-10 bg-accent text-on-accent rounded-3xl flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] transition-all shadow-2xl active:scale-95 w-full md:w-auto overflow-hidden relative group"
-         >
-            <Plus size={18} /> 
-            <span>Create Manifest</span>
-            <div className="absolute inset-0 bg-card/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-         </button>
-      </div>
+      <div className="flex gap-8">
+        <FilterSidebar
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          priceRange={priceRange}
+          onPriceChange={setPriceRange}
+          status={status}
+          onStatusChange={setStatus}
+        />
 
-      {/* Marketplace Layout */}
-      <div className="flex gap-10">
-        {/* Sidebar Filters */}
-        <FilterSidebar 
+        <div className="flex-1 min-w-0 space-y-6">
+          <CategoryBar
             categories={categories}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
-            priceRange={priceRange}
-            onPriceChange={setPriceRange}
-            status={status}
-            onStatusChange={setStatus}
-        />
+          />
 
-        {/* Main Content Area */}
-        <div className="flex-1 space-y-8">
-            <CategoryBar 
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-            />
-
-            {/* Results Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <AnimatePresence mode="popLayout">
-                    {filteredItems.map((item) => (
-                        <InventoryProductCard 
-                            key={item._id}
-                            item={item}
-                            onEdit={(id) => router.push(`/dashboard/item/${id}/edit`)}
-                            onDelete={handleDelete}
-                        />
-                    ))}
-                </AnimatePresence>
+          {filteredItems.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+              <AnimatePresence mode="popLayout">
+                {filteredItems.map((item) => (
+                  <InventoryProductCard
+                    key={item._id}
+                    item={item}
+                    onEdit={(id: string) => router.push(`/dashboard/item/${id}/edit`)}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
-
-            {filteredItems.length === 0 && (
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="py-32 flex flex-col items-center text-center space-y-8"
-                >
-                    <div className="w-24 h-24 bg-elevated rounded-full flex items-center justify-center border border-line shadow-inner relative overflow-hidden">
-                        <motion.div 
-                             animate={{ rotate: 360 }}
-                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                             className="absolute inset-0 opacity-[0.03] bg-gradient-to-tr from-[var(--text-primary)] to-transparent"
-                        />
-                        <Search size={32} className="text-text-muted" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-black tracking-tighter text-text italic">No Artifacts Manifested</h3>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted mt-2">Adjust your filters to reveal hidden nodes</p>
-                    </div>
-                    <button 
-                        onClick={() => {
-                            setSelectedCategory('All');
-                            setPriceRange([0, Infinity]);
-                            setStatus('all');
-                            setSearchQuery('');
-                        }}
-                        className="px-8 py-4 rounded-2xl border border-line text-[9px] font-black uppercase tracking-widest text-text-muted hover:text-text hover:border-accent transition-all"
-                    >
-                        Reset All Parameters
-                    </button>
-                </motion.div>
-            )}
+          ) : (
+            <EmptyState
+              icon={<Search size={34} />}
+              title={items.length === 0 ? 'No items yet' : 'Nothing matches those filters'}
+              description={
+                items.length === 0
+                  ? 'Open one of your spaces and add your first item.'
+                  : 'Try widening the search or clearing the filters.'
+              }
+              action={
+                items.length === 0 ? (
+                  <Link href="/dashboard">
+                    <Button iconLeft={<Plus size={16} />}>Go to spaces</Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setSelectedCategory('All');
+                      setPriceRange([0, Infinity]);
+                      setStatus('all');
+                      setSearchQuery('');
+                    }}
+                  >
+                    Clear filters
+                  </Button>
+                )
+              }
+            />
+          )}
         </div>
       </div>
-    </div>
+    </Page>
   );
 }
