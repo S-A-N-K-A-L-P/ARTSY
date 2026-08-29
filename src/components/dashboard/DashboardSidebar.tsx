@@ -24,9 +24,9 @@ export default function DashboardSidebar() {
     <aside className="hidden md:flex w-64 h-screen sticky top-0 flex flex-col border-r transition-all duration-500" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
       {/* Brand */}
       <div className="h-16 flex items-center px-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/dashboard" className="flex items-center gap-3 h-11">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-subtle)' }}>
-            <span className="font-bold text-sm italic" style={{ color: 'var(--accent)' }}>A</span>
+            <span className="font-bold text-sm italic" style={{ color: 'var(--accent-text)' }}>A</span>
           </div>
           <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text-primary)' }}>Astl</span>
         </Link>
@@ -60,7 +60,7 @@ export default function DashboardSidebar() {
               )}
               style={{
                  backgroundColor: isActive ? 'var(--bg-tertiary)' : 'transparent',
-                 color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
+                 color: isActive ? 'var(--accent-text)' : 'var(--text-secondary)',
                  border: isActive ? '1px solid var(--border-subtle)' : '1px solid transparent'
               }}
             >
@@ -87,7 +87,7 @@ export default function DashboardSidebar() {
               style={{
                 backgroundColor: 'var(--bg-tertiary)',
                 border: '1px solid var(--border-subtle)',
-                color: 'var(--accent)',
+                color: 'var(--accent-text)',
               }}
             >
               {session.user.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -103,7 +103,7 @@ export default function DashboardSidebar() {
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
               aria-label="Sign out"
-              className="p-2 opacity-30 hover:opacity-100 transition-all"
+              className="h-11 w-11 flex items-center justify-center rounded-full opacity-40 hover:opacity-100 transition-all shrink-0"
               style={{ color: 'var(--text-primary)' }}
             >
               <LogOut size={16} />

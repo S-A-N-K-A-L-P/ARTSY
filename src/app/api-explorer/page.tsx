@@ -50,7 +50,7 @@ export default function ApiExplorer() {
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <Box sx={{ mb: 6, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" gutterBottom 
-          sx={{ fontWeight: 'bold', color: 'var(--accent)' }}>
+          sx={{ fontWeight: 'bold', color: 'var(--accent-text)' }}>
           ASTL API Explorer
         </Typography>
         <Typography variant="h6" color="text.secondary">
@@ -77,7 +77,7 @@ export default function ApiExplorer() {
                     p: 1.5, 
                     borderRadius: '50%', 
                     backgroundColor: 'rgba(var(--accent-rgb), 0.1)', 
-                    color: 'var(--accent)',
+                    color: 'var(--accent-text)',
                     mr: 2 
                   }}>
                     {layer.icon}
@@ -87,7 +87,7 @@ export default function ApiExplorer() {
                       {layer.name}
                     </Typography>
                     <Chip size="small" label={`${layer.count} Endpoints`} 
-                      sx={{ mt: 0.5, backgroundColor: 'rgba(var(--accent-rgb), 0.2)', color: 'var(--accent)' }} />
+                      sx={{ mt: 0.5, backgroundColor: 'rgba(var(--accent-rgb), 0.2)', color: 'var(--accent-text)' }} />
                   </Box>
                 </Box>
                 

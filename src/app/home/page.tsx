@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { LayoutGrid, PlayCircle, Sparkles, ShoppingBag, Loader2, Layers, Package } from 'lucide-react';
 import Masonry from 'react-masonry-css';
+import { Search } from 'lucide-react';
+import { Input, EmptyState, Button } from '@/components/ui';
 import FeedReels from '@/components/feed/FeedReels';
 import FeedCard from '@/components/feed/FeedCard';
 import { cn } from '@/lib/utils';
@@ -16,6 +18,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'reels' | 'grid'>('grid');
   const [gridMode, setGridMode] = useState<'spaces' | 'items'>('spaces');
+  const [query, setQuery] = useState('');
 
   const fetchDiscovery = useCallback(async (mode: 'spaces' | 'items') => {
     setLoading(true);
@@ -70,6 +73,22 @@ export default function HomePage() {
     }
   }, [view, gridMode, fetchDiscovery]);
 
+  /*
+   * The board had no search at all. It is the single most prominent control on
+   * a pin board, and with the feed paging in everything a creator has
+   * published there was no way to narrow it.
+   */
+  const visibleItems = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (i: any) =>
+        i.title?.toLowerCase().includes(q) ||
+        i.creator?.username?.toLowerCase().includes(q) ||
+        i.aesthetic?.toLowerCase().includes(q)
+    );
+  }, [items, query]);
+
   const handleTabChange = (newView: 'reels' | 'grid', mode?: 'spaces' | 'items') => {
     setView(newView);
     if (mode) setGridMode(mode);
@@ -88,6 +107,19 @@ export default function HomePage() {
                 <Sparkles size={10} /> {aesthetic}
               </span>
            </div>
+
+           {view === 'grid' && (
+             <div className="order-3 w-full md:order-none md:w-auto md:flex-1 md:max-w-sm">
+               <Input
+                 type="search"
+                 value={query}
+                 onChange={(e) => setQuery(e.target.value)}
+                 placeholder={`Search ${gridMode}…`}
+                 icon={<Search size={16} />}
+                 aria-label={`Search ${gridMode}`}
+               />
+             </div>
+           )}
 
            {/* Premium Tab System */}
            <div className="flex items-center p-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-[var(--elevation-soft)]">
@@ -118,7 +150,7 @@ export default function HomePage() {
             feed spun forever with data already fetched. */}
         {loading && (
           <div className="flex justify-center py-40">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--accent)' }} />
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--accent-text)' }} />
           </div>
         )}
 
@@ -158,16 +190,28 @@ export default function HomePage() {
                  className="flex gap-3"
                  columnClassName="flex flex-col"
                >
-                  {items.map((item) => (
+                  {visibleItems.map((item: any) => (
                      <FeedCard key={item.id} item={item} />
                   ))}
                </Masonry>
 
-               {items.length === 0 && (
-                  <div className="py-40 text-center" style={{ color: 'var(--text-muted)' }}>
-                    <ShoppingBag size={48} className="mx-auto mb-4 opacity-20" />
-                    <p className="font-semibold text-xs uppercase tracking-widest italic opacity-40">No manifestations discovered in this node</p>
-                  </div>
+               {visibleItems.length === 0 && (
+                  <EmptyState
+                    icon={<Search size={34} />}
+                    title={items.length === 0 ? `No ${gridMode} yet` : 'Nothing matches that search'}
+                    description={
+                      items.length === 0
+                        ? 'Published spaces and items show up here.'
+                        : 'Try a different word, or clear the search.'
+                    }
+                    action={
+                      query ? (
+                        <Button variant="secondary" onClick={() => setQuery('')}>
+                          Clear search
+                        </Button>
+                      ) : undefined
+                    }
+                  />
                )}
             </motion.div>
           )}
@@ -184,7 +228,7 @@ function TabButton({ isActive, onClick, icon, label }: { isActive: boolean; onCl
       aria-pressed={isActive}
       className={cn(
           "flex items-center gap-2 px-4 md:px-6 h-11 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all relative group",
-          isActive ? "text-[var(--bg-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          isActive ? "text-[var(--on-accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
       )}
     >
       {isActive && (

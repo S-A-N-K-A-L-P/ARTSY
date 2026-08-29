@@ -133,7 +133,7 @@ export default function FeedReels() {
       {/* Detail rail — fills the space the lone reel used to leave empty */}
       {active && (
         <aside className="hidden lg:flex flex-1 min-w-0 flex-col gap-5">
-          <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-soft text-accent text-[var(--text-label)] font-bold uppercase tracking-[0.12em]">
+          <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-soft text-accent-text text-[var(--text-label)] font-bold uppercase tracking-[0.12em]">
             <Sparkles size={11} /> {active.aesthetic}
           </span>
 

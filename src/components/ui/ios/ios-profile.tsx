@@ -80,7 +80,7 @@ export function IOSProfile({ initialUser }: IOSProfileProps) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-bg">
-        <Loader2 className="w-8 h-8 animate-spin text-accent opacity-20" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-text opacity-20" />
       </div>
     );
   }

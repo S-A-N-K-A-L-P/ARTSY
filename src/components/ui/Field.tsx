@@ -55,7 +55,7 @@ export function Field({ label, hint, error, required, className, children }: Fie
       {label && (
         <Label htmlFor={id}>
           {label}
-          {required && <span className="text-accent ml-1">*</span>}
+          {required && <span className="text-accent-text ml-1">*</span>}
         </Label>
       )}
 

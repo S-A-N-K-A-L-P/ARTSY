@@ -184,7 +184,7 @@ export default function CreatePagePage() {
                           'h-10 pl-2 pr-4 rounded-full border inline-flex items-center gap-2 transition-colors',
                           'text-[var(--text-label)] font-bold uppercase tracking-[0.12em]',
                           selected
-                            ? 'border-accent bg-accent-soft text-accent'
+                            ? 'border-accent bg-accent-soft text-accent-text'
                             : 'border-line bg-card text-text-muted hover:text-text'
                         )}
                       >

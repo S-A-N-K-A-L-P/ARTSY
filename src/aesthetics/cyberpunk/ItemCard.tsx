@@ -41,12 +41,12 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
-            <p className="text-[8px] uppercase tracking-[0.4em] font-black" style={{ color: 'var(--accent)' }}>MARKET_READY</p>
+            <p className="text-[8px] uppercase tracking-[0.4em] font-black" style={{ color: 'var(--accent-text)' }}>MARKET_READY</p>
           </div>
           <h3 className="text-sm font-black text-white italic tracking-tighter" style={{ fontFamily: "var(--font)" }}>{title}</h3>
           <div className="flex items-center justify-between mt-2">
             <p className="text-[9px] uppercase tracking-widest font-mono" style={{ color: 'var(--text-muted)' }}>// @{author}</p>
-            <span className="text-xs font-black" style={{ color: 'var(--accent)' }}>${price}</span>
+            <span className="text-xs font-black" style={{ color: 'var(--accent-text)' }}>${price}</span>
           </div>
         </div>
 
@@ -54,7 +54,7 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
            <button 
              onClick={(e) => { e.stopPropagation(); addToCart({ id: String(id), title, image, price }); }}
-             className="w-10 h-10 border border-[var(--accent)] bg-black text-[var(--accent)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-black transition-colors shadow-[0_0_10px_var(--accent-soft)]"
+             className="w-10 h-10 border border-[var(--accent)] bg-black text-[var(--accent-text)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-black transition-colors shadow-[0_0_10px_var(--accent-soft)]"
            >
              <ShoppingBag size={14} />
            </button>

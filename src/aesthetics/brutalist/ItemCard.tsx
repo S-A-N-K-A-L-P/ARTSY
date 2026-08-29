@@ -33,7 +33,7 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute bottom-0 left-0 right-0 p-5 border-t-[4px] border-black" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
           <h3 className="text-sm font-black uppercase tracking-tight font-mono" style={{ color: 'var(--text-primary)' }}>{title}</h3>
           <div className="flex items-center justify-between mt-2">
-            <p className="text-[10px] font-mono font-black uppercase" style={{ color: 'var(--accent)' }}>@{author}</p>
+            <p className="text-[10px] font-mono font-black uppercase" style={{ color: 'var(--accent-text)' }}>@{author}</p>
             <span className="text-sm font-black font-mono" style={{ color: 'var(--text-primary)' }}>${price}</span>
           </div>
         </div>

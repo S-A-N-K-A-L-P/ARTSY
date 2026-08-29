@@ -27,6 +27,10 @@
      contrast: assuming --bg-primary reads on the accent gave 1.59:1 on soft
      and 2.25:1 on luxury, i.e. primary CTAs nobody could read. */
   --color-on-accent: var(--on-accent);
+  /* Contrast-safe companion to --accent for TEXT. --accent itself stays
+     exact for fills, borders and swatches, but as a text colour it failed
+     AA on 5 of 9 themes — the active sidebar item measured 1.4:1 on soft. */
+  --color-accent-text: var(--accent-text);
 
   --color-line: var(--border-subtle);
   --color-line-strong: var(--border-strong);
@@ -126,7 +130,9 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  /* --accent is a fill colour; as a ring on a light theme it measured 1.6:1
+     against the page. --accent-text is contrast-checked against the surfaces. */
+  outline: 2px solid var(--accent-text);
   outline-offset: 2px;
   border-radius: 4px;
 }

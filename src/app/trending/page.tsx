@@ -55,7 +55,7 @@ export default function TrendingPage() {
                                 className="h-full bg-[var(--accent)]"
                             />
                         </div>
-                        <TrendingUp size={20} className="text-[var(--accent)]" />
+                        <TrendingUp size={20} className="text-[var(--accent-text)]" />
                     </div>
                 </motion.div>
             ))}

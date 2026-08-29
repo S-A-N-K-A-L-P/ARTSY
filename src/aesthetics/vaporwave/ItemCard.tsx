@@ -36,7 +36,7 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <h3 className="text-base font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>{title}</h3>
           <div className="flex items-center justify-between mt-2">
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>@{author}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>@{author}</p>
             <span className="text-xs font-bold opacity-60" style={{ color: 'var(--text-primary)' }}>${price}</span>
           </div>
         </div>
@@ -45,12 +45,12 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
            <button 
              onClick={(e) => { e.stopPropagation(); addToCart({ id: String(id), title, image, price }); }}
-             className="w-10 h-10 rounded-full backdrop-blur-xl flex items-center justify-center transition-all bg-[var(--accent-soft)] border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white"
+             className="w-10 h-10 rounded-full backdrop-blur-xl flex items-center justify-center transition-all bg-[var(--accent-soft)] border border-[var(--accent)] text-[var(--accent-text)] hover:bg-[var(--accent)] hover:text-white"
            >
              <ShoppingBag size={14} />
            </button>
            <button className="w-10 h-10 rounded-full backdrop-blur-xl flex items-center justify-center bg-white/5 border border-white/10 text-white">
-             <Heart size={14} className="group-hover:text-[var(--accent)]" />
+             <Heart size={14} className="group-hover:text-[var(--accent-text)]" />
            </button>
         </div>
       </div>

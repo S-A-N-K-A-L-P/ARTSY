@@ -26,7 +26,7 @@ export function IOSBottomNav() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center justify-center gap-1.5 transition-all active:scale-90",
-                isActive ? "text-[var(--accent)]" : "text-text/30 hover:text-text/50"
+                isActive ? "text-[var(--accent-text)]" : "text-text-muted hover:text-text"
               )}
             >
               <div className={cn(
@@ -37,7 +37,7 @@ export function IOSBottomNav() {
               </div>
               <span className={cn(
                 "text-[9px] font-black uppercase tracking-[0.15em]",
-                isActive ? "opacity-100" : "opacity-40"
+                isActive ? "opacity-100" : "opacity-90"
               )}>
                 {item.label}
               </span>

@@ -274,7 +274,7 @@ function AestheticChip({
         'h-10 pl-2.5 pr-4 rounded-full border shrink-0 inline-flex items-center gap-2 transition-colors',
         'text-[var(--text-label)] font-bold uppercase tracking-[0.12em]',
         active
-          ? 'border-accent bg-accent-soft text-accent'
+          ? 'border-accent bg-accent-soft text-accent-text'
           : 'border-line bg-card text-text-muted hover:text-text'
       )}
     >

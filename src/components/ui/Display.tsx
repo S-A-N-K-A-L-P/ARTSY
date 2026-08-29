@@ -20,7 +20,7 @@ export function Badge({
 }) {
   const tones: Record<Tone, string> = {
     neutral: 'bg-elevated text-text-secondary border-line',
-    accent: 'bg-accent-soft text-accent border-transparent',
+    accent: 'bg-accent-soft text-accent-text border-transparent',
     success: 'bg-emerald-500/12 text-emerald-500 border-transparent',
     warning: 'bg-amber-500/12 text-amber-500 border-transparent',
     danger: 'bg-red-500/12 text-red-500 border-transparent',

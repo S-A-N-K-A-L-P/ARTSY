@@ -36,7 +36,7 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <h3 className="text-sm font-bold tracking-tight font-mono" style={{ color: 'var(--text-primary)' }}>{title}</h3>
           <div className="flex items-center justify-between mt-2">
-            <p className="text-[10px] font-mono opacity-60" style={{ color: 'var(--accent)' }}>@{author}</p>
+            <p className="text-[10px] font-mono opacity-60" style={{ color: 'var(--accent-text)' }}>@{author}</p>
             <span className="text-[10px] font-bold opacity-40 font-mono" style={{ color: 'var(--text-secondary)' }}>${price}</span>
           </div>
         </div>
@@ -45,7 +45,7 @@ export const ItemCard = ({ id, title, author, image, price = 0, height = 300 }: 
         <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
            <button 
              onClick={(e) => { e.stopPropagation(); addToCart({ id: String(id), title, image, price }); }}
-             className="w-10 h-10 rounded-md flex items-center justify-center transition-all bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--accent)] hover:border-[var(--accent)] shadow-md"
+             className="w-10 h-10 rounded-md flex items-center justify-center transition-all bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] text-[var(--accent-text)] hover:border-[var(--accent)] shadow-md"
            >
              <ShoppingBag size={14} />
            </button>

@@ -145,7 +145,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               color: 'var(--text-primary)',
             }}
           >
-            <ShoppingBag size={13} style={{ color: 'var(--accent)' }} />
+            <ShoppingBag size={13} style={{ color: 'var(--accent-text)' }} />
             <span className="text-[11px] font-semibold tracking-tight">{toast}</span>
           </motion.div>
         )}

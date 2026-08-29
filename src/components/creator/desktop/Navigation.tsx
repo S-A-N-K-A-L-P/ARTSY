@@ -38,7 +38,7 @@ export const SidebarFilterPanel = ({
                 'w-full text-left px-3 h-11 rounded-[var(--radius-sm)] transition-colors',
                 'text-sm font-semibold flex items-center gap-2.5',
                 active
-                  ? 'bg-accent-soft text-accent'
+                  ? 'bg-accent-soft text-accent-text'
                   : 'text-text-secondary hover:text-text hover:bg-elevated'
               )}
             >

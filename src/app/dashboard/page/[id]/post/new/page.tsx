@@ -110,7 +110,7 @@ export default function CreatePostPage() {
                 'h-10 px-4 rounded-full border transition-colors',
                 'text-[var(--text-label)] font-bold uppercase tracking-[0.12em]',
                 selected
-                  ? 'border-accent bg-accent-soft text-accent'
+                  ? 'border-accent bg-accent-soft text-accent-text'
                   : 'border-line bg-card text-text-muted hover:text-text'
               )}
             >

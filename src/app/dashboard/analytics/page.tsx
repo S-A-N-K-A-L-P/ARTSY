@@ -139,7 +139,7 @@ export default function AnalyticsPage() {
                   <Td>
                     <Link
                       href={`/dashboard/page/${p._id}`}
-                      className="font-semibold hover:text-accent transition-colors"
+                      className="font-semibold hover:text-accent-text transition-colors"
                     >
                       {p.name}
                     </Link>

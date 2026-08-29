@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight, Heart, Layers, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/components/cart/CartProvider';
+import { useImageRatio, placeholderRatio } from '@/hooks/useImageRatio';
 
 interface DiscoveryItem {
   id: string;
@@ -28,23 +29,18 @@ interface DiscoveryItem {
 const ITEM_RATIOS = ['3 / 4', '1 / 1', '4 / 5', '2 / 3', '5 / 6'];
 const PAGE_RATIOS = ['4 / 3', '1 / 1', '5 / 4'];
 
-/** Stable per-id pick, so a tile keeps its shape across re-renders. */
-function pickRatio(id: string, ratios: string[]) {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  return ratios[hash % ratios.length];
-}
-
 export default function FeedCard({ item }: { item: DiscoveryItem }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [saved, setSaved] = useState(false);
   const isPage = item.type === 'page';
 
-  const ratio = useMemo(
-    () => pickRatio(item.id, isPage ? PAGE_RATIOS : ITEM_RATIOS),
+  // Placeholder only — replaced by the image's real ratio once it loads.
+  const fallbackRatio = useMemo(
+    () => placeholderRatio(item.id, isPage ? PAGE_RATIOS : ITEM_RATIOS),
     [item.id, isPage]
   );
+  const { ratio, onLoad } = useImageRatio(fallbackRatio);
 
   const handleNavigate = () => {
     if (isPage && item.pageSlug) {
@@ -91,6 +87,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
           src={item.image}
           alt={item.title}
           loading="lazy"
+          onLoad={onLoad}
           className="w-full h-full object-cover"
         />
 
@@ -110,6 +107,15 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
             'transition-opacity duration-200'
           )}
         >
+          {isPurchasable && (
+            <span
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums"
+              style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+            >
+              {`₹${item.price!.toLocaleString('en-IN')}`}
+            </span>
+          )}
+
           {isPurchasable ? (
             <button
               onClick={handleAddToCart}
@@ -135,21 +141,18 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
 
         {/* Bottom row: price, then the quiet save */}
         <div className="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-2 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
-          {isPurchasable ? (
-            <span
-              className="px-2.5 py-1 rounded-full text-[11px] font-bold tabular-nums"
-              style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
-            >
-              {`₹${item.price!.toLocaleString('en-IN')}`}
+
+          <span className="flex items-center gap-1.5 min-w-0">
+            <img
+              src={item.creator.avatar}
+              alt=""
+              loading="lazy"
+              className="w-5 h-5 rounded-full object-cover shrink-0 ring-1 ring-white/40"
+            />
+            <span className="text-[11px] font-medium text-white truncate drop-shadow">
+              {item.creator.username}
             </span>
-          ) : (
-            <span
-              className="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.1em]"
-              style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff' }}
-            >
-              {item.aesthetic}
-            </span>
-          )}
+          </span>
 
           <button
             onClick={(e) => {
@@ -169,40 +172,27 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
         </div>
       </div>
 
-      {/* Caption sits outside the tile, unboxed — pin boards keep metadata quiet
-          so the imagery carries the grid. */}
-      <div className="mt-2 px-1">
-        <div className="flex items-start justify-between gap-2">
-          <h3
-            className="text-[13px] font-semibold leading-snug line-clamp-2"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            {item.title}
-          </h3>
-          {isPage && (
-            <ArrowUpRight
-              size={14}
-              className="shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ color: 'var(--text-muted)' }}
-            />
-          )}
-        </div>
-
-        <div className="flex items-center gap-1.5 mt-1.5">
-          <img
-            src={item.creator.avatar}
-            alt=""
-            loading="lazy"
-            className="w-5 h-5 rounded-full object-cover"
-            style={{ backgroundColor: 'var(--bg-tertiary)' }}
-          />
-          <span
-            className="text-[11px] font-medium truncate"
+      {/*
+        One quiet line, not a caption block.
+        This was a title plus an avatar row under every single tile — roughly
+        48px of chrome per pin, which lined the board up into visible rows and
+        pulled the eye off the imagery. Pinterest shows nothing under most pins;
+        the creator moves onto the tile on hover, where it does not cost layout.
+      */}
+      <div className="mt-1.5 px-1 flex items-center gap-1.5">
+        <h3
+          className="text-[13px] font-medium leading-snug truncate"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {item.title}
+        </h3>
+        {isPage && (
+          <ArrowUpRight
+            size={13}
+            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
             style={{ color: 'var(--text-muted)' }}
-          >
-            {item.creator.username}
-          </span>
-        </div>
+          />
+        )}
       </div>
     </motion.article>
   );

@@ -10,7 +10,7 @@ export function Spinner({ size = 20, className }: { size?: number; className?: s
   return (
     <Loader2
       size={size}
-      className={cn('animate-spin text-accent', className)}
+      className={cn('animate-spin text-accent-text', className)}
       role="status"
       aria-label="Loading"
     />

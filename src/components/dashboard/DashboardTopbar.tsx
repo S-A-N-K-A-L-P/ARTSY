@@ -36,14 +36,14 @@ export default function DashboardTopbar({ title: customTitle }: { title?: string
       }}
     >
       <nav aria-label="Breadcrumb">
-        <p className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">
+        <p className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-secondary">
           {section}
         </p>
       </nav>
 
       <button
         aria-label="Notifications"
-        className="p-2.5 rounded-[var(--radius-sm)] text-text-muted hover:text-text hover:bg-elevated transition-colors"
+        className="h-11 w-11 flex items-center justify-center rounded-full text-text-muted hover:text-text hover:bg-elevated transition-colors"
       >
         <Bell size={18} />
       </button>

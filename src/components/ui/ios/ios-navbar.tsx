@@ -25,7 +25,7 @@ export function IOSNavBar({
           {showBack && (
             <button 
               onClick={() => router.back()}
-              className="flex items-center text-accent active:opacity-50 transition-opacity"
+              className="flex items-center text-accent-text active:opacity-50 transition-opacity"
             >
               <ChevronLeft size={28} className="-ml-2" />
               <span className="text-[17px]">Back</span>
