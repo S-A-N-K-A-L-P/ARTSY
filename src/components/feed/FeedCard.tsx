@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Heart, Layers, ShoppingBag } from 'lucide-react';
+import { ArrowUpRight, Heart, ImageOff, Layers, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/components/cart/CartProvider';
 import { useImageRatio, placeholderRatio } from '@/hooks/useImageRatio';
@@ -40,7 +40,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
     () => placeholderRatio(item.id, isPage ? PAGE_RATIOS : ITEM_RATIOS),
     [item.id, isPage]
   );
-  const { ratio, onLoad } = useImageRatio(fallbackRatio);
+  const { ratio, onLoad, onError, failed } = useImageRatio(fallbackRatio);
 
   const handleNavigate = () => {
     if (isPage && item.pageSlug) {
@@ -83,13 +83,23 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
         className="relative w-full overflow-hidden cursor-zoom-in rounded-2xl bg-elevated"
         style={{ aspectRatio: ratio }}
       >
-        <img
-          src={item.image}
-          alt={item.title}
-          loading="lazy"
-          onLoad={onLoad}
-          className="w-full h-full object-cover"
-        />
+        {item.image && !failed ? (
+          <img
+            src={item.image}
+            alt={item.title}
+            loading="lazy"
+            onLoad={onLoad}
+            onError={onError}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-text-muted">
+            <ImageOff size={22} className="opacity-50" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] opacity-70">
+              No image
+            </span>
+          </span>
+        )}
 
         {/* Scrim only on hover, so the board stays clean at rest — the way a pin
             grid reads before you engage with it. */}

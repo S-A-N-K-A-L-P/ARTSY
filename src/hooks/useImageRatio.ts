@@ -29,13 +29,23 @@ export function placeholderRatio(id: string, variants: string[]) {
 
 export function useImageRatio(fallback: string) {
   const [ratio, setRatio] = useState<string>(fallback);
+  const [failed, setFailed] = useState(false);
 
   const onLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
     if (!w || !h) return;
     const r = Math.min(MAX_RATIO, Math.max(MIN_RATIO, w / h));
     setRatio(`${r}`);
+    setFailed(false);
   }, []);
 
-  return { ratio, onLoad };
+  /*
+   * Third-party images are not reliable. Production hotlinks covers from sites
+   * that serve curl but return 403 to a browser user agent, and several records
+   * carry no image at all — both currently paint an empty tinted rectangle with
+   * nothing to explain it.
+   */
+  const onError = useCallback(() => setFailed(true), []);
+
+  return { ratio, onLoad, onError, failed };
 }
