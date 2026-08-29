@@ -9,8 +9,8 @@ function getSection(pathname: string): string {
   if (pathname.startsWith('/dashboard/settings')) return 'Settings';
   if (pathname.startsWith('/dashboard/analytics')) return 'Analytics';
   if (pathname.startsWith('/dashboard/items') || pathname.includes('/item/')) return 'Items';
-  if (pathname.startsWith('/dashboard/create') || pathname.startsWith('/dashboard/page')) return 'Pages';
-  if (pathname === '/dashboard') return 'Pages';
+  if (pathname.startsWith('/dashboard/create') || pathname.startsWith('/dashboard/page')) return 'Spaces';
+  if (pathname === '/dashboard') return 'Spaces';
   return 'Dashboard';
 }
 

@@ -30,7 +30,7 @@ export const StickyAddToCart = ({ price, onAdd, isLoading }: StickyAddToCartProp
       >
         {isLoading ? 'Synchronizing...' : (
           <>
-            Add to Manifest <ChevronRight size={16} />
+            Add to bag <ChevronRight size={16} />
           </>
         )}
       </motion.button>

@@ -14,8 +14,7 @@ export const DesktopCategoryNav = ({ categories, activeCategory, onSelectCategor
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Archives</span>
-        <h3 className="text-xl font-bold text-text tracking-tighter">Collections</h3>
+        <h3 className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">Categories</h3>
       </div>
       
       <div className="flex flex-col gap-2">

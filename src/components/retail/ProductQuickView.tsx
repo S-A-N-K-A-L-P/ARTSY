@@ -55,7 +55,7 @@ export const ProductQuickView = ({ isOpen, onClose, item, onAddToCart }: Product
                      </motion.button>
                   </div>
 
-                  <h2 className="text-4xl font-black tracking-tighter text-text mb-2 leading-[0.9] italic">Manifesting Depth</h2>
+                  <h2 className="text-4xl font-black tracking-tighter text-text mb-2 leading-[0.9] italic">Details</h2>
                   <ReviewStars rating={4.5} count={12} className="mb-10" />
                   
                   <p className="text-sm text-text-muted font-medium leading-relaxed mb-10 max-w-xs">
@@ -75,7 +75,7 @@ export const ProductQuickView = ({ isOpen, onClose, item, onAddToCart }: Product
                     onClick={() => { onAddToCart(item); onClose(); }}
                     className="w-full h-14 rounded-2xl bg-accent text-on-accent font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.1)] active:brightness-95 transition-all"
                   >
-                     <ShoppingBag size={18} /> Add to Manifest
+                     <ShoppingBag size={18} /> Add to bag
                   </motion.button>
                   <motion.button 
                     whileHover={{ x: 5 }}

@@ -84,7 +84,7 @@ export function InventoryProductCard({ item, onEdit, onDelete }: InventoryProduc
                 onClick={() => router.push(`/dashboard/item/${item._id}/edit`)}
                 className="text-[8px] font-black uppercase tracking-widest text-text-muted hover:text-text flex items-center gap-1 transition-colors"
             >
-                View Node <ExternalLink size={8} />
+                View <ExternalLink size={8} />
             </button>
         </div>
       </div>

@@ -17,7 +17,7 @@ export const NewsletterMinimal = () => {
       <div className="space-y-4 relative z-10">
         <div className="flex items-center gap-4 text-amber-400">
            <Mail size={18} />
-           <span className="text-[10px] font-black uppercase tracking-[0.4em]">Archival Access</span>
+           <span className="text-[10px] font-black uppercase tracking-[0.4em]">Stay in the loop</span>
         </div>
         <h3 className="text-4xl font-black tracking-tighter leading-[0.9] max-w-md italic">Join the convergence.</h3>
         <p className="text-sm text-text-muted font-medium uppercase tracking-[0.2em] leading-relaxed max-w-xs">

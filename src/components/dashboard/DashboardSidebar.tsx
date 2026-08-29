@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const NAV = [
-  { href: '/home', label: 'Daily Feed', icon: Home },
-  { href: '/dashboard', label: 'Pages', icon: LayoutGrid },
+  { href: '/home', label: 'Feed', icon: Home },
+  { href: '/dashboard', label: 'Spaces', icon: LayoutGrid },
   { href: '/dashboard/items', label: 'Items', icon: FileText },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },

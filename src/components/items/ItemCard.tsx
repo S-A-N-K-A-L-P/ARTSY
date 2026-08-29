@@ -31,7 +31,7 @@ export const ItemCard: React.FC<ItemCardProps> = (props) => {
          <div className="w-16 h-16 rounded-full bg-[var(--accent-soft)] flex items-center justify-center group-hover:scale-110 transition-all duration-500">
             <span className="text-4xl font-black text-[var(--accent-text)] transition-colors">+</span>
          </div>
-         <span className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">Manifest New Artifact</span>
+         <span className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">Add an item</span>
       </div>
     );
   }

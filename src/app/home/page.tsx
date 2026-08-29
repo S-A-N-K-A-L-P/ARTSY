@@ -101,7 +101,7 @@ export default function HomePage() {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
            <div className="flex items-baseline gap-3 min-w-0">
               <h1 className="text-2xl md:text-3xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>
-                {view === 'reels' ? 'Artifacts' : gridMode === 'spaces' ? 'Spaces' : 'Items'}
+                {view === 'reels' ? 'Reels' : gridMode === 'spaces' ? 'Spaces' : 'Items'}
               </h1>
               <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] shrink-0">
                 <Sparkles size={10} /> {aesthetic}
@@ -127,7 +127,7 @@ export default function HomePage() {
                 isActive={view === 'reels'} 
                 onClick={() => handleTabChange('reels')}
                 icon={<PlayCircle size={14} />}
-                label="Artifacts"
+                label="Reels"
               />
               <TabButton 
                 isActive={view === 'grid' && gridMode === 'spaces'} 

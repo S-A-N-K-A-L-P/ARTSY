@@ -33,7 +33,7 @@ export const StoreAnnouncement = ({ title, message, onClose }: StoreAnnouncement
         <div className="flex-1 flex items-center justify-center gap-4 relative z-10">
            <Megaphone size={14} className="text-amber-400 animate-pulse" />
            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-center">
-              {message} <span className="text-amber-400 ml-4 font-black tracking-normal italic uppercase">Explore Archives</span>
+              {message} <span className="text-amber-400 ml-4 font-black tracking-normal italic uppercase">Browse</span>
            </p>
         </div>
         

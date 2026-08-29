@@ -133,7 +133,7 @@ export function MobileInventoryView() {
                     onClick={() => {setSelectedCategory('All'); setSearchQuery('');}}
                     className="mt-4 text-[9px] font-black uppercase tracking-widest text-text underline"
                   >
-                    Reset Manifest
+                    Reset filters
                   </button>
               </div>
           )}

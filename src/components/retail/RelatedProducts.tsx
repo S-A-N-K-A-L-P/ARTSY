@@ -12,7 +12,7 @@ export const RelatedProducts = ({ items, onSelect }: RelatedProductsProps) => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-text-muted">Converging Artifacts</h3>
+        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-text-muted">More from this space</h3>
         <span className="text-[10px] font-bold text-text uppercase tracking-widest cursor-pointer hover:underline">View All</span>
       </div>
       

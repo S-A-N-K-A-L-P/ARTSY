@@ -28,7 +28,7 @@ export const StoreStatus = ({ isOpen, message, className, hours }: StoreStatusPr
       </div>
       <div>
          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-text leading-none">
-           Archival {isOpen ? 'Online' : 'Offline'}
+           {isOpen ? 'Open' : 'Closed'}
          </p>
          {hours && <p className="text-[8px] font-black uppercase tracking-[0.2em] text-text-muted mt-1">{hours}</p>}
       </div>

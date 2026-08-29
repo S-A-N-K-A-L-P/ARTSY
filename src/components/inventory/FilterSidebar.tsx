@@ -26,7 +26,7 @@ export function FilterSidebar({
   return (
     <aside className="w-64 flex-shrink-0 space-y-10 pr-8 border-r border-line hidden md:block">
       {/* Category Filter */}
-      <FilterSection title="Manifest Category">
+      <FilterSection title="Category">
         <div className="flex flex-col gap-2">
             {['All', ...categories].map((cat) => (
                 <button

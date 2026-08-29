@@ -42,7 +42,7 @@ export const SizeGuideModal = ({ isOpen, onClose }: SizeGuideModalProps) => {
                <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-line">
-                      <th className="py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Archival Size</th>
+                      <th className="py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Size guide</th>
                       <th className="py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Width (cm)</th>
                       <th className="py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Height (cm)</th>
                     </tr>

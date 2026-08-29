@@ -62,7 +62,7 @@ export const BrandStorySection = ({ title, story, image }: BrandStorySectionProp
           transition={{ delay: 0.3 }}
           className="pt-10 border-t border-line"
         >
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Astl Archives • 2026 • Manifest Zero</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">astl</p>
         </motion.div>
       </div>
     </motion.div>

@@ -37,8 +37,8 @@ export const CartDrawer = ({ isOpen, onClose, items, onRemove, onUpdateQuantity 
           >
             <div className="p-8 border-b flex items-center justify-between" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
-                <h3 className="text-xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>Manifest Summary</h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: 'var(--text-muted)' }}>{items.length} Artifacts</p>
+                <h3 className="text-xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>Your bag</h3>
+                <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: 'var(--text-muted)' }}>{items.length} items</p>
               </div>
               <button onClick={onClose} aria-label="Close cart" className="p-2" style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -49,7 +49,7 @@ export const CartDrawer = ({ isOpen, onClose, items, onRemove, onUpdateQuantity 
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center opacity-20">
                    <ShoppingBag size={48} strokeWidth={1} />
-                   <p className="text-[10px] font-bold uppercase tracking-widest mt-4">Empty Manifest</p>
+                   <p className="text-[10px] font-bold uppercase tracking-widest mt-4">Your bag is empty</p>
                 </div>
               ) : (
                 items.map((item) => (
@@ -85,7 +85,7 @@ export const CartDrawer = ({ isOpen, onClose, items, onRemove, onUpdateQuantity 
 
             <div className="p-8 border-t" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-primary)' }}>
               <div className="flex items-center justify-between mb-8">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>Archival Total</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>Total</span>
                 <span className="text-3xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>₹{total}</span>
               </div>
               <motion.button 

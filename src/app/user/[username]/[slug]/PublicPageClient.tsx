@@ -9,7 +9,6 @@ import Masonry from 'react-masonry-css';
 import { ShoppingBag, X } from 'lucide-react';
 
 import { PromoBanner } from '@/components/retail/PromoBanner';
-import { BreadcrumbTrail } from '@/components/retail/BreadcrumbTrail';
 import { FilterDrawer } from '@/components/retail/FilterDrawer';
 import { QuantitySelector } from '@/components/retail/QuantitySelector';
 import { StoreStatus } from '@/components/retail/StoreStatus';
@@ -109,7 +108,6 @@ export default function PublicPageClient({ page, user, items }: any) {
         >
           <div className="flex-1 min-w-0">
             <div className="hidden lg:block">
-              <BreadcrumbTrail items={[{ label: page.name, href: '#' }]} />
             </div>
 
             <div className="flex items-center gap-4 lg:block">
@@ -217,7 +215,7 @@ export default function PublicPageClient({ page, user, items }: any) {
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-16 px-6 bg-accent text-on-accent font-bold text-xs uppercase tracking-[0.24em] flex items-center justify-center gap-3 shadow-[var(--elevation-medium)]"
       >
         <ShoppingBag size={16} />
-        Open Manifest ({cartItems.length})
+        Open bag ({cartItems.length})
       </button>
 
       <CartDrawer
@@ -327,9 +325,6 @@ function GalleryCard({ item, onSelect, onAdd }: any) {
 
       <div className="mt-2 px-1">
         <h3 className="text-[13px] font-semibold leading-snug line-clamp-2 text-text">{item.title}</h3>
-        {item.price > 0 && (
-          <p className="text-xs font-bold tabular-nums mt-1 text-text-secondary">{money(item.price)}</p>
-        )}
       </div>
     </motion.article>
   );
