@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Page from '@/models/Page';
+import User from '@/models/User';
 
 export async function PUT(
   request: Request,
@@ -22,10 +23,21 @@ export async function PUT(
     }
 
     await dbConnect();
-    
-    // In this specific model structure, aesthetic is an object { theme, custom }
-    const updatedPage = await Page.findByIdAndUpdate(
-      id,
+
+    /*
+     * Ownership check.
+     *
+     * This previously verified only that *a* session existed and then called
+     * findByIdAndUpdate on the supplied id, so any signed-in user could
+     * retheme anyone else's space just by knowing its id.
+     */
+    const user = await User.findOne({ email: session.user.email }).select('_id');
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const updatedPage = await Page.findOneAndUpdate(
+      { _id: id, ownerId: user._id },
       { $set: { 'aesthetic.theme': theme, 'aesthetic.custom': {} } },
       { new: true }
     );

@@ -15,10 +15,13 @@ import {
   Tabs,
   Avatar,
   EmptyState,
-  DescriptionList,
   SkeletonGrid,
   Skeleton,
   Alert,
+  Field,
+  Input,
+  Textarea,
+  Label,
 } from '@/components/ui';
 
 type Tab = 'items' | 'feed' | 'settings';
@@ -34,6 +37,9 @@ export default function PageHubPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('items');
+  const [settings, setSettings] = useState({ name: '', description: '', coverImage: '' });
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -51,7 +57,15 @@ export default function PageHubPage() {
         ]);
         if (cancelled) return;
         if (pageData.success) {
-          setPage(pageData.pages.find((p: any) => p._id === pageId) ?? null);
+          const found = pageData.pages.find((p: any) => p._id === pageId) ?? null;
+          setPage(found);
+          if (found) {
+            setSettings({
+              name: found.name ?? '',
+              description: found.description ?? '',
+              coverImage: found.coverImage ?? '',
+            });
+          }
         }
         if (itemData.success) setItems(itemData.items ?? []);
         if (postData.success) setPosts(postData.posts ?? []);
@@ -65,6 +79,28 @@ export default function PageHubPage() {
       cancelled = true;
     };
   }, [pageId]);
+
+  const saveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    setError(null);
+    setSettingsSaved(false);
+    try {
+      const res = await fetch(`/api/creator/page/${pageId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Could not save this space');
+      setPage(data.page);
+      setSettingsSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const handleDeleteItem = async (itemId: string) => {
     if (!confirm('Delete this item?')) return;
@@ -247,30 +283,104 @@ export default function PageHubPage() {
       )}
 
       {activeTab === 'settings' && (
-        <Section
-          title="Space settings"
-          description="Editing a space is not built yet — these are the current values."
-        >
-          <Card>
-            {/*
-              These were three readOnly <input>s styled to look editable, which
-              invites a change that silently does nothing. A description list
-              reads as information, which is what it is.
-            */}
-            <DescriptionList
-              items={[
-                { label: 'Name', value: page.name },
-                { label: 'URL', value: `/${page.slug}` },
-                { label: 'Type', value: page.type ?? 'gallery' },
-                { label: 'Aesthetic', value: theme },
-                {
-                  label: 'Visibility',
-                  value: page.settings?.isPublic !== false ? 'Public' : 'Private',
-                },
-                { label: 'Items', value: String(items.length) },
-              ]}
-            />
-          </Card>
+        <Section title="Space settings" description="Changes apply to your public storefront.">
+          {/*
+            This tab used to be read-only because no endpoint existed to update
+            a space — the only page-update route handled `aesthetic` alone. With
+            PATCH /api/creator/page/[id] in place it is a real form, which is
+            also how a space with no cover image gets one.
+          */}
+          <form onSubmit={saveSettings}>
+            <Stack gap="md">
+              {settingsSaved && <Alert tone="success">Space saved.</Alert>}
+
+              <Card>
+                <Stack gap="md">
+                  <Field label="Name" required>
+                    {(id) => (
+                      <Input
+                        id={id}
+                        value={settings.name}
+                        onChange={(e) => {
+                          setSettingsSaved(false);
+                          setSettings((f) => ({ ...f, name: e.target.value }));
+                        }}
+                      />
+                    )}
+                  </Field>
+
+                  <Field label="Description">
+                    {(id) => (
+                      <Textarea
+                        id={id}
+                        rows={3}
+                        value={settings.description}
+                        onChange={(e) => {
+                          setSettingsSaved(false);
+                          setSettings((f) => ({ ...f, description: e.target.value }));
+                        }}
+                        placeholder="What lives in this space?"
+                      />
+                    )}
+                  </Field>
+
+                  <Field
+                    label="Cover image URL"
+                    hint="Shown on the feed, on Explore and at the top of your storefront."
+                  >
+                    {(id, describedBy) => (
+                      <Input
+                        id={id}
+                        aria-describedby={describedBy}
+                        value={settings.coverImage}
+                        onChange={(e) => {
+                          setSettingsSaved(false);
+                          setSettings((f) => ({ ...f, coverImage: e.target.value }));
+                        }}
+                        placeholder="https://…"
+                        inputMode="url"
+                      />
+                    )}
+                  </Field>
+
+                  {settings.coverImage && (
+                    <div className="space-y-2">
+                      <Label>Preview</Label>
+                      <img
+                        src={settings.coverImage}
+                        alt=""
+                        className="w-full max-w-xs aspect-[4/3] object-cover rounded-[var(--radius-md)] border border-line bg-elevated"
+                      />
+                    </div>
+                  )}
+                </Stack>
+              </Card>
+
+              <Card>
+                <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  {[
+                    { label: 'URL', value: `/${page.slug}` },
+                    { label: 'Type', value: page.type ?? 'gallery' },
+                    { label: 'Aesthetic', value: theme },
+                    { label: 'Items', value: String(items.length) },
+                  ].map((d) => (
+                    <div key={d.label}>
+                      <dt className="text-[var(--text-label)] font-bold uppercase tracking-[0.14em] text-text-muted">
+                        {d.label}
+                      </dt>
+                      <dd className="mt-1 text-sm text-text">{d.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Card>
+
+              <div className="flex justify-end">
+                <Button type="submit" size="lg" loading={savingSettings} disabled={!settings.name}>
+                  Save changes
+                </Button>
+              </div>
+            </Stack>
+          </form>
         </Section>
       )}
     </Page>
