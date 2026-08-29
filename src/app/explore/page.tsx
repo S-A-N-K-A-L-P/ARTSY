@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Layers, Package, Search, ShoppingBag, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { THEME_NAMES, themes, resolveTheme } from '@/lib/theme/themes';
+import { useSession } from 'next-auth/react';
 import { useCart } from '@/components/cart/CartProvider';
 import {
   Page,
@@ -44,6 +45,8 @@ function ratioFor(id: string) {
  * aesthetic so the board shows you what each one actually looks like.
  */
 export default function ExplorePage() {
+  const { data: session, status } = useSession();
+  const { totalItems } = useCart();
   const [mode, setMode] = useState<Mode>('spaces');
   const [aesthetic, setAesthetic] = useState<string>(ALL);
   const [query, setQuery] = useState('');
@@ -113,17 +116,49 @@ export default function ExplorePage() {
         <Link href="/" className="text-sm font-black tracking-tight text-text">
           astl
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-1.5">
           <Link
             href="/cart"
-            aria-label="Bag"
-            className="h-10 w-10 rounded-full flex items-center justify-center text-text-muted hover:text-text transition-colors"
+            aria-label={totalItems > 0 ? `Bag, ${totalItems} items` : 'Bag'}
+            className="relative h-10 w-10 rounded-full flex items-center justify-center text-text-muted hover:text-text transition-colors"
           >
             <ShoppingBag size={18} />
+            {totalItems > 0 && (
+              <span
+                className="absolute top-1 right-0.5 min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold tabular-nums"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
+              >
+                {totalItems}
+              </span>
+            )}
           </Link>
-          <Link href="/login">
-            <Button size="sm" variant="secondary">Sign in</Button>
-          </Link>
+
+          {/*
+            status is 'loading' until the session resolves. Rendering the
+            signed-out state during that window would flash "Sign in" at
+            someone who is already signed in, so hold the space instead.
+          */}
+          {status === 'loading' ? (
+            <span aria-hidden className="h-9 w-24 rounded-full bg-elevated animate-pulse" />
+          ) : session?.user ? (
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 h-10 pl-1.5 pr-3 rounded-full hover:bg-elevated transition-colors"
+            >
+              <Avatar
+                src={(session.user as any).image ?? undefined}
+                name={session.user.name ?? session.user.email ?? undefined}
+                size="sm"
+              />
+              <span className="hidden sm:inline text-[13px] font-semibold text-text truncate max-w-[140px]">
+                {session.user.name || 'Dashboard'}
+              </span>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button size="sm" variant="secondary">Sign in</Button>
+            </Link>
+          )}
         </nav>
       </header>
 
