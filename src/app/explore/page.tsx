@@ -104,6 +104,29 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-bg text-text">
+      {/*
+        Explore is public and linked from the marketing navbar, the hero and the
+        CTA — but it rendered no navigation of any kind, so a visitor arriving
+        on a phone had no way back and no way into the rest of the product.
+      */}
+      <header className="sticky top-0 z-40 h-14 px-5 md:px-10 flex items-center justify-between gap-4 border-b border-line bg-bg/90 backdrop-blur-xl">
+        <Link href="/" className="text-sm font-black tracking-tight text-text">
+          astl
+        </Link>
+        <nav className="flex items-center gap-1">
+          <Link
+            href="/cart"
+            aria-label="Bag"
+            className="h-10 w-10 rounded-full flex items-center justify-center text-text-muted hover:text-text transition-colors"
+          >
+            <ShoppingBag size={18} />
+          </Link>
+          <Link href="/login">
+            <Button size="sm" variant="secondary">Sign in</Button>
+          </Link>
+        </nav>
+      </header>
+
       <div className="px-5 md:px-10 py-8 md:py-12">
         <Page
           title="Explore"
@@ -282,11 +305,11 @@ function ResultCard({ row, mode, theme }: { row: any; mode: Mode; theme: string 
                 });
               }}
               aria-label={`Add ${row.title} to bag`}
-              className="absolute top-2.5 right-2.5 h-9 px-4 rounded-full flex items-center gap-1.5 text-[11px] font-bold tracking-tight active:scale-95 transition-all [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+              className="absolute top-2.5 right-2.5 h-11 w-11 sm:h-9 sm:w-auto sm:px-4 rounded-full flex items-center justify-center gap-1.5 text-[11px] font-bold tracking-tight active:scale-95 transition-all [@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
               style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
             >
-              <ShoppingBag size={14} />
-              Add to bag
+              <ShoppingBag size={16} className="shrink-0" />
+              <span className="hidden sm:inline">Add to bag</span>
             </button>
           )}
           {!isSpace && row.price > 0 && (

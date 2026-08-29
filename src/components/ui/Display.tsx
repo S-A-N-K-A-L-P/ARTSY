@@ -125,12 +125,18 @@ export function Tabs({
   onChange: (id: string) => void;
   className?: string;
 }) {
+  /*
+   * The pill is scrollable rather than fixed-width. Three tabs measured 441px
+   * on a 375px viewport, and the bar had overflow visible with no scroll, so
+   * the last tab sat off-screen with no way to reach it — on Explore that made
+   * the entire Creators section unreachable on a phone.
+   */
   return (
+    <div className={cn('max-w-full overflow-x-auto hide-scrollbar', className)}>
     <div
       role="tablist"
       className={cn(
-        'inline-flex items-center gap-1 p-1 bg-card border border-line rounded-full',
-        className
+        'inline-flex items-center gap-1 p-1 bg-card border border-line rounded-full w-max'
       )}
     >
       {items.map((t) => {
@@ -143,7 +149,7 @@ export function Tabs({
             onClick={() => onChange(t.id)}
             className={cn(
               // 44px target: these were 38px, under the minimum
-              'inline-flex items-center gap-2 h-11 px-4 rounded-full transition-colors',
+              'inline-flex items-center gap-2 h-11 px-4 rounded-full transition-colors shrink-0 whitespace-nowrap',
               'text-[var(--text-label)] font-bold uppercase tracking-[0.14em]',
               active ? 'bg-accent text-on-accent' : 'text-text-muted hover:text-text'
             )}
@@ -153,6 +159,7 @@ export function Tabs({
           </button>
         );
       })}
+    </div>
     </div>
   );
 }

@@ -114,11 +114,11 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
             <button
               onClick={handleAddToCart}
               aria-label={`Add ${item.title} to bag`}
-              className="h-9 px-4 rounded-full flex items-center gap-1.5 text-[11px] font-bold tracking-tight active:scale-95 transition-transform"
+              className="h-11 w-11 sm:h-9 sm:w-auto sm:px-4 rounded-full flex items-center justify-center gap-1.5 text-[11px] font-bold tracking-tight active:scale-95 transition-transform"
               style={{ backgroundColor: 'var(--accent)', color: 'var(--on-accent)' }}
             >
-              <ShoppingBag size={14} />
-              Add to bag
+              <ShoppingBag size={16} className="shrink-0" />
+              <span className="hidden sm:inline">Add to bag</span>
             </button>
           ) : (
             isPage && (
@@ -158,7 +158,7 @@ export default function FeedCard({ item }: { item: DiscoveryItem }) {
             }}
             aria-label={saved ? 'Remove from saved' : 'Save'}
             aria-pressed={saved}
-            className="h-8 w-8 rounded-full flex items-center justify-center active:scale-90 transition-transform shrink-0"
+            className="h-11 w-11 sm:h-8 sm:w-8 rounded-full flex items-center justify-center active:scale-90 transition-transform shrink-0"
             style={{
               backgroundColor: saved ? 'var(--accent)' : 'var(--bg-secondary)',
               color: saved ? 'var(--on-accent)' : 'var(--text-primary)',
